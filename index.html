@@ -28,16 +28,15 @@
         .batch-item.active { border-color: var(--primary); opacity: 1; transform: scale(1.05); box-shadow: 0 0 20px rgba(59, 130, 246, 0.3); }
 
         #main-canvas { 
-            transition: transform 0.1s ease-out; 
             cursor: grab; 
-            max-width: none; 
             border-radius: 1rem; 
-            transform-origin: center center;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+            image-rendering: -webkit-optimize-contrast;
         }
         #main-canvas:active { cursor: grabbing; }
         
         .canvas-container { 
-            overflow: hidden; 
+            overflow: auto; 
             display: flex; 
             align-items: center; 
             justify-content: center; 
@@ -46,10 +45,10 @@
             position: relative; 
             background: #000; 
             border-radius: 2.5rem; 
+            padding: 50px;
         }
-        
-        .custom-scrollbar::-webkit-scrollbar { width: 4px; height: 4px; }
-        .custom-scrollbar::-webkit-scrollbar-thumb { background: #333; border-radius: 10px; }
+        .canvas-container::-webkit-scrollbar { width: 6px; height: 6px; }
+        .canvas-container::-webkit-scrollbar-thumb { background: #333; border-radius: 10px; }
         
         .glow { position: fixed; width: 600px; height: 600px; background: radial-gradient(circle, rgba(59, 130, 246, 0.1) 0%, transparent 70%); z-index: -1; pointer-events: none; }
         .hidden { display: none; }
@@ -72,7 +71,7 @@
                 </div>
                 <div>
                     <h1 class="text-3xl font-black tracking-tighter text-white uppercase italic leading-none">Tahir <span class="text-blue-500">Tahir</span></h1>
-                    <p class="text-[10px] text-slate-500 font-bold uppercase tracking-[0.5em] mt-1 italic">Optimized Vision Engine v6.5</p>
+                    <p class="text-[10px] text-slate-500 font-bold uppercase tracking-[0.5em] mt-1 italic">Pro Vision Engine v6.6</p>
                 </div>
             </div>
             <div id="toast" class="hidden glass px-6 py-2.5 rounded-full text-[11px] font-black text-blue-400 border border-blue-500/20 shadow-2xl animate-pulse">ڕێکخستنەکان کۆپی کرا ✓</div>
@@ -129,8 +128,8 @@
                 <!-- Floating Tools -->
                 <div class="absolute bottom-10 left-1/2 -translate-x-1/2 flex items-center gap-6 glass px-10 py-5 rounded-full border border-white/10 shadow-[0_20px_60px_rgba(0,0,0,0.8)] z-20">
                     <button id="zoom-out" class="p-2 hover:text-blue-500 transition-all text-slate-400"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="5" y1="12" x2="19" y2="12"/></svg></button>
-                    <button id="btn-fit" class="px-4 py-1.5 glass text-blue-400 text-[10px] font-black uppercase rounded-lg border border-blue-500/20 hover:bg-blue-600 hover:text-white transition-all">Fit</button>
-                    <span id="zoom-val" class="text-[11px] font-black w-14 text-center text-blue-500">100%</span>
+                    <button id="btn-fit" class="px-5 py-2 glass text-blue-400 text-[10px] font-black uppercase rounded-xl border border-blue-500/20 hover:bg-blue-600 hover:text-white transition-all">Fit View</button>
+                    <span id="zoom-val" class="text-[11px] font-black w-16 text-center text-blue-500">100%</span>
                     <button id="zoom-in" class="p-2 hover:text-blue-500 transition-all text-slate-400"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></button>
                     <div class="w-px h-6 bg-white/10 mx-2"></div>
                     <button id="compare-btn" class="px-6 py-2 bg-blue-600/20 text-blue-400 text-[10px] font-black uppercase rounded-xl border border-blue-500/20 active:bg-blue-600 active:text-white transition-all select-none">بەراوردکردن</button>
@@ -148,13 +147,11 @@
             <!-- Right: Sidebar -->
             <div class="w-full lg:w-[380px] glass rounded-[3rem] p-8 flex flex-col gap-8 shadow-2xl overflow-y-auto custom-scrollbar flex-shrink-0 h-full">
                 
-                <!-- Sidebar Tabs -->
                 <div class="flex border-b border-white/5 flex-shrink-0">
                     <button onclick="switchTab('color')" id="tab-color" class="tab-btn flex-1 active">ڕەنگ و ڕووناکی</button>
                     <button onclick="switchTab('face')" id="tab-face" class="tab-btn flex-1">جوانی و دەموچاو</button>
                 </div>
 
-                <!-- Section: Color -->
                 <div id="section-color" class="space-y-8 overflow-y-auto flex-1 custom-scrollbar">
                     <div class="space-y-6 p-6 bg-blue-500/5 rounded-[2.5rem] border border-blue-500/10">
                         <div class="space-y-4">
@@ -193,25 +190,17 @@
                     </div>
                 </div>
 
-                <!-- Section: Face -->
                 <div id="section-face" class="hidden space-y-8 overflow-y-auto flex-1 custom-scrollbar">
                     <div class="p-6 bg-pink-500/5 rounded-[2.5rem] border border-pink-500/10 space-y-6">
-                        <h4 class="text-[10px] font-black text-pink-400 uppercase tracking-widest flex items-center gap-2">
-                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/><line x1="9" y1="9" x2="9.01" y2="9"/><line x1="15" y1="9" x2="15.01" y2="9"/></svg>
-                            سافکردنی زیرەکی پێست
-                        </h4>
+                        <h4 class="text-[10px] font-black text-pink-400 uppercase tracking-widest">سافکردنی زیرەکی پێست</h4>
                         <div class="space-y-4">
                             <div class="flex justify-between text-[10px] font-bold text-slate-400 uppercase"><span>Smoothing</span><span id="smoothing-val" class="text-pink-400">0%</span></div>
                             <input type="range" id="smoothing-slider" min="0" max="100" value="0" class="w-full accent-pink-500" />
                         </div>
-                        <p class="text-[9px] text-slate-600 leading-relaxed italic">تێبینی: ئەم کردارە تەنها کار لە ڕەنگی پێست دەکات و وردەکارییەکان دەپارێزێت.</p>
                     </div>
 
                     <div class="p-6 bg-purple-500/5 rounded-[2.5rem] border border-purple-500/10 space-y-8">
-                        <h4 class="text-[10px] font-black text-purple-400 uppercase tracking-widest flex items-center gap-2">
-                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18z"/><path d="M12 7v5l3 3"/></svg>
-                            AI Makeup (مەیکەپ)
-                        </h4>
+                        <h4 class="text-[10px] font-black text-purple-400 uppercase tracking-widest italic">AI Makeup Effects</h4>
                         <div class="space-y-6">
                             <div class="space-y-3">
                                 <div class="flex justify-between text-[10px] font-black text-slate-400 uppercase"><span>ڕەنگی لێو (Lipstick)</span><span id="lipstick-val" class="text-purple-400">0%</span></div>
@@ -225,7 +214,6 @@
                     </div>
                 </div>
 
-                <!-- Shared Actions -->
                 <div class="space-y-4 pt-4 border-t border-white/5 flex-shrink-0">
                     <button onclick="downloadActive()" class="w-full py-6 btn-zaxm text-white rounded-[2rem] font-black text-md shadow-2xl uppercase tracking-tighter italic">دابەزاندنی وێنە</button>
                     <div class="grid grid-cols-2 gap-3">
@@ -238,12 +226,11 @@
     </div>
 
     <script>
-        // --- Core Application Logic ---
         let sourceStats = null;
         let batch = []; 
         let activeIdx = 0;
         let copiedSettings = null;
-        let zoomLevel = 1.0;
+        let zoomLevel = 1.0; 
         let fitScale = 1.0;
         let isComparing = false;
         let processedBaseCanvas = document.createElement('canvas');
@@ -380,22 +367,16 @@
                 renderFilmstrip();
                 const item = batch[i];
                 
-                // --- Robust Fit to Screen Calculation ---
                 const container = els.container;
-                const cw = container.clientWidth;
-                const ch = container.clientHeight;
-                const iw = item.img.width;
-                const ih = item.img.height;
-                
-                fitScale = Math.min(cw / iw, ch / ih) * 0.95;
+                fitScale = Math.min(container.clientWidth / item.img.width, container.clientHeight / item.img.height) * 0.92;
                 zoomLevel = 1.0; 
 
                 const canvas = processedBaseCanvas;
                 const ctx = canvas.getContext('2d');
-                canvas.width = iw; canvas.height = ih;
+                canvas.width = item.img.width; canvas.height = item.img.height;
                 ctx.drawImage(item.img, 0, 0);
                 
-                const idata = ctx.getImageData(0,0,iw,ih);
+                const idata = ctx.getImageData(0,0,canvas.width,canvas.height);
                 const data = idata.data;
                 const tCanvas = document.createElement('canvas'); tCanvas.width=100; tCanvas.height=100;
                 const tCtx = tCanvas.getContext('2d'); tCtx.drawImage(item.img,0,0,100,100);
@@ -433,8 +414,6 @@
                     
                     const f = getUI();
                     const blend = f.intensity / 100;
-
-                    // Composite Background
                     const mainBuffer = document.createElement('canvas');
                     mainBuffer.width = w; mainBuffer.height = h;
                     const bCtx = mainBuffer.getContext('2d');
@@ -442,13 +421,12 @@
                     if(blend >= 1.0) bCtx.drawImage(processedBaseCanvas, 0, 0);
                     else { bCtx.drawImage(item.img, 0, 0); bCtx.globalAlpha = blend; bCtx.drawImage(processedBaseCanvas, 0, 0); bCtx.globalAlpha = 1.0; }
 
-                    // Smart Retouch
                     if(f.smoothing > 0 || f.lipstick > 0 || f.blush > 0 || f.shadows !== 0) {
                         const idata = bCtx.getImageData(0,0,w,h); const d = idata.data;
                         const copy = new Uint8ClampedArray(d);
-                        const step = w > 2500 ? 4 : (w > 1200 ? 2 : 1);
-                        const rad = Math.max(1, Math.floor(f.smoothing/15));
-                        const factor = f.smoothing / 180;
+                        const step = w > 2000 ? 3 : 1;
+                        const rad = Math.max(1, Math.floor(f.smoothing/16));
+                        const factor = f.smoothing / 200;
 
                         for(let y=0; y<h; y+=step) {
                             for(let x=0; x<w; x+=step) {
@@ -457,20 +435,19 @@
                                 
                                 if (f.shadows !== 0) {
                                     const lum = 0.299*r + 0.587*g + 0.114*b;
-                                    if (lum < 128) {
-                                        const shadowFactor = (1 - lum/128) * (f.shadows / 100);
+                                    if (lum < 110) {
+                                        const shadowFactor = (1 - lum/110) * (f.shadows / 80);
                                         d[i] = Math.max(0, Math.min(255, d[i] * (1 + shadowFactor)));
                                         d[i+1] = Math.max(0, Math.min(255, d[i+1] * (1 + shadowFactor)));
                                         d[i+2] = Math.max(0, Math.min(255, d[i+2] * (1 + shadowFactor)));
                                     }
                                 }
 
-                                if (r>70 && g>45 && r>g && (r-g)>12) { 
+                                if (r>60 && g>40 && r>g) { 
                                     if(f.smoothing > 0 && y > rad && y < h-rad && x > rad && x < w-rad) {
                                         let sr=0, sg=0, sb=0, sc=0;
-                                        const sampleStep = Math.max(1, Math.floor(rad/2));
-                                        for(let ky=-rad; ky<=rad; ky+=sampleStep) {
-                                            for(let kx=-rad; kx<=rad; kx+=sampleStep) {
+                                        for(let ky=-rad; ky<=rad; ky+=rad) {
+                                            for(let kx=-rad; kx<=rad; kx+=rad) {
                                                 const ki=((y+ky)*w+(x+kx))*4; sr+=copy[ki]; sg+=copy[ki+1]; sb+=copy[ki+2]; sc++;
                                             }
                                         }
@@ -478,14 +455,12 @@
                                         d[i+1]=copy[i+1]*(1-factor)+(sg/sc)*factor;
                                         d[i+2]=copy[i+2]*(1-factor)+(sb/sc)*factor;
                                     }
-                                    if(f.lipstick > 0 && r > g * 1.35) {
-                                        d[i] = Math.min(255, d[i] + f.lipstick * 0.4);
+                                    if(f.lipstick > 0 && r > g * 1.4) {
+                                        d[i] = Math.min(255, d[i] + f.lipstick * 0.45);
                                         d[i+1] = Math.max(0, d[i+1] - f.lipstick * 0.2);
-                                        d[i+2] = Math.min(255, d[i+2] + f.lipstick * 0.1);
                                     }
                                     if(f.blush > 0 && r > g && g > b) {
-                                        d[i] = Math.min(255, d[i] + f.blush * 0.25);
-                                        d[i+1] = Math.max(0, d[i+1] - f.blush * 0.1);
+                                        d[i] = Math.min(255, d[i] + f.blush * 0.3);
                                     }
                                 }
                             }
@@ -493,27 +468,24 @@
                         bCtx.putImageData(idata, 0,0);
                     }
 
-                    const finalBuffer = document.createElement('canvas'); 
-                    finalBuffer.width=w; finalBuffer.height=h;
-                    const fctx = finalBuffer.getContext('2d');
+                    const fctx = canvas.getContext('2d');
                     fctx.filter = `brightness(${f.brightness}%) contrast(${f.contrast}%) saturate(${f.saturation}%) hue-rotate(${f.tint}deg)`;
                     fctx.drawImage(mainBuffer, 0, 0);
 
                     if(f.temp !== 0) {
                         fctx.globalCompositeOperation = 'overlay'; 
-                        fctx.fillStyle = f.temp > 0 ? `rgba(255,180,0,${Math.abs(f.temp)/350})` : `rgba(0,120,255,${Math.abs(f.temp)/350})`;
+                        // Temp fix: f.temp > 0 is Yellow (Warm), < 0 is Blue (Cold)
+                        fctx.fillStyle = f.temp > 0 ? `rgba(255,180,0,${Math.abs(f.temp)/350})` : `rgba(0,100,255,${Math.abs(f.temp)/350})`;
                         fctx.fillRect(0,0,w,h);
                     }
-
-                    ctx.clearRect(0,0,w,h); ctx.drawImage(finalBuffer, 0, 0);
                     isRendering = false;
                 });
             };
 
             const getUI = () => { const obj = {}; SLIDERS.forEach(s => { const el = get(s+'-slider'); if(el) obj[s] = parseInt(el.value); }); return obj; };
-            const setUI = (f) => { SLIDERS.forEach(s => { const el = get(s+'-slider'); if(el) { el.value = f[s]; const v = get(s+'-val'); if(v) v.innerText = f[s] + (['intensity','smoothing','lipstick','blush'].includes(s)?'%':''); } }); };
+            const setUI = (f) => { SLIDERS.forEach(s => { const el = get(s+'-slider'); if(el) { el.value = f[s]; const v = get(s+'-val'); if(v) v.innerText = (s==='smoothing'||s==='intensity'||s==='lipstick'||s==='blush') ? f[s]+'%' : f[s]; } }); };
 
-            SLIDERS.forEach(s => { const sl = get(s+'-slider'); if(sl) sl.oninput = () => { const v = get(s+'-val'); if(v) v.innerText = sl.value + (['intensity','smoothing','lipstick','blush'].includes(s)?'%':''); render(); }; });
+            SLIDERS.forEach(s => { const sl = get(s+'-slider'); if(sl) sl.oninput = () => { const v = get(s+'-val'); if(v) v.innerText = (s==='smoothing'||s==='intensity'||s==='lipstick'||s==='blush') ? sl.value+'%' : sl.value; render(); }; });
 
             get('btn-copy').onclick = () => { copiedSettings = getUI(); els.toast.classList.remove('hidden'); setTimeout(()=>els.toast.classList.add('hidden'), 2000); };
             get('btn-paste').onclick = () => { if(copiedSettings) { setUI(copiedSettings); render(); } };
@@ -525,23 +497,27 @@
                 get('tab-face').classList.toggle('active', t==='face');
             };
 
-            window.applySettingsToAll = () => { const s = getUI(); batch.forEach(item => item.settings = {...s}); alert('ڕێکخستنەکان لەسەر هەموو وێنەکان جێبەجێ کرا ✓'); };
+            window.applySettingsToAll = () => { const s = getUI(); batch.forEach(item => item.settings = {...s}); alert('ڕێکخستنەکان جێبەجێ کرا ✓'); };
             window.resetAll = () => { setUI({ temp:0, tint:0, smoothing:0, intensity:100, brightness:100, contrast:100, saturation:100, lipstick:0, blush:0, shadows:0 }); zoomLevel=1.0; updateZoom(); render(); };
             
-            // --- Zoom & Panning System ---
+            // --- Advanced Zoom & Panning (v6.6 Fixed) ---
             const updateZoom = () => { 
+                // Actual scale applied to the canvas element
                 const s = fitScale * zoomLevel;
-                els.canvas.style.transform = `scale(${s})`; 
-                els.zoomVal.innerText = zoomLevel === 1.0 ? 'Fit' : Math.round(zoomLevel * 100) + '%';
+                els.canvas.style.width = (batch[activeIdx].img.width * s) + 'px';
+                els.canvas.style.height = (batch[activeIdx].img.height * s) + 'px';
+                
+                // Show zoom percentage relative to original size
+                const displayZoom = Math.round((s) * 100);
+                els.zoomVal.innerText = displayZoom + '%';
             };
             
-            get('zoom-in').onclick = () => { if(zoomLevel < 5) { zoomLevel += 0.2; updateZoom(); } };
-            get('zoom-out').onclick = () => { if(zoomLevel > 0.2) { zoomLevel -= 0.2; updateZoom(); } };
+            get('zoom-in').onclick = () => { zoomLevel *= 1.3; updateZoom(); };
+            get('zoom-out').onclick = () => { if(zoomLevel > 0.1) { zoomLevel /= 1.3; updateZoom(); } };
             els.btnFit.onclick = () => { zoomLevel = 1.0; updateZoom(); els.container.scrollLeft = 0; els.container.scrollTop = 0; };
 
             let isDragging = false, startX, startY, scrollL, scrollT;
             els.container.onmousedown = (e) => {
-                if (zoomLevel <= 1.0) return;
                 isDragging = true;
                 startX = e.pageX - els.container.offsetLeft;
                 startY = e.pageY - els.container.offsetTop;
@@ -553,8 +529,8 @@
                 if (!isDragging) return;
                 const x = e.pageX - els.container.offsetLeft;
                 const y = e.pageY - els.container.offsetTop;
-                els.container.scrollLeft = scrollL - (x - startX) * 1.5;
-                els.container.scrollTop = scrollT - (y - startY) * 1.5;
+                els.container.scrollLeft = scrollL - (x - startX);
+                els.container.scrollTop = scrollT - (y - startY);
             };
 
             const comp = get('compare-btn');
