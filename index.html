@@ -30,10 +30,9 @@
         #main-canvas { 
             transition: transform 0.1s ease-out; 
             cursor: grab; 
-            max-width: 100%; 
-            max-height: 100%; 
-            object-fit: contain; 
+            max-width: none; 
             border-radius: 1rem; 
+            transform-origin: center center;
         }
         #main-canvas:active { cursor: grabbing; }
         
@@ -73,7 +72,7 @@
                 </div>
                 <div>
                     <h1 class="text-3xl font-black tracking-tighter text-white uppercase italic leading-none">Tahir <span class="text-blue-500">Tahir</span></h1>
-                    <p class="text-[10px] text-slate-500 font-bold uppercase tracking-[0.5em] mt-1 italic">Optimized Vision Engine v6.4</p>
+                    <p class="text-[10px] text-slate-500 font-bold uppercase tracking-[0.5em] mt-1 italic">Optimized Vision Engine v6.5</p>
                 </div>
             </div>
             <div id="toast" class="hidden glass px-6 py-2.5 rounded-full text-[11px] font-black text-blue-400 border border-blue-500/20 shadow-2xl animate-pulse">ڕێکخستنەکان کۆپی کرا ✓</div>
@@ -130,10 +129,11 @@
                 <!-- Floating Tools -->
                 <div class="absolute bottom-10 left-1/2 -translate-x-1/2 flex items-center gap-6 glass px-10 py-5 rounded-full border border-white/10 shadow-[0_20px_60px_rgba(0,0,0,0.8)] z-20">
                     <button id="zoom-out" class="p-2 hover:text-blue-500 transition-all text-slate-400"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="5" y1="12" x2="19" y2="12"/></svg></button>
-                    <span id="zoom-val" class="text-[11px] font-black w-14 text-center text-blue-500">Fit</span>
+                    <button id="btn-fit" class="px-4 py-1.5 glass text-blue-400 text-[10px] font-black uppercase rounded-lg border border-blue-500/20 hover:bg-blue-600 hover:text-white transition-all">Fit</button>
+                    <span id="zoom-val" class="text-[11px] font-black w-14 text-center text-blue-500">100%</span>
                     <button id="zoom-in" class="p-2 hover:text-blue-500 transition-all text-slate-400"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></button>
                     <div class="w-px h-6 bg-white/10 mx-2"></div>
-                    <button id="compare-btn" class="px-6 py-2 bg-blue-600/20 text-blue-400 text-[10px] font-black uppercase rounded-xl border border-blue-500/20 select-none">بەراوردکردن</button>
+                    <button id="compare-btn" class="px-6 py-2 bg-blue-600/20 text-blue-400 text-[10px] font-black uppercase rounded-xl border border-blue-500/20 active:bg-blue-600 active:text-white transition-all select-none">بەراوردکردن</button>
                 </div>
 
                 <!-- Copy/Paste HUD -->
@@ -272,7 +272,8 @@
                 wrap: get('canvas-wrap'),
                 srcLabel: get('source-label'),
                 tarLabel: get('target-label'),
-                container: document.getElementById('canvas-container')
+                container: document.getElementById('canvas-container'),
+                btnFit: get('btn-fit')
             };
 
             function getStats(ctx, w, h) {
@@ -379,28 +380,38 @@
                 renderFilmstrip();
                 const item = batch[i];
                 
-                // Set initial Fit to Screen
+                // --- Robust Fit to Screen Calculation ---
                 const container = els.container;
-                fitScale = Math.min(container.clientWidth / item.img.width, container.clientHeight / item.img.height) * 0.95;
-                zoomLevel = 1.0; // Scale relative to fit
+                const cw = container.clientWidth;
+                const ch = container.clientHeight;
+                const iw = item.img.width;
+                const ih = item.img.height;
+                
+                fitScale = Math.min(cw / iw, ch / ih) * 0.95;
+                zoomLevel = 1.0; 
 
                 const canvas = processedBaseCanvas;
                 const ctx = canvas.getContext('2d');
-                canvas.width = item.img.width; canvas.height = item.img.height;
+                canvas.width = iw; canvas.height = ih;
                 ctx.drawImage(item.img, 0, 0);
-                const idata = ctx.getImageData(0,0,canvas.width,canvas.height);
+                
+                const idata = ctx.getImageData(0,0,iw,ih);
                 const data = idata.data;
                 const tCanvas = document.createElement('canvas'); tCanvas.width=100; tCanvas.height=100;
                 const tCtx = tCanvas.getContext('2d'); tCtx.drawImage(item.img,0,0,100,100);
                 currentTargetStats = getStats(tCtx, 100, 100);
+
                 const scaleR = sourceStats.std.r / currentTargetStats.std.r;
                 const scaleG = sourceStats.std.g / currentTargetStats.std.g;
                 const scaleB = sourceStats.std.b / currentTargetStats.std.b;
+
                 for(let j=0; j<data.length; j+=4) {
                     data[j] = (data[j]-currentTargetStats.mean.r)*scaleR + sourceStats.mean.r;
                     data[j+1] = (data[j+1]-currentTargetStats.mean.g)*scaleG + sourceStats.mean.g;
                     data[j+2] = (data[j+2]-currentTargetStats.mean.b)*scaleB + sourceStats.mean.b;
-                    data[j]=Math.max(0,Math.min(255,data[j])); data[j+1]=Math.max(0,Math.min(255,data[j+1])); data[j+2]=Math.max(0,Math.min(255,data[j+2]));
+                    if(data[j]>255)data[j]=255;else if(data[j]<0)data[j]=0;
+                    if(data[j+1]>255)data[j+1]=255;else if(data[j+1]<0)data[j+1]=0;
+                    if(data[j+2]>255)data[j+2]=255;else if(data[j+2]<0)data[j+2]=0;
                 }
                 ctx.putImageData(idata, 0, 0);
                 setUI(item.settings);
@@ -411,15 +422,19 @@
             const render = () => {
                 if (isRendering) return;
                 isRendering = true;
+
                 requestAnimationFrame(() => {
                     const canvas = els.canvas; const ctx = canvas.getContext('2d');
                     const item = batch[activeIdx]; if(!item) { isRendering = false; return; }
                     const w = item.img.width, h = item.img.height;
                     canvas.width = w; canvas.height = h;
+
                     if(isComparing) { ctx.drawImage(item.img, 0, 0); isRendering = false; return; }
                     
                     const f = getUI();
                     const blend = f.intensity / 100;
+
+                    // Composite Background
                     const mainBuffer = document.createElement('canvas');
                     mainBuffer.width = w; mainBuffer.height = h;
                     const bCtx = mainBuffer.getContext('2d');
@@ -427,13 +442,12 @@
                     if(blend >= 1.0) bCtx.drawImage(processedBaseCanvas, 0, 0);
                     else { bCtx.drawImage(item.img, 0, 0); bCtx.globalAlpha = blend; bCtx.drawImage(processedBaseCanvas, 0, 0); bCtx.globalAlpha = 1.0; }
 
-                    // --- Optimized Smoothing & Retouch for Huge Images ---
+                    // Smart Retouch
                     if(f.smoothing > 0 || f.lipstick > 0 || f.blush > 0 || f.shadows !== 0) {
                         const idata = bCtx.getImageData(0,0,w,h); const d = idata.data;
                         const copy = new Uint8ClampedArray(d);
-                        // Increase step dynamically based on resolution for ultra speed
-                        const step = w > 3000 ? 5 : (w > 1800 ? 3 : (w > 1200 ? 2 : 1));
-                        const rad = Math.max(1, Math.floor(f.smoothing/14));
+                        const step = w > 2500 ? 4 : (w > 1200 ? 2 : 1);
+                        const rad = Math.max(1, Math.floor(f.smoothing/15));
                         const factor = f.smoothing / 180;
 
                         for(let y=0; y<h; y+=step) {
@@ -451,10 +465,9 @@
                                     }
                                 }
 
-                                if (r>70 && g>45 && r>g && (r-g)>12) { // Skin
+                                if (r>70 && g>45 && r>g && (r-g)>12) { 
                                     if(f.smoothing > 0 && y > rad && y < h-rad && x > rad && x < w-rad) {
                                         let sr=0, sg=0, sb=0, sc=0;
-                                        // Dynamic sample radius for speed
                                         const sampleStep = Math.max(1, Math.floor(rad/2));
                                         for(let ky=-rad; ky<=rad; ky+=sampleStep) {
                                             for(let kx=-rad; kx<=rad; kx+=sampleStep) {
@@ -515,13 +528,16 @@
             window.applySettingsToAll = () => { const s = getUI(); batch.forEach(item => item.settings = {...s}); alert('ڕێکخستنەکان لەسەر هەموو وێنەکان جێبەجێ کرا ✓'); };
             window.resetAll = () => { setUI({ temp:0, tint:0, smoothing:0, intensity:100, brightness:100, contrast:100, saturation:100, lipstick:0, blush:0, shadows:0 }); zoomLevel=1.0; updateZoom(); render(); };
             
+            // --- Zoom & Panning System ---
             const updateZoom = () => { 
                 const s = fitScale * zoomLevel;
                 els.canvas.style.transform = `scale(${s})`; 
                 els.zoomVal.innerText = zoomLevel === 1.0 ? 'Fit' : Math.round(zoomLevel * 100) + '%';
             };
+            
             get('zoom-in').onclick = () => { if(zoomLevel < 5) { zoomLevel += 0.2; updateZoom(); } };
             get('zoom-out').onclick = () => { if(zoomLevel > 0.2) { zoomLevel -= 0.2; updateZoom(); } };
+            els.btnFit.onclick = () => { zoomLevel = 1.0; updateZoom(); els.container.scrollLeft = 0; els.container.scrollTop = 0; };
 
             let isDragging = false, startX, startY, scrollL, scrollT;
             els.container.onmousedown = (e) => {
@@ -544,7 +560,14 @@
             const comp = get('compare-btn');
             ['mousedown', 'touchstart'].forEach(ev => comp.addEventListener(ev, () => { isComparing=true; render(); }));
             ['mouseup', 'mouseleave', 'touchend'].forEach(ev => comp.addEventListener(ev, () => { isComparing=false; render(); }));
-            window.downloadActive = () => { const a = document.createElement('a'); a.download = `Tahir_Result_${activeIdx+1}.jpg`; a.href = els.canvas.toDataURL('image/jpeg', 0.98); a.click(); };
+            
+            window.downloadActive = () => { 
+                const link = document.createElement('a');
+                link.download = `Tahir_Result_${activeIdx+1}.jpg`;
+                link.href = els.canvas.toDataURL('image/jpeg', 0.98);
+                link.click();
+            };
+
             window.exportLUT = () => {
                 if (!sourceStats || !currentTargetStats) return;
                 const size = 33; let cube = `TITLE "TAHIR_TAHIR_LUT"\nLUT_3D_SIZE ${size}\n\n`;
