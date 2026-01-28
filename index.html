@@ -1,0 +1,553 @@
+<!DOCTYPE html>
+<html lang="ku" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tahir Tahir</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap');
+        
+        :root { --primary: #3b82f6; --accent: #ec4899; --bg: #050505; }
+        body { font-family: 'Inter', sans-serif; background-color: var(--bg); color: #f1f5f9; margin: 0; overflow: hidden; }
+        
+        .glass { background: rgba(255, 255, 255, 0.03); backdrop-filter: blur(15px); border: 1px solid rgba(255, 255, 255, 0.1); }
+        .btn-zaxm { background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%); transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
+        .btn-zaxm:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 10px 30px rgba(59, 130, 246, 0.4); }
+        
+        input[type=range] { -webkit-appearance: none; background: rgba(255, 255, 255, 0.1); height: 6px; border-radius: 10px; }
+        input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; height: 18px; width: 18px; border-radius: 50%; background: white; cursor: pointer; border: 2px solid var(--primary); box-shadow: 0 0 15px rgba(0,0,0,0.5); }
+
+        .temp-slider::-webkit-slider-runnable-track { background: linear-gradient(to right, #3b82f6, #f3f4f6, #eab308); border-radius: 10px; height: 6px; }
+        .tint-slider::-webkit-slider-runnable-track { background: linear-gradient(to right, #22c55e, #f3f4f6, #ec4899); border-radius: 10px; height: 6px; }
+
+        .card-upload { border: 2px dashed rgba(255, 255, 255, 0.1); transition: all 0.4s ease; position: relative; }
+        .card-upload.dragging { border-color: var(--primary); background: rgba(59, 130, 246, 0.15); transform: scale(1.02); }
+
+        .batch-item { transition: all 0.3s ease; border: 2px solid transparent; cursor: pointer; opacity: 0.4; }
+        .batch-item.active { border-color: var(--primary); opacity: 1; transform: scale(1.05); box-shadow: 0 0 20px rgba(59, 130, 246, 0.3); }
+
+        #main-canvas { transition: transform 0.1s ease-out; cursor: grab; max-width: none; border-radius: 1rem; }
+        #main-canvas:active { cursor: grabbing; }
+        
+        .canvas-container { overflow: auto; display: flex; align-items: center; justify-content: center; width: 100%; height: 100%; position: relative; background: #000; border-radius: 2.5rem; }
+        .canvas-container::-webkit-scrollbar { display: none; }
+        
+        .custom-scrollbar::-webkit-scrollbar { width: 4px; height: 4px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #333; border-radius: 10px; }
+        
+        .glow { position: fixed; width: 600px; height: 600px; background: radial-gradient(circle, rgba(59, 130, 246, 0.1) 0%, transparent 70%); z-index: -1; pointer-events: none; }
+        .hidden { display: none; }
+
+        .tab-btn { padding: 12px 20px; font-size: 11px; font-weight: 900; text-transform: uppercase; letter-spacing: 1px; transition: all 0.3s; border-bottom: 2px solid transparent; color: #64748b; }
+        .tab-btn.active { color: var(--primary); border-bottom-color: var(--primary); background: rgba(59, 130, 246, 0.05); }
+    </style>
+</head>
+<body class="selection:bg-blue-500/30">
+
+    <div class="glow top-[-200px] right-[-100px]"></div>
+    <div class="glow bottom-[-200px] left-[-100px]"></div>
+
+    <div class="max-w-[1600px] mx-auto px-6 py-6 h-screen flex flex-col">
+        <!-- Header -->
+        <header class="flex items-center justify-between mb-6 flex-shrink-0">
+            <div class="flex items-center gap-4">
+                <div class="w-14 h-14 bg-gradient-to-br from-blue-600 to-indigo-600 rounded-2xl flex items-center justify-center shadow-2xl border border-white/10">
+                    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><path d="M15 4V2m0 14v-2M8 9h2m10 0h2m-4.2 2.8L19 13m-4-4h0m2.8-2.8L19 5m-16 16 9-9m.2-5.8L11 5" /></svg>
+                </div>
+                <div>
+                    <h1 class="text-3xl font-black tracking-tighter text-white uppercase italic leading-none">Tahir <span class="text-blue-500">Tahir</span></h1>
+                    <p class="text-[10px] text-slate-500 font-bold uppercase tracking-[0.5em] mt-1 italic">AI Image Intelligence v6.3</p>
+                </div>
+            </div>
+            <div id="toast" class="hidden glass px-6 py-2.5 rounded-full text-[11px] font-black text-blue-400 border border-blue-500/20 shadow-2xl animate-pulse">ڕێکخستنەکان کۆپی کرا ✓</div>
+        </header>
+
+        <!-- Step 1: Upload UI -->
+        <div id="upload-section" class="flex-1 flex flex-col justify-center gap-10 animate-in fade-in duration-700">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-10 max-w-6xl mx-auto w-full">
+                <div class="space-y-4">
+                    <h3 class="text-[11px] font-black text-slate-500 uppercase tracking-widest px-4 italic">١. وێنەی پرێسێت (Source Style)</h3>
+                    <label id="source-label" class="relative flex flex-col items-center justify-center aspect-video rounded-[3rem] card-upload bg-[#080808] cursor-pointer overflow-hidden group shadow-2xl">
+                        <img id="source-preview" class="w-full h-full object-cover hidden" />
+                        <div id="source-placeholder" class="text-center opacity-40 group-hover:opacity-100 transition-all">
+                            <svg class="mx-auto mb-4" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect width="18" height="18" x="3" y="3" rx="2" ry="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/></svg>
+                            <span class="text-[11px] font-black uppercase tracking-widest leading-relaxed">وێنەکە ڕابکێشە ئێرە<br><span class="text-[9px] opacity-60">یان کلیک بکە بۆ بارکردن</span></span>
+                        </div>
+                        <input type="file" id="source-input" class="hidden" accept="image/*" />
+                    </label>
+                </div>
+
+                <div class="space-y-4">
+                    <h3 class="text-[11px] font-black text-slate-500 uppercase tracking-widest px-4 italic">٢. وێنەکانت (Batch Processing)</h3>
+                    <label id="target-label" class="relative flex flex-col items-center justify-center aspect-video rounded-[3rem] card-upload bg-[#080808] cursor-pointer overflow-hidden group shadow-2xl">
+                        <div id="target-placeholder" class="text-center opacity-40 group-hover:opacity-100 transition-all">
+                            <svg class="mx-auto mb-4" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4m2-5 5 5 5-5m-5 5V3" /></svg>
+                            <span class="text-[11px] font-black uppercase tracking-widest leading-relaxed">وێنەکان ڕابکێشە ئێرە<br><span class="text-[9px] opacity-60">دەتوانیت تا ٣٠ وێنە بار بکەیت</span></span>
+                        </div>
+                        <div id="target-grid" class="grid grid-cols-4 gap-3 p-8 w-full h-full hidden overflow-y-auto custom-scrollbar"></div>
+                        <input type="file" id="target-input" class="hidden" accept="image/*" multiple />
+                    </label>
+                </div>
+            </div>
+
+            <div class="flex flex-col items-center gap-6">
+                <button id="process-btn" disabled class="px-24 py-7 bg-slate-900 text-slate-700 rounded-full font-black text-2xl shadow-2xl transition-all cursor-not-allowed uppercase italic tracking-tighter border border-white/5">بە زیرەکی ڕێندەری بکە</button>
+                <div class="flex items-center gap-2 text-[10px] text-slate-600 font-bold uppercase tracking-[0.3em]">
+                    <span id="batch-count">0 Photos Selected</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Step 2: Editor UI -->
+        <div id="editor-section" class="hidden flex flex-col lg:flex-row gap-6 flex-1 overflow-hidden h-full">
+            
+            <!-- Left: Batch Filmstrip -->
+            <div id="filmstrip" class="w-full lg:w-24 flex lg:flex-col gap-4 overflow-x-auto lg:overflow-y-auto custom-scrollbar flex-shrink-0 py-2 px-1"></div>
+
+            <!-- Middle: Main Viewport -->
+            <div class="flex-1 glass rounded-[3rem] relative flex items-center justify-center overflow-hidden bg-black/80 shadow-2xl h-full">
+                <div class="canvas-container" id="canvas-wrap">
+                    <canvas id="main-canvas"></canvas>
+                </div>
+
+                <!-- Floating Tools -->
+                <div class="absolute bottom-10 left-1/2 -translate-x-1/2 flex items-center gap-6 glass px-10 py-5 rounded-full border border-white/10 shadow-[0_20px_60px_rgba(0,0,0,0.8)] z-20">
+                    <button id="zoom-out" class="p-2 hover:text-blue-500 transition-all text-slate-400"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="5" y1="12" x2="19" y2="12"/></svg></button>
+                    <span id="zoom-val" class="text-[11px] font-black w-14 text-center text-blue-500">100%</span>
+                    <button id="zoom-in" class="p-2 hover:text-blue-500 transition-all text-slate-400"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></button>
+                    <div class="w-px h-6 bg-white/10 mx-2"></div>
+                    <button id="compare-btn" class="px-6 py-2 bg-blue-600/20 text-blue-400 text-[10px] font-black uppercase rounded-xl border border-blue-500/20 select-none">بەراوردکردن</button>
+                </div>
+
+                <!-- Copy/Paste HUD -->
+                <div class="absolute top-10 left-10 flex gap-3">
+                    <button id="btn-copy" class="glass px-5 py-2.5 rounded-full text-[10px] font-black text-blue-400 uppercase tracking-widest hover:bg-blue-600/10 transition-all">کۆپی</button>
+                    <button id="btn-paste" class="glass px-5 py-2.5 rounded-full text-[10px] font-black text-purple-400 uppercase tracking-widest hover:bg-purple-600/10 transition-all">دانان</button>
+                </div>
+                
+                <button onclick="location.reload()" class="absolute top-10 right-10 w-14 h-14 glass hover:bg-red-500/20 text-white rounded-full flex items-center justify-center transition-all shadow-2xl">✕</button>
+            </div>
+
+            <!-- Right: Sidebar -->
+            <div class="w-full lg:w-[380px] glass rounded-[3rem] p-8 flex flex-col gap-8 shadow-2xl overflow-y-auto custom-scrollbar flex-shrink-0 h-full">
+                
+                <!-- Sidebar Tabs -->
+                <div class="flex border-b border-white/5 flex-shrink-0">
+                    <button onclick="switchTab('color')" id="tab-color" class="tab-btn flex-1 active">ڕەنگ و ڕووناکی</button>
+                    <button onclick="switchTab('face')" id="tab-face" class="tab-btn flex-1">جوانی و دەموچاو</button>
+                </div>
+
+                <!-- Section: Color -->
+                <div id="section-color" class="space-y-8 overflow-y-auto flex-1 custom-scrollbar">
+                    <div class="space-y-6 p-6 bg-blue-500/5 rounded-[2.5rem] border border-blue-500/10">
+                        <div class="space-y-4">
+                            <div class="space-y-2">
+                                <div class="flex justify-between text-[10px] font-black text-slate-400 uppercase"><span>پلەی گەرمی (Temp)</span><span id="temp-val" class="text-blue-400">0</span></div>
+                                <input type="range" id="temp-slider" min="-50" max="50" value="0" class="w-full temp-slider" />
+                            </div>
+                            <div class="space-y-2">
+                                <div class="flex justify-between text-[10px] font-black text-slate-400 uppercase"><span>ڕەنگدانەوە (Tint)</span><span id="tint-val" class="text-purple-400">0</span></div>
+                                <input type="range" id="tint-slider" min="-50" max="50" value="0" class="w-full tint-slider" />
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="space-y-8 px-2">
+                        <div class="space-y-4">
+                            <div class="flex justify-between text-[9px] font-black text-slate-500 uppercase italic"><span>هێزی ستایل (Intensity)</span><span id="intensity-val" class="text-white">100%</span></div>
+                            <input type="range" id="intensity-slider" min="0" max="100" value="100" class="w-full accent-blue-500" />
+                        </div>
+                        <div class="space-y-4">
+                            <div class="flex justify-between text-[9px] font-black text-slate-500 uppercase italic"><span>ڕووناکی</span><span id="brightness-val" class="text-white">100</span></div>
+                            <input type="range" id="brightness-slider" min="50" max="150" value="100" class="w-full accent-white" />
+                        </div>
+                        <div class="space-y-4">
+                            <div class="flex justify-between text-[9px] font-black text-slate-500 uppercase italic"><span>کۆنتراست</span><span id="contrast-val" class="text-white">100</span></div>
+                            <input type="range" id="contrast-slider" min="50" max="150" value="100" class="w-full accent-white" />
+                        </div>
+                        <div class="space-y-4">
+                            <div class="flex justify-between text-[9px] font-black text-slate-500 uppercase italic"><span>تێری ڕەنگ</span><span id="saturation-val" class="text-white">100</span></div>
+                            <input type="range" id="saturation-slider" min="0" max="200" value="100" class="w-full accent-white" />
+                        </div>
+                        <div class="space-y-4">
+                            <div class="flex justify-between text-[9px] font-black text-slate-500 uppercase italic"><span>سێبەرەکان (Shadows)</span><span id="shadows-val" class="text-white">0</span></div>
+                            <input type="range" id="shadows-slider" min="-50" max="50" value="0" class="w-full accent-white" />
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Section: Face -->
+                <div id="section-face" class="hidden space-y-8 overflow-y-auto flex-1 custom-scrollbar">
+                    <div class="p-6 bg-pink-500/5 rounded-[2.5rem] border border-pink-500/10 space-y-6">
+                        <h4 class="text-[10px] font-black text-pink-400 uppercase tracking-widest flex items-center gap-2">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/><line x1="9" y1="9" x2="9.01" y2="9"/><line x1="15" y1="9" x2="15.01" y2="9"/></svg>
+                            سافکردنی زیرەکی پێست
+                        </h4>
+                        <div class="space-y-4">
+                            <div class="flex justify-between text-[10px] font-bold text-slate-400 uppercase"><span>Smoothing</span><span id="smoothing-val" class="text-pink-400">0%</span></div>
+                            <input type="range" id="smoothing-slider" min="0" max="100" value="0" class="w-full accent-pink-500" />
+                        </div>
+                        <p class="text-[9px] text-slate-600 leading-relaxed italic">تێبینی: ئەم کردارە تەنها کار لە ڕەنگی پێست دەکات و وردەکارییەکان دەپارێزێت.</p>
+                    </div>
+
+                    <div class="p-6 bg-purple-500/5 rounded-[2.5rem] border border-purple-500/10 space-y-8">
+                        <h4 class="text-[10px] font-black text-purple-400 uppercase tracking-widest flex items-center gap-2">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18z"/><path d="M12 7v5l3 3"/></svg>
+                            AI Makeup (مەیکەپ)
+                        </h4>
+                        <div class="space-y-6">
+                            <div class="space-y-3">
+                                <div class="flex justify-between text-[10px] font-black text-slate-400 uppercase"><span>ڕەنگی لێو (Lipstick)</span><span id="lipstick-val" class="text-purple-400">0%</span></div>
+                                <input type="range" id="lipstick-slider" min="0" max="100" value="0" class="w-full accent-purple-500" />
+                            </div>
+                            <div class="space-y-3">
+                                <div class="flex justify-between text-[10px] font-black text-slate-400 uppercase"><span>سووراوی کوڵم (Blush)</span><span id="blush-val" class="text-purple-400">0%</span></div>
+                                <input type="range" id="blush-slider" min="0" max="100" value="0" class="w-full accent-purple-500" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Shared Actions -->
+                <div class="space-y-4 pt-4 border-t border-white/5 flex-shrink-0">
+                    <button onclick="downloadActive()" class="w-full py-6 btn-zaxm text-white rounded-[2rem] font-black text-md shadow-2xl uppercase tracking-tighter italic">دابەزاندنی وێنە</button>
+                    <div class="grid grid-cols-2 gap-3">
+                        <button onclick="exportLUT()" class="py-3 glass text-[9px] text-blue-400 font-black uppercase rounded-2xl hover:bg-blue-600/10 transition-all border border-blue-500/20">Photoshop .CUBE</button>
+                        <button onclick="applySettingsToAll()" class="py-3 glass text-[9px] text-slate-400 font-black uppercase rounded-2xl hover:text-white transition-all">Apply to All</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let sourceStats = null;
+        let batch = []; 
+        let activeIdx = 0;
+        let copiedSettings = null;
+        let zoomLevel = 1.0;
+        let isComparing = false;
+        let processedBaseCanvas = document.createElement('canvas');
+        let currentTargetStats = null;
+        let isRendering = false;
+
+        const SLIDERS = ['temp', 'tint', 'smoothing', 'intensity', 'brightness', 'contrast', 'saturation', 'lipstick', 'blush', 'shadows'];
+
+        window.onload = () => {
+            const get = (id) => document.getElementById(id);
+            const els = {
+                srcIn: get('source-input'),
+                tarIn: get('target-input'),
+                srcPre: get('source-preview'),
+                srcHold: get('source-placeholder'),
+                tarGrid: get('target-grid'),
+                tarHold: get('target-placeholder'),
+                procBtn: get('process-btn'),
+                upSec: get('upload-section'),
+                edSec: get('editor-section'),
+                canvas: get('main-canvas'),
+                strip: get('filmstrip'),
+                zoomVal: get('zoom-val'),
+                toast: get('toast'),
+                batchCount: get('batch-count'),
+                wrap: get('canvas-wrap'),
+                srcLabel: get('source-label'),
+                tarLabel: get('target-label')
+            };
+
+            // --- Stats Analysis ---
+            function getStats(ctx, w, h) {
+                const d = ctx.getImageData(0, 0, w, h).data;
+                let r=0, g=0, b=0;
+                const c = d.length / 4;
+                for (let i=0; i<d.length; i+=4) { r+=d[i]; g+=d[i+1]; b+=d[i+2]; }
+                const m = { r:r/c, g:g/c, b:b/c };
+                let vr=0, vg=0, vb=0;
+                for (let i=0; i<d.length; i+=4) {
+                    vr+=Math.pow(d[i]-m.r, 2); vg+=Math.pow(d[i+1]-m.g, 2); vb+=Math.pow(d[i+2]-m.b, 2);
+                }
+                return { mean: m, std: { r:Math.sqrt(vr/c)||1, g:Math.sqrt(vg/c)||1, b:Math.sqrt(vb/c)||1 } };
+            }
+
+            // --- Drag and Drop Logic ---
+            const initDragDrop = (label, input, type) => {
+                label.addEventListener('dragover', (e) => { e.preventDefault(); label.classList.add('dragging'); });
+                label.addEventListener('dragleave', () => { label.classList.remove('dragging'); });
+                label.addEventListener('drop', (e) => {
+                    e.preventDefault();
+                    label.classList.remove('dragging');
+                    const files = e.dataTransfer.files;
+                    if (files.length > 0) {
+                        const dataTransfer = new DataTransfer();
+                        Array.from(files).forEach(f => dataTransfer.items.add(f));
+                        input.files = dataTransfer.files;
+                        input.dispatchEvent(new Event('change'));
+                    }
+                });
+            };
+
+            initDragDrop(els.srcLabel, els.srcIn, 'source');
+            initDragDrop(els.tarLabel, els.tarIn, 'target');
+
+            // --- Upload Handlers ---
+            els.srcIn.onchange = (e) => {
+                const file = e.target.files[0];
+                if(!file) return;
+                const reader = new FileReader();
+                reader.onload = (ev) => {
+                    const img = new Image();
+                    img.onload = () => {
+                        els.srcPre.src = ev.target.result;
+                        els.srcPre.classList.remove('hidden');
+                        els.srcHold.classList.add('hidden');
+                        const t = document.createElement('canvas'); t.width=150; t.height=150;
+                        const tx = t.getContext('2d'); tx.drawImage(img,0,0,150,150);
+                        sourceStats = getStats(tx, 150, 150);
+                        checkReady();
+                    };
+                    img.src = ev.target.result;
+                };
+                reader.readAsDataURL(file);
+            };
+
+            els.tarIn.onchange = (e) => {
+                const files = Array.from(e.target.files).slice(0, 30);
+                if(!files.length) return;
+                batch = []; els.tarGrid.innerHTML = '';
+                els.tarGrid.classList.remove('hidden'); els.tarHold.classList.add('hidden');
+                files.forEach((f) => {
+                    const reader = new FileReader();
+                    reader.onload = (ev) => {
+                        const img = new Image();
+                        img.onload = () => {
+                            batch.push({ 
+                                img, data: ev.target.result, 
+                                settings: { temp:0, tint:0, smoothing:0, intensity:100, brightness:100, contrast:100, saturation:100, lipstick:0, blush:0, shadows:0 } 
+                            });
+                            const t = document.createElement('img'); t.src = ev.target.result;
+                            t.className = "w-full aspect-square object-cover rounded-2xl border border-white/10 shadow-lg";
+                            els.tarGrid.appendChild(t);
+                            els.batchCount.innerText = `${batch.length} Photos Selected`;
+                            checkReady();
+                        };
+                        img.src = ev.target.result;
+                    };
+                    reader.readAsDataURL(f);
+                });
+            };
+
+            const checkReady = () => {
+                if(sourceStats && batch.length) {
+                    els.procBtn.disabled = false;
+                    els.procBtn.className = "px-24 py-7 btn-zaxm text-white rounded-full font-black text-2xl shadow-2xl transition-all uppercase italic tracking-tighter border border-white/10";
+                }
+            };
+
+            els.procBtn.onclick = () => {
+                els.upSec.classList.add('hidden');
+                els.edSec.classList.remove('hidden');
+                renderFilmstrip();
+                loadPhoto(0);
+            };
+
+            const renderFilmstrip = () => {
+                els.strip.innerHTML = '';
+                batch.forEach((item, i) => {
+                    const d = document.createElement('div');
+                    d.className = `batch-item w-20 h-20 lg:w-full lg:aspect-square rounded-2xl overflow-hidden shadow-xl ${i === activeIdx ? 'active' : ''}`;
+                    d.innerHTML = `<img src="${item.data}" class="w-full h-full object-cover">`;
+                    d.onclick = () => loadPhoto(i);
+                    els.strip.appendChild(d);
+                });
+            };
+
+            const loadPhoto = (i) => {
+                if(batch[activeIdx]) batch[activeIdx].settings = getUI();
+                activeIdx = i;
+                renderFilmstrip();
+                const item = batch[i];
+                const canvas = processedBaseCanvas;
+                const ctx = canvas.getContext('2d');
+                canvas.width = item.img.width; canvas.height = item.img.height;
+                ctx.drawImage(item.img, 0, 0);
+                const idata = ctx.getImageData(0,0,canvas.width,canvas.height);
+                const data = idata.data;
+                const tCanvas = document.createElement('canvas'); tCanvas.width=100; tCanvas.height=100;
+                const tCtx = tCanvas.getContext('2d'); tCtx.drawImage(item.img,0,0,100,100);
+                currentTargetStats = getStats(tCtx, 100, 100);
+                const scaleR = sourceStats.std.r / currentTargetStats.std.r;
+                const scaleG = sourceStats.std.g / currentTargetStats.std.g;
+                const scaleB = sourceStats.std.b / currentTargetStats.std.b;
+                for(let j=0; j<data.length; j+=4) {
+                    data[j] = (data[j]-currentTargetStats.mean.r)*scaleR + sourceStats.mean.r;
+                    data[j+1] = (data[j+1]-currentTargetStats.mean.g)*scaleG + sourceStats.mean.g;
+                    data[j+2] = (data[j+2]-currentTargetStats.mean.b)*scaleB + sourceStats.mean.b;
+                    if(data[j]>255)data[j]=255;else if(data[j]<0)data[j]=0;
+                    if(data[j+1]>255)data[j+1]=255;else if(data[j+1]<0)data[j+1]=0;
+                    if(data[j+2]>255)data[j+2]=255;else if(data[j+2]<0)data[j+2]=0;
+                }
+                ctx.putImageData(idata, 0, 0);
+                setUI(item.settings);
+                render();
+            };
+
+            const render = () => {
+                if (isRendering) return;
+                isRendering = true;
+                requestAnimationFrame(() => {
+                    const canvas = els.canvas; const ctx = canvas.getContext('2d');
+                    const item = batch[activeIdx]; if(!item) { isRendering = false; return; }
+                    const w = item.img.width, h = item.img.height;
+                    canvas.width = w; canvas.height = h;
+                    if(isComparing) { ctx.drawImage(item.img, 0, 0); isRendering = false; return; }
+                    
+                    const f = getUI();
+                    const blend = f.intensity / 100;
+
+                    const mainBuffer = document.createElement('canvas');
+                    mainBuffer.width = w; mainBuffer.height = h;
+                    const bCtx = mainBuffer.getContext('2d');
+
+                    if(blend >= 1.0) bCtx.drawImage(processedBaseCanvas, 0, 0);
+                    else { bCtx.drawImage(item.img, 0, 0); bCtx.globalAlpha = blend; bCtx.drawImage(processedBaseCanvas, 0, 0); bCtx.globalAlpha = 1.0; }
+
+                    // Smart Pixel Manipulation: Smoothing, Makeup, Shadows
+                    if(f.smoothing > 0 || f.lipstick > 0 || f.blush > 0 || f.shadows !== 0) {
+                        const idata = bCtx.getImageData(0,0,w,h); const d = idata.data;
+                        const copy = new Uint8ClampedArray(d);
+                        const step = w > 1800 ? 3 : (w > 1200 ? 2 : 1);
+                        const rad = Math.max(1, Math.floor(f.smoothing/14));
+                        const factor = f.smoothing / 180;
+
+                        for(let y=0; y<h; y+=step) {
+                            for(let x=0; x<w; x+=step) {
+                                const i = (y*w+x)*4;
+                                const r=d[i], g=d[i+1], b=d[i+2];
+                                
+                                // Shadow Adjustment Logic (targets darker luminance)
+                                if (f.shadows !== 0) {
+                                    const lum = 0.299*r + 0.587*g + 0.114*b;
+                                    if (lum < 128) {
+                                        const shadowFactor = (1 - lum/128) * (f.shadows / 100);
+                                        d[i] = Math.max(0, Math.min(255, d[i] * (1 + shadowFactor)));
+                                        d[i+1] = Math.max(0, Math.min(255, d[i+1] * (1 + shadowFactor)));
+                                        d[i+2] = Math.max(0, Math.min(255, d[i+2] * (1 + shadowFactor)));
+                                    }
+                                }
+
+                                const isSkin = (r>70 && g>45 && r>g && (r-g)>15 && (r-b)>15);
+                                if(isSkin) {
+                                    if(f.smoothing > 0 && y > rad && y < h-rad && x > rad && x < w-rad) {
+                                        let sr=0, sg=0, sb=0, sc=0;
+                                        for(let ky=-rad; ky<=rad; ky+=rad) {
+                                            for(let kx=-rad; kx<=rad; kx+=rad) {
+                                                const ki=((y+ky)*w+(x+kx))*4; sr+=copy[ki]; sg+=copy[ki+1]; sb+=copy[ki+2]; sc++;
+                                            }
+                                        }
+                                        d[i]=copy[i]*(1-factor)+(sr/sc)*factor;
+                                        d[i+1]=copy[i+1]*(1-factor)+(sg/sc)*factor;
+                                        d[i+2]=copy[i+2]*(1-factor)+(sb/sc)*factor;
+                                    }
+                                    if(f.lipstick > 0 && r > g * 1.3) {
+                                        d[i] = Math.min(255, d[i] + f.lipstick * 0.4);
+                                        d[i+1] = Math.max(0, d[i+1] - f.lipstick * 0.2);
+                                        d[i+2] = Math.min(255, d[i+2] + f.lipstick * 0.1);
+                                    }
+                                    if(f.blush > 0 && r > g && g > b) {
+                                        d[i] = Math.min(255, d[i] + f.blush * 0.25);
+                                        d[i+1] = Math.max(0, d[i+1] - f.blush * 0.1);
+                                        d[i+2] = Math.min(255, d[i+2] + f.blush * 0.05);
+                                    }
+                                }
+                            }
+                        }
+                        bCtx.putImageData(idata, 0,0);
+                    }
+
+                    const finalBuffer = document.createElement('canvas'); 
+                    finalBuffer.width=w; finalBuffer.height=h;
+                    const fctx = finalBuffer.getContext('2d');
+                    fctx.filter = `brightness(${f.brightness}%) contrast(${f.contrast}%) saturate(${f.saturation}%) hue-rotate(${f.tint}deg)`;
+                    fctx.drawImage(mainBuffer, 0, 0);
+
+                    if(f.temp !== 0) {
+                        fctx.globalCompositeOperation = 'overlay'; 
+                        fctx.fillStyle = f.temp > 0 ? `rgba(255,180,0,${Math.abs(f.temp)/350})` : `rgba(0,120,255,${Math.abs(f.temp)/350})`;
+                        fctx.fillRect(0,0,w,h);
+                    }
+
+                    ctx.clearRect(0,0,w,h); ctx.drawImage(finalBuffer, 0, 0);
+                    isRendering = false;
+                });
+            };
+
+            const getUI = () => { const obj = {}; SLIDERS.forEach(s => { const el = get(s+'-slider'); if(el) obj[s] = parseInt(el.value); }); return obj; };
+            const setUI = (f) => { SLIDERS.forEach(s => { const el = get(s+'-slider'); if(el) { el.value = f[s]; const v = get(s+'-val'); if(v) v.innerText = f[s] + (['intensity','smoothing','lipstick','blush'].includes(s)?'%':''); } }); };
+
+            SLIDERS.forEach(s => { const sl = get(s+'-slider'); if(sl) sl.oninput = () => { const v = get(s+'-val'); if(v) v.innerText = sl.value + (['intensity','smoothing','lipstick','blush'].includes(s)?'%':''); render(); }; });
+
+            get('btn-copy').onclick = () => { copiedSettings = getUI(); els.toast.classList.remove('hidden'); setTimeout(()=>els.toast.classList.add('hidden'), 2000); };
+            get('btn-paste').onclick = () => { if(copiedSettings) { setUI(copiedSettings); render(); } };
+
+            window.switchTab = (t) => {
+                get('section-color').classList.toggle('hidden', t!=='color');
+                get('section-face').classList.toggle('hidden', t!=='face');
+                get('tab-color').classList.toggle('active', t==='color');
+                get('tab-face').classList.toggle('active', t==='face');
+            };
+
+            window.applySettingsToAll = () => { const s = getUI(); batch.forEach(item => item.settings = {...s}); alert('ڕێکخستنەکان لەسەر هەموو وێنەکان جێبەجێ کرا ✓'); };
+            window.resetAll = () => { setUI({ temp:0, tint:0, smoothing:0, intensity:100, brightness:100, contrast:100, saturation:100, lipstick:0, blush:0, shadows:0 }); zoomLevel=1; updateZoom(); render(); };
+            
+            const updateZoom = () => { 
+                els.canvas.style.transform = `scale(${zoomLevel})`; 
+                els.zoomVal.innerText = Math.round(zoomLevel*100)+'%'; 
+            };
+            get('zoom-in').onclick = () => { if(zoomLevel<4) { zoomLevel+=0.2; updateZoom(); } };
+            get('zoom-out').onclick = () => { if(zoomLevel>0.2) { zoomLevel-=0.2; updateZoom(); } };
+
+            let isDragging = false, startX, startY, scrollL, scrollT;
+            const container = els.wrap.parentElement;
+            
+            container.onmousedown = (e) => {
+                if (zoomLevel <= 1.0) return;
+                isDragging = true;
+                startX = e.pageX - container.offsetLeft;
+                startY = e.pageY - container.offsetTop;
+                scrollL = container.scrollLeft;
+                scrollT = container.scrollTop;
+            };
+            container.onmouseleave = () => isDragging = false;
+            container.onmouseup = () => isDragging = false;
+            container.onmousemove = (e) => {
+                if (!isDragging) return;
+                e.preventDefault();
+                const x = e.pageX - container.offsetLeft;
+                const y = e.pageY - container.offsetTop;
+                const walkX = (x - startX) * 1.5;
+                const walkY = (y - startY) * 1.5;
+                container.scrollLeft = scrollL - walkX;
+                container.scrollTop = scrollT - walkY;
+            };
+
+            const comp = get('compare-btn');
+            ['mousedown', 'touchstart'].forEach(ev => comp.addEventListener(ev, () => { isComparing=true; render(); }));
+            ['mouseup', 'mouseleave', 'touchend'].forEach(ev => comp.addEventListener(ev, () => { isComparing=false; render(); }));
+            window.downloadActive = () => { const a = document.createElement('a'); a.download = `Tahir_Result_${activeIdx+1}.jpg`; a.href = els.canvas.toDataURL('image/jpeg', 0.98); a.click(); };
+            window.exportLUT = () => {
+                if (!sourceStats || !currentTargetStats) return;
+                const size = 33; let cube = `TITLE "TAHIR_TAHIR_LUT"\nLUT_3D_SIZE ${size}\n\n`;
+                const dr = (sourceStats.mean.r - currentTargetStats.mean.r) / 255;
+                const dg = (sourceStats.mean.g - currentTargetStats.mean.g) / 255;
+                const db = (sourceStats.mean.b - currentTargetStats.mean.b) / 255;
+                for (let b = 0; b < size; b++) { for (let g = 0; g < size; g++) { for (let r = 0; r < size; r++) {
+                    cube += `${Math.max(0, Math.min(1, r/(size-1) + dr)).toFixed(6)} ${Math.max(0, Math.min(1, g/(size-1) + dg)).toFixed(6)} ${Math.max(0, Math.min(1, b/(size-1) + db)).toFixed(6)}\n`;
+                }}}
+                const blob = new Blob([cube], { type: 'text/plain' });
+                const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = "Tahir_Tahir_Style.cube"; a.click();
+            };
+        };
+    </script>
+</body>
+</html>
