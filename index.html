@@ -7,210 +7,180 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap');
-        :root { --primary: #3b82f6; --accent: #8b5cf6; --bg: #0a0a0a; --glass: rgba(255, 255, 255, 0.03); }
+        :root { --primary: #3b82f6; --accent: #8b5cf6; --bg: #050505; --glass: rgba(20, 20, 20, 0.7); }
         body { font-family: 'Inter', sans-serif; background-color: var(--bg); color: #f1f5f9; margin: 0; overflow: hidden; }
-        .glass { background: var(--glass); backdrop-filter: blur(15px); border: 1px solid rgba(255, 255, 255, 0.1); }
+        .glass { background: var(--glass); backdrop-filter: blur(25px); border: 1px solid rgba(255, 255, 255, 0.1); }
         .btn-zaxm { background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%); transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
         
         input[type=range] { -webkit-appearance: none; background: rgba(255, 255, 255, 0.1); height: 4px; border-radius: 10px; width: 100%; }
-        input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; height: 14px; width: 14px; border-radius: 50%; background: white; cursor: pointer; border: 2px solid var(--primary); }
+        input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; height: 16px; width: 16px; border-radius: 50%; background: white; cursor: pointer; border: 2px solid var(--primary); }
         
         .accordion-content { max-height: 0; overflow: hidden; transition: max-height 0.4s ease-out; }
         .accordion-item.active .accordion-content { max-height: 1200px; padding-bottom: 1.5rem; }
-        .accordion-header { cursor: pointer; display: flex; justify-content: space-between; align-items: center; padding: 14px 10px; border-bottom: 1px solid rgba(255,255,255,0.05); transition: 0.3s; }
-        .accordion-header:hover { background: rgba(255,255,255,0.02); }
+        .accordion-header { cursor: pointer; display: flex; justify-content: space-between; align-items: center; padding: 14px 10px; border-bottom: 1px solid rgba(255,255,255,0.05); }
         
-        #main-canvas { transition: transform 0.1s ease-out; border-radius: 0.5rem; max-width: none; }
-        .canvas-container { overflow: auto; display: flex; align-items: center; justify-content: center; width: 100%; height: 100%; position: relative; background: #000; }
-        .canvas-container::-webkit-scrollbar { width: 4px; height: 4px; }
-        .canvas-container::-webkit-scrollbar-thumb { background: #333; border-radius: 10px; }
-
-        .batch-item { flex-shrink: 0; width: 65px; height: 65px; border-radius: 12px; overflow: hidden; border: 2px solid transparent; cursor: pointer; opacity: 0.5; transition: 0.3s; }
+        #main-canvas { transition: transform 0.1s ease-out; border-radius: 0.5rem; }
+        .canvas-container { overflow: auto; display: flex; align-items: center; justify-content: center; width: 100%; height: 100%; background: #000; position: relative; }
+        
+        .batch-item { flex-shrink: 0; width: 60px; height: 60px; border-radius: 12px; overflow: hidden; border: 2px solid transparent; cursor: pointer; opacity: 0.5; transition: 0.3s; }
         .batch-item.active { border-color: var(--primary); opacity: 1; transform: scale(1.05); }
 
-        .hsl-btn { width: 28px; height: 28px; border-radius: 50%; transition: transform 0.2s; border: 2px solid transparent; }
+        .hsl-btn { width: 26px; height: 26px; border-radius: 50%; border: 2px solid transparent; }
         .hsl-btn.active { transform: scale(1.2); border-color: white; }
 
+        /* Mobile Optimization: Floating Overlay UI */
         @media (max-width: 1024px) {
-            .sidebar { width: 100% !important; height: 45vh !important; order: 2; }
-            .viewport { height: 45vh !important; order: 1; }
-            .batch-strip { order: 3; height: 80px !important; }
+            .sidebar { 
+                position: absolute !important; 
+                bottom: 0; 
+                left: 0; 
+                width: 100% !important; 
+                height: 45vh !important; 
+                z-index: 50; 
+                border-radius: 2.5rem 2.5rem 0 0 !important;
+                background: rgba(10, 10, 10, 0.8) !important;
+            }
+            .viewport { height: 100vh !important; width: 100vw !important; }
+            .batch-strip { position: absolute; top: 80px; left: 10px; z-index: 40; width: 65px !important; height: auto !important; }
+            header { position: absolute; top: 0; width: 100%; z-index: 60; background: linear-gradient(to bottom, rgba(0,0,0,0.8), transparent); }
         }
     </style>
 </head>
 <body>
 
-    <div class="max-w-[1920px] mx-auto h-screen flex flex-col p-2 md:p-4 overflow-hidden">
+    <div class="max-w-[1920px] mx-auto h-screen flex flex-col overflow-hidden relative">
         <!-- Header -->
-        <header class="flex items-center justify-between mb-4 flex-shrink-0 px-2">
+        <header class="flex items-center justify-between p-4 flex-shrink-0">
             <div class="flex items-center gap-4">
-                <div class="w-12 h-12 bg-blue-600 rounded-2xl flex items-center justify-center shadow-2xl font-black text-white text-xl">T</div>
+                <div class="w-10 h-10 bg-blue-600 rounded-xl flex items-center justify-center shadow-2xl font-black text-white">T</div>
                 <div>
-                    <h1 class="text-2xl font-black tracking-tighter uppercase italic leading-none">Tahir <span class="text-blue-500">Tahir</span></h1>
-                    <p class="text-[9px] text-slate-500 font-bold uppercase tracking-widest mt-1 italic text-right italic">AI Vision Core v8.0</p>
+                    <h1 class="text-xl font-black tracking-tighter uppercase italic leading-none">Tahir <span class="text-blue-500">Tahir</span></h1>
+                    <p class="text-[8px] text-slate-500 font-bold uppercase tracking-widest mt-1">Raw Vision Engine v9.0 Pro</p>
                 </div>
             </div>
-            <div id="toast" class="hidden glass px-6 py-2 rounded-full text-[11px] font-black text-blue-400 border border-blue-500/20 shadow-xl animate-pulse">Copied! ✓</div>
-            <button onclick="location.reload()" class="w-10 h-10 glass rounded-full flex items-center justify-center hover:bg-red-500/20 transition-colors">✕</button>
+            <div class="flex items-center gap-2">
+                <div id="toast" class="hidden glass px-4 py-1.5 rounded-full text-[10px] font-black text-blue-400 border border-blue-500/20">Copied!</div>
+                <button onclick="location.reload()" class="w-10 h-10 glass rounded-full flex items-center justify-center hover:bg-red-500/20">✕</button>
+            </div>
         </header>
 
         <!-- Step 1: Upload UI -->
-        <div id="upload-section" class="flex-1 flex flex-col justify-center items-center gap-8 animate-in fade-in duration-700">
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 w-full max-w-5xl px-4">
-                <label id="src-drop" class="glass rounded-[2.5rem] aspect-video flex flex-col items-center justify-center cursor-pointer border-dashed border-2 border-white/10 hover:border-blue-500/40 transition-all group overflow-hidden shadow-2xl">
+        <div id="upload-section" class="flex-1 flex flex-col justify-center items-center gap-8 animate-in fade-in duration-700 bg-[#0a0a0a]">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 w-full max-w-5xl px-6">
+                <label id="src-drop" class="glass rounded-[2.5rem] aspect-video flex flex-col items-center justify-center cursor-pointer border-dashed border-2 border-white/10 hover:border-blue-500/40 transition-all group overflow-hidden">
                     <img id="src-pre" class="hidden w-full h-full object-cover">
-                    <div id="src-hold" class="text-center opacity-40 group-hover:opacity-100 transition-opacity">
+                    <div id="src-hold" class="text-center opacity-40 group-hover:opacity-100">
                         <svg class="mx-auto mb-4" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect width="18" height="18" x="3" y="3" rx="2" ry="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/></svg>
                         <p class="text-[11px] font-black uppercase tracking-[0.2em]">١. ڕەنگی پرێسێت (Source Style)</p>
                     </div>
                     <input type="file" id="src-in" class="hidden" accept="image/*">
                 </label>
-                <label id="tar-drop" class="glass rounded-[2.5rem] aspect-video flex flex-col items-center justify-center cursor-pointer border-dashed border-2 border-white/10 hover:border-purple-500/40 transition-all group overflow-hidden shadow-2xl">
-                    <div id="tar-hold" class="text-center opacity-40 group-hover:opacity-100 transition-opacity">
+                <label id="tar-drop" class="glass rounded-[2.5rem] aspect-video flex flex-col items-center justify-center cursor-pointer border-dashed border-2 border-white/10 hover:border-purple-500/40 transition-all group overflow-hidden">
+                    <div id="tar-hold" class="text-center opacity-40 group-hover:opacity-100">
                         <svg class="mx-auto mb-4" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4m2-5 5 5 5-5m-5 5V3" /></svg>
                         <p class="text-[11px] font-black uppercase tracking-[0.2em]">٢. وێنەکانت (Batch Processing)</p>
                     </div>
-                    <div id="tar-grid" class="hidden grid grid-cols-4 gap-2 p-6 w-full h-full overflow-y-auto custom-scrollbar"></div>
+                    <div id="tar-grid" class="hidden grid grid-cols-4 gap-2 p-6 w-full h-full overflow-y-auto"></div>
                     <input type="file" id="tar-in" class="hidden" accept="image/*" multiple>
                 </label>
             </div>
-            <div class="flex flex-col items-center gap-4">
-                <button id="proc-btn" disabled class="px-24 py-7 bg-slate-900 text-slate-700 rounded-full font-black text-2xl shadow-2xl transition-all cursor-not-allowed uppercase italic tracking-tighter border border-white/5">بە زیرەکی ڕێندەری بکە</button>
-                <p id="batch-count" class="text-[10px] text-slate-600 font-bold uppercase tracking-[0.3em]">0 Photos Ready</p>
-            </div>
+            <button id="proc-btn" disabled class="px-20 py-6 bg-slate-900 text-slate-700 rounded-full font-black text-2xl shadow-2xl transition-all uppercase italic border border-white/5">ڕێندەری زیرەک</button>
+            <p id="batch-count" class="text-[10px] text-slate-600 font-bold uppercase tracking-[0.3em]">0 Photos Ready</p>
         </div>
 
         <!-- Step 2: Editor UI -->
-        <div id="editor-section" class="hidden flex flex-col lg:flex-row gap-4 flex-1 overflow-hidden">
+        <div id="editor-section" class="hidden flex flex-col lg:flex-row flex-1 overflow-hidden relative">
             <!-- Filmstrip -->
-            <div id="filmstrip" class="batch-strip flex lg:flex-col gap-3 overflow-x-auto lg:overflow-y-auto custom-scrollbar lg:w-24 py-2 px-1 flex-shrink-0"></div>
+            <div id="filmstrip" class="batch-strip flex lg:flex-col gap-3 overflow-x-auto lg:overflow-y-auto p-2 lg:w-24 flex-shrink-0"></div>
 
             <!-- Viewport -->
-            <div class="viewport flex-1 glass rounded-[2.5rem] relative overflow-hidden bg-black shadow-inner flex-shrink-0">
+            <div class="viewport flex-1 relative overflow-hidden bg-black shadow-inner">
                 <div class="canvas-container" id="container">
                     <canvas id="main-canvas"></canvas>
                 </div>
-                <!-- HUD Controls -->
-                <div class="absolute bottom-8 left-1/2 -translate-x-1/2 flex items-center gap-6 glass px-10 py-4 rounded-full border border-white/10 shadow-[0_20px_60px_rgba(0,0,0,0.8)] z-20">
-                    <button onclick="zoomAdjust(0.7)" class="p-2 hover:text-blue-500 transition-all"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><line x1="5" y1="12" x2="19" y2="12"/></svg></button>
-                    <button onclick="fitView()" class="text-[10px] font-black uppercase text-blue-400 border border-blue-500/20 px-4 py-1.5 rounded-lg hover:bg-blue-600 hover:text-white transition-all">Fit View</button>
-                    <span id="zoom-val" class="text-[11px] font-black w-14 text-center text-slate-100">100%</span>
-                    <button onclick="zoomAdjust(1.3)" class="p-2 hover:text-blue-500 transition-all"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></button>
-                    <div class="w-px h-6 bg-white/10"></div>
-                    <button id="comp-btn" class="px-6 py-2 bg-blue-600/20 text-blue-400 text-[10px] font-black uppercase rounded-xl active:bg-blue-600 active:text-white select-none transition-all">Before</button>
+                <!-- Controls HUD -->
+                <div class="absolute bottom-1/2 lg:bottom-10 translate-y-1/2 lg:translate-y-0 left-1/2 -translate-x-1/2 flex items-center gap-4 glass px-8 py-4 rounded-full border border-white/10 shadow-2xl z-20">
+                    <button onclick="zoomAdjust(0.7)" class="p-2 hover:text-blue-500"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><line x1="5" y1="12" x2="19" y2="12"/></svg></button>
+                    <button onclick="fitView()" class="text-[10px] font-black uppercase text-blue-400 border border-blue-500/20 px-4 py-1.5 rounded-lg">Fit</button>
+                    <span id="zoom-val" class="text-[11px] font-black w-12 text-center">100%</span>
+                    <button onclick="zoomAdjust(1.3)" class="p-2 hover:text-blue-500"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></button>
                 </div>
-                <div class="absolute top-6 left-6 flex gap-3">
-                    <button onclick="copySets()" class="glass px-5 py-2.5 rounded-full text-[10px] font-black uppercase text-blue-400 border border-blue-500/10 hover:bg-blue-600/10 transition-all">Copy</button>
-                    <button onclick="pasteSets()" class="glass px-5 py-2.5 rounded-full text-[10px] font-black uppercase text-purple-400 border border-purple-500/10 hover:bg-purple-600/10 transition-all">Paste</button>
+                <div class="absolute top-20 lg:top-6 left-6 flex gap-3 z-30">
+                    <button onclick="copySets()" class="glass px-4 py-2 rounded-full text-[10px] font-black uppercase text-blue-400">Copy</button>
+                    <button onclick="pasteSets()" class="glass px-4 py-2 rounded-full text-[10px] font-black uppercase text-purple-400">Paste</button>
+                    <button id="comp-btn" class="glass px-4 py-2 text-[10px] font-black uppercase text-white rounded-full active:bg-blue-600 select-none">Before</button>
                 </div>
             </div>
 
-            <!-- Complete Camera Raw Sidebar -->
-            <div class="sidebar lg:w-[400px] glass rounded-[2.5rem] p-6 flex flex-col gap-4 shadow-2xl overflow-y-auto custom-scrollbar flex-shrink-0">
+            <!-- Sidebar Panel -->
+            <div class="sidebar lg:w-[380px] glass p-6 flex flex-col gap-6 shadow-2xl overflow-y-auto custom-scrollbar flex-shrink-0">
                 <div class="flex items-center justify-between border-b border-white/5 pb-4">
-                    <h3 class="text-xs font-black uppercase tracking-[0.2em] text-slate-400 italic">Camera Raw Panel</h3>
-                    <button onclick="resetAll()" class="p-2 glass rounded-xl hover:bg-white/10 transition-all"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8m0-5v5h5" /></svg></button>
+                    <h3 class="text-xs font-black uppercase tracking-[0.2em] text-slate-400">RAW Editor</h3>
+                    <button onclick="resetAll()" class="p-2 hover:text-white opacity-40"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8m0-5v5h5" /></svg></button>
                 </div>
 
-                <div class="space-y-1 flex-1">
-                    <!-- Basic Section -->
+                <!-- 1. INTENSITY FIRST (AS REQUESTED) -->
+                <div class="p-5 bg-blue-600/10 rounded-3xl border border-blue-500/20 mb-2">
+                    <div class="flex justify-between text-[11px] font-black text-blue-400 uppercase tracking-widest mb-3"><span>هێزی پرێسێت (Intensity)</span><span id="intensity-v">100%</span></div>
+                    <input type="range" id="intensity" min="0" max="100" value="100" class="accent-blue-500">
+                </div>
+
+                <div class="space-y-2 flex-1">
+                    <!-- Basic Panel -->
                     <div class="accordion-item active">
                         <div class="accordion-header" onclick="toggleAcc(this)">
-                            <span class="text-[10px] font-black uppercase tracking-widest text-slate-200">Basic</span>
+                            <span class="text-[10px] font-black uppercase tracking-widest text-slate-200">Basic Corrections</span>
                             <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="m6 9 6 6 6-6"/></svg>
                         </div>
-                        <div class="accordion-content space-y-4 pt-3 px-1">
+                        <div class="accordion-content space-y-5 pt-3 px-1">
                             <div class="space-y-4">
                                 <div class="space-y-2"><div class="flex justify-between text-[9px] font-bold text-slate-500 uppercase"><span>Temperature</span><span id="temp-v" class="text-blue-400">0</span></div><input type="range" id="temp" min="-50" max="50" value="0" class="temp-slider"></div>
                                 <div class="space-y-2"><div class="flex justify-between text-[9px] font-bold text-slate-500 uppercase"><span>Tint</span><span id="tint-v" class="text-purple-400">0</span></div><input type="range" id="tint" min="-50" max="50" value="0" class="tint-slider"></div>
-                                <div class="space-y-2"><div class="flex justify-between text-[9px] font-bold text-slate-500 uppercase"><span>Exposure</span><span id="exposure-v" class="text-white">100</span></div><input type="range" id="exposure" min="50" max="150" value="100"></div>
-                                <div class="space-y-2"><div class="flex justify-between text-[9px] font-bold text-slate-500 uppercase"><span>Contrast</span><span id="contrast-v" class="text-white">100</span></div><input type="range" id="contrast" min="50" max="150" value="100"></div>
+                                <div class="space-y-2"><div class="flex justify-between text-[9px] font-bold text-slate-500 uppercase"><span>ڕووناکی (Exposure)</span><span id="exposure-v" class="text-white">100</span></div><input type="range" id="exposure" min="50" max="150" value="100"></div>
+                                <div class="space-y-2"><div class="flex justify-between text-[9px] font-bold text-slate-500 uppercase"><span>کۆنتراست</span><span id="contrast-v" class="text-white">100</span></div><input type="range" id="contrast" min="50" max="150" value="100"></div>
                                 <div class="space-y-2"><div class="flex justify-between text-[9px] font-bold text-slate-500 uppercase"><span>Highlights</span><span id="highlights-v" class="text-white">0</span></div><input type="range" id="highlights" min="-50" max="50" value="0"></div>
-                                <div class="space-y-2"><div class="flex justify-between text-[9px] font-bold text-slate-500 uppercase"><span>Shadows</span><span id="shadows-v" class="text-white">0</span></div><input type="range" id="shadows" min="-50" max="50" value="0"></div>
+                                <div class="space-y-2"><div class="flex justify-between text-[9px] font-bold text-slate-500 uppercase"><span>Shadows (سێبەر)</span><span id="shadows-v" class="text-white">0</span></div><input type="range" id="shadows" min="-50" max="50" value="0"></div>
                             </div>
                         </div>
                     </div>
 
-                    <!-- Curve Section -->
+                    <!-- Face & Smoothing -->
                     <div class="accordion-item">
                         <div class="accordion-header" onclick="toggleAcc(this)">
-                            <span class="text-[10px] font-black uppercase tracking-widest text-slate-200">Curve</span>
+                            <span class="text-[10px] font-black uppercase tracking-widest text-slate-200">AI Face Retouch</span>
                             <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="m6 9 6 6 6-6"/></svg>
                         </div>
-                        <div class="accordion-content space-y-4 pt-3 px-1">
-                            <div class="space-y-4">
-                                <div class="space-y-2"><div class="flex justify-between text-[9px] font-bold text-slate-500 uppercase"><span>Lights (ڕووناکی)</span><span id="lights-v">0</span></div><input type="range" id="lights" min="-50" max="50" value="0"></div>
-                                <div class="space-y-2"><div class="flex justify-between text-[9px] font-bold text-slate-500 uppercase"><span>Darks (تاریکی)</span><span id="darks-v">0</span></div><input type="range" id="darks" min="-50" max="50" value="0"></div>
-                            </div>
+                        <div class="accordion-content space-y-5 pt-3 px-1">
+                            <div class="space-y-2"><div class="flex justify-between text-[9px] font-bold text-pink-400 uppercase"><span>سافکردنی پێست</span><span id="smoothing-v">0%</span></div><input type="range" id="smoothing" min="0" max="100" value="0" class="accent-pink-500"></div>
+                            <div class="space-y-2"><div class="flex justify-between text-[9px] font-bold text-purple-400 uppercase"><span>ڕەنگی لێو</span><span id="lipstick-v">0%</span></div><input type="range" id="lipstick" min="0" max="100" value="0"></div>
                         </div>
                     </div>
 
-                    <!-- Detail & Face Section -->
+                    <!-- Color Mixer -->
                     <div class="accordion-item">
                         <div class="accordion-header" onclick="toggleAcc(this)">
-                            <span class="text-[10px] font-black uppercase tracking-widest text-slate-200">Detail & Face</span>
+                            <span class="text-[10px] font-black uppercase tracking-widest text-slate-200">Color Mixer (HSL)</span>
                             <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="m6 9 6 6 6-6"/></svg>
                         </div>
                         <div class="accordion-content space-y-4 pt-3 px-1">
-                            <div class="space-y-2"><div class="flex justify-between text-[9px] font-bold text-pink-400 uppercase"><span>Skin Smoothing</span><span id="smoothing-v">0%</span></div><input type="range" id="smoothing" min="0" max="100" value="0" class="accent-pink-500"></div>
-                            <div class="space-y-2"><div class="flex justify-between text-[9px] font-bold text-slate-500 uppercase"><span>Sharpening (تیژکردن)</span><span id="sharpen-v">0</span></div><input type="range" id="sharpen" min="0" max="100" value="0"></div>
-                            <div class="space-y-2"><div class="flex justify-between text-[9px] font-bold text-purple-400 uppercase"><span>Lipstick (ڕەنگی لێو)</span><span id="lipstick-v">0%</span></div><input type="range" id="lipstick" min="0" max="100" value="0" class="accent-purple-500"></div>
-                            <div class="space-y-2"><div class="flex justify-between text-[9px] font-bold text-purple-400 uppercase"><span>Blush (سووراوی کوڵم)</span><span id="blush-v">0%</span></div><input type="range" id="blush" min="0" max="100" value="0" class="accent-purple-500"></div>
-                            <div class="space-y-2"><div class="flex justify-between text-[9px] font-bold text-blue-400 uppercase"><span>Style Intensity</span><span id="intensity-v">100%</span></div><input type="range" id="intensity" min="0" max="100" value="100"></div>
-                        </div>
-                    </div>
-
-                    <!-- Color Mixer Section -->
-                    <div class="accordion-item">
-                        <div class="accordion-header" onclick="toggleAcc(this)">
-                            <span class="text-[10px] font-black uppercase tracking-widest text-slate-200">Color Mixer</span>
-                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="m6 9 6 6 6-6"/></svg>
-                        </div>
-                        <div class="accordion-content space-y-4 pt-3 px-1 text-center">
-                            <div class="flex flex-wrap justify-center gap-2 mb-4">
+                            <div class="flex flex-wrap justify-center gap-3 mb-2">
                                 <button onclick="setMixColor('red','#ef4444')" class="hsl-btn bg-red-500 active"></button>
                                 <button onclick="setMixColor('orange','#f97316')" class="hsl-btn bg-orange-500"></button>
                                 <button onclick="setMixColor('yellow','#eab308')" class="hsl-btn bg-yellow-500"></button>
                                 <button onclick="setMixColor('green','#22c55e')" class="hsl-btn bg-green-500"></button>
                                 <button onclick="setMixColor('blue','#3b82f6')" class="hsl-btn bg-blue-500"></button>
-                                <button onclick="setMixColor('magenta','#d946ef')" class="hsl-btn bg-[#d946ef]"></button>
                             </div>
-                            <div class="space-y-4">
-                                <div class="space-y-2"><div class="flex justify-between text-[9px] font-bold text-slate-500 uppercase"><span id="mix-title">Saturation (Red)</span><span id="mix-sat-v">0</span></div><input type="range" id="mix-sat" min="-50" max="50" value="0"></div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Effects Section -->
-                    <div class="accordion-item">
-                        <div class="accordion-header" onclick="toggleAcc(this)">
-                            <span class="text-[10px] font-black uppercase tracking-widest text-slate-200">Effects</span>
-                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="m6 9 6 6 6-6"/></svg>
-                        </div>
-                        <div class="accordion-content space-y-4 pt-3 px-1">
-                            <div class="space-y-2"><div class="flex justify-between text-[9px] font-bold text-slate-500 uppercase"><span>Vignette</span><span id="vignette-v">0</span></div><input type="range" id="vignette" min="-100" max="100" value="0"></div>
-                            <div class="space-y-2"><div class="flex justify-between text-[9px] font-bold text-slate-500 uppercase"><span>Grain</span><span id="grain-v">0</span></div><input type="range" id="grain" min="0" max="100" value="0"></div>
-                        </div>
-                    </div>
-
-                    <!-- Calibration Section -->
-                    <div class="accordion-item">
-                        <div class="accordion-header" onclick="toggleAcc(this)">
-                            <span class="text-[10px] font-black uppercase tracking-widest text-slate-200">Calibration</span>
-                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="m6 9 6 6 6-6"/></svg>
-                        </div>
-                        <div class="accordion-content space-y-4 pt-3 px-1">
-                            <div class="space-y-2"><div class="flex justify-between text-[9px] font-bold text-slate-500 uppercase"><span>Shadow Tint</span><span id="shadow-tint-v">0</span></div><input type="range" id="shadow-tint" min="-50" max="50" value="0"></div>
+                            <div class="space-y-2"><div class="flex justify-between text-[9px] font-bold text-slate-500 uppercase"><span id="mix-title">Saturation (Red)</span><span id="mix-sat-v">0</span></div><input type="range" id="mix-sat" min="-50" max="50" value="0"></div>
                         </div>
                     </div>
                 </div>
 
-                <!-- Footer -->
+                <!-- Final Actions -->
                 <div class="space-y-4 pt-6 border-t border-white/5 flex-shrink-0">
-                    <button onclick="dlActive()" class="w-full py-6 btn-zaxm text-white rounded-[2rem] font-black text-md shadow-2xl uppercase tracking-tighter italic">Download Result</button>
+                    <button onclick="dlActive()" class="w-full py-6 btn-zaxm text-white rounded-[2rem] font-black text-md shadow-2xl uppercase tracking-tighter italic">دابەزاندن بە کوالێتی بەرز</button>
                     <div class="grid grid-cols-2 gap-3">
-                        <button onclick="exportLUT()" class="py-3 glass text-[9px] text-blue-400 font-black uppercase rounded-2xl border border-blue-500/20 hover:bg-blue-600/10 transition-all">Photoshop .CUBE</button>
-                        <button onclick="applyAll()" class="py-3 glass text-[9px] text-slate-400 font-black uppercase rounded-2xl hover:text-white transition-all">Sync All Batch</button>
+                        <button onclick="exportLUT()" class="py-3 glass text-[9px] text-blue-400 font-black uppercase rounded-2xl">Save LUT</button>
+                        <button onclick="applyAll()" class="py-3 glass text-[9px] text-slate-400 font-black uppercase rounded-2xl">Sync Batch</button>
                     </div>
                 </div>
             </div>
@@ -223,7 +193,7 @@
         let pBaseC = document.createElement('canvas'), isComparing = false, isRendering = false;
         let selectedMixColor = 'red';
 
-        const SLIDERS = ['temp', 'tint', 'smoothing', 'intensity', 'exposure', 'contrast', 'highlights', 'shadows', 'sharpen', 'lights', 'darks', 'vignette', 'grain', 'shadow-tint', 'mix-sat', 'lipstick', 'blush'];
+        const SLIDERS = ['temp', 'tint', 'smoothing', 'intensity', 'exposure', 'contrast', 'highlights', 'shadows', 'mix-sat', 'lipstick'];
 
         window.onload = () => {
             const get = (id) => document.getElementById(id);
@@ -235,38 +205,19 @@
                 srcDrop: get('src-drop'), tarDrop: get('tar-drop'), bCount: get('batch-count')
             };
 
-            // --- ADVANCED PERCEPTUAL ANALYSIS ENGINE ---
             function getStats(ctx, w, h) {
                 const d = ctx.getImageData(0,0,w,h).data;
-                let r=0, g=0, b=0, c=d.length/4;
-                
-                // Track Luminance Histogram
+                let r=0,g=0,b=0,lum=0,c=d.length/4;
                 let histogram = new Array(256).fill(0);
-
-                for(let i=0; i<d.length; i+=4){ 
-                    r += d[i]; g += d[i+1]; b += d[i+2]; 
-                    const lum = Math.round(0.299*d[i] + 0.587*d[i+1] + 0.114*d[i+2]);
-                    histogram[lum]++;
+                for(let i=0;i<d.length;i+=4){ 
+                    r+=d[i]; g+=d[i+1]; b+=d[i+2]; 
+                    const l = Math.round(0.299*d[i] + 0.587*d[i+1] + 0.114*d[i+2]);
+                    histogram[l]++; lum += l;
                 }
-
-                // Calculate Mean/Std as base
-                const m = { r:r/c, g:g/c, b:b/c };
-                let vr=0, vg=0, vb=0;
-                for(let i=0; i<d.length; i+=4){ 
-                    vr += Math.pow(d[i]-m.r, 2); 
-                    vg += Math.pow(d[i+1]-m.g, 2); 
-                    vb += Math.pow(d[i+2]-m.b, 2); 
-                }
-
-                return {
-                    mean: m, 
-                    std: {
-                        r: Math.sqrt(vr/c) || 1, 
-                        g: Math.sqrt(vg/c) || 1, 
-                        b: Math.sqrt(vb/c) || 1
-                    },
-                    histogram: histogram
-                };
+                const m = {r:r/c, g:g/c, b:b/c, lum:lum/c};
+                let vr=0,vg=0,vb=0;
+                for(let i=0;i<d.length;i+=4){ vr+=Math.pow(d[i]-m.r,2); vg+=Math.pow(d[i+1]-m.g,2); vb+=Math.pow(d[i+2]-m.b,2); }
+                return {mean:m, std:{r:Math.sqrt(vr/c)||1, g:Math.sqrt(vg/c)||1, b:Math.sqrt(vb/c)||1}, histogram};
             }
 
             const setupDD = (drop, inp) => {
@@ -294,8 +245,7 @@
             els.tarIn.onchange = e => {
                 const fs = Array.from(e.target.files).slice(0, 30); if(!fs.length) return;
                 batch = []; els.tarGrid.innerHTML = ''; els.tarGrid.classList.remove('hidden'); els.tarHold.classList.add('hidden');
-                
-                let loadedCount = 0;
+                let loaded = 0;
                 fs.forEach(f => {
                     const r = new FileReader();
                     r.onload = ev => {
@@ -303,9 +253,8 @@
                         img.onload = () => {
                             batch.push({img, data: ev.target.result, settings: defS()});
                             const t = document.createElement('img'); t.src = ev.target.result; t.className = "w-full aspect-square object-cover rounded-xl border border-white/5"; els.tarGrid.appendChild(t);
-                            loadedCount++;
-                            if(els.bCount) els.bCount.innerText = `${loadedCount} Photos Ready`; 
-                            if(loadedCount === fs.length) checkReady();
+                            loaded++; if(els.bCount) els.bCount.innerText = `${loaded} Photos Ready`;
+                            if(loaded === fs.length) checkReady();
                         };
                         img.src = ev.target.result;
                     };
@@ -313,14 +262,8 @@
                 });
             };
 
-            const defS = () => ({ temp:0, tint:0, smoothing:0, intensity:100, exposure:100, contrast:100, highlights:0, shadows:0, sharpen:0, lights:0, darks:0, vignette:0, grain:0, 'shadow-tint':0, 'mix-sat':0, lipstick:0, blush:0 });
-            
-            const checkReady = () => { 
-                if(srcStats && batch.length > 0) { 
-                    els.procBtn.disabled=false; 
-                    els.procBtn.className="px-24 py-7 btn-zaxm text-white rounded-full font-black text-2xl shadow-2xl transition-all cursor-pointer uppercase italic"; 
-                } 
-            };
+            const defS = () => ({ temp:0, tint:0, smoothing:0, intensity:100, exposure:100, contrast:100, highlights:0, shadows:0, 'mix-sat':0, lipstick:0 });
+            const checkReady = () => { if(srcStats && batch.length) { els.procBtn.disabled=false; els.procBtn.classList.remove('text-slate-700','bg-slate-900'); els.procBtn.classList.add('btn-zaxm','text-white'); } };
 
             els.procBtn.onclick = () => { els.upSec.classList.add('hidden'); els.edSec.classList.remove('hidden'); loadPhoto(0); };
 
@@ -331,67 +274,37 @@
                 fitS = Math.min(els.cont.clientWidth / item.img.width, els.cont.clientHeight / item.img.height) * 0.92;
                 zoomL = 1.0; 
 
-                // --- AI HISTOGRAM ALIGNMENT ENGINE v8.0 ---
                 const ctx = pBaseC.getContext('2d');
                 pBaseC.width = item.img.width; pBaseC.height = item.img.height;
                 ctx.drawImage(item.img, 0, 0);
                 const idata = ctx.getImageData(0,0,item.img.width,item.img.height);
                 const d = idata.data;
-
-                // Targeted Analysis
-                const tC = document.createElement('canvas'); tC.width=256; tC.height=256; 
-                const tX = tC.getContext('2d'); tX.drawImage(item.img,0,0,256,256);
+                const tC = document.createElement('canvas'); tC.width=256; tC.height=256; const tX = tC.getContext('2d'); tX.drawImage(item.img,0,0,256,256);
                 const tStats = getStats(tX, 256, 256);
-
-                // Build Cumulative Distribution Functions (CDF)
-                const buildCDF = (hist) => {
-                    let cdf = new Array(256).fill(0);
-                    let sum = 0;
-                    const total = hist.reduce((a, b) => a + b, 0);
-                    for(let i=0; i<256; i++) {
-                        sum += hist[i];
-                        cdf[i] = sum / total;
-                    }
-                    return cdf;
-                };
 
                 const srcCDF = buildCDF(srcStats.histogram);
                 const tarCDF = buildCDF(tStats.histogram);
-
-                // Build mapping lookup table (LUT)
                 let toneLUT = new Array(256);
-                for(let i=0; i<256; i++) {
-                    let j = 0;
-                    while(j < 255 && srcCDF[j] < tarCDF[i]) {
-                        j++;
-                    }
-                    toneLUT[i] = j;
-                }
+                for(let i=0; i<256; i++) { let j=0; while(j<255 && srcCDF[j]<tarCDF[i]) j++; toneLUT[i]=j; }
 
-                // Advanced Color Scale (StdDev based)
-                const sR = srcStats.std.r / tStats.std.r;
-                const sG = srcStats.std.g / tStats.std.g;
-                const sB = srcStats.std.b / tStats.std.b;
+                const sR = srcStats.std.r / tStats.std.r; const sG = srcStats.std.g / tStats.std.g; const sB = srcStats.std.b / tStats.std.b;
 
                 for(let j=0; j<d.length; j+=4) {
-                    // Step 1: Smart Luminance Alignment (Histogram Match)
                     const lum = Math.round(0.299*d[j] + 0.587*d[j+1] + 0.114*d[j+2]);
                     const mappedLum = toneLUT[lum];
                     const ratio = mappedLum / (lum || 1);
-
-                    // Step 2: Apply Color Identity Transfer
-                    let nr = (d[j] - tStats.mean.r) * sR + srcStats.mean.r;
-                    let ng = (d[j+1] - tStats.mean.g) * sG + srcStats.mean.g;
-                    let nb = (d[j+2] - tStats.mean.b) * sB + srcStats.mean.b;
-
-                    // Step 3: Perceptual Balancing (Mix Histogram + Color Stats)
-                    d[j] = Math.max(0, Math.min(255, nr * 0.7 + (d[j] * ratio) * 0.3)); 
-                    d[j+1] = Math.max(0, Math.min(255, ng * 0.7 + (d[j+1] * ratio) * 0.3)); 
-                    d[j+2] = Math.max(0, Math.min(255, nb * 0.7 + (d[j+2] * ratio) * 0.3));
+                    let nr = (d[j]-tStats.mean.r)*sR+srcStats.mean.r;
+                    let ng = (d[j+1]-tStats.mean.g)*sG+srcStats.mean.g;
+                    let nb = (d[j+2]-tStats.mean.b)*sB+srcStats.mean.b;
+                    d[j] = Math.max(0,Math.min(255, nr*0.7 + (d[j]*ratio)*0.3));
+                    d[j+1] = Math.max(0,Math.min(255, ng*0.7 + (d[j+1]*ratio)*0.3));
+                    d[j+2] = Math.max(0,Math.min(255, nb*0.7 + (d[j+2]*ratio)*0.3));
                 }
                 ctx.putImageData(idata, 0, 0);
                 setUI(item.settings); updateZoom(); render();
             };
+
+            function buildCDF(hist) { let cdf=new Array(256).fill(0), sum=0, total=hist.reduce((a,b)=>a+b,0); for(let i=0;i<256;i++){ sum+=hist[i]; cdf[i]=sum/total; } return cdf; }
 
             const render = () => {
                 if(isRendering) return;
@@ -401,75 +314,42 @@
                     const item = batch[activeIdx]; if(!item) { isRendering=false; return; }
                     const w = item.img.width, h = item.img.height;
                     c.width = w; c.height = h;
-
                     if(isComparing) { ctx.drawImage(item.img, 0, 0); isRendering=false; return; }
 
                     const f = getUI();
                     const blend = f.intensity / 100;
                     const buf = document.createElement('canvas'); buf.width=w; buf.height=h; const bX = buf.getContext('2d');
-
                     if(blend >= 1.0) bX.drawImage(pBaseC, 0, 0);
                     else { bX.drawImage(item.img, 0, 0); bX.globalAlpha = blend; bX.drawImage(pBaseC, 0, 0); bX.globalAlpha = 1.0; }
 
-                    if(f.smoothing > 0 || f.highlights !== 0 || f.shadows !== 0 || f.grain > 0 || f.lights !== 0 || f.darks !== 0 || f['mix-sat'] !== 0 || f['shadow-tint'] !== 0 || f.sharpen > 0 || f.lipstick > 0 || f.blush > 0) {
+                    if(f.smoothing > 0 || f.highlights !== 0 || f.shadows !== 0 || f['mix-sat'] !== 0 || f.lipstick > 0) {
                         const idata = bX.getImageData(0,0,w,h); const d = idata.data;
                         const copy = new Uint8ClampedArray(d);
-                        const step = w > 2000 ? 3 : 1; 
-                        const rad = Math.max(1, Math.floor(f.smoothing/16)); 
-                        const smFactor = f.smoothing/200;
-
+                        const step = w > 2000 ? 3 : 1; const rad = Math.max(1, Math.floor(f.smoothing/16)); const factor = f.smoothing/200;
                         for(let y=0; y<h; y+=step) {
                             for(let x=0; x<w; x+=step) {
                                 const i = (y*w+x)*4; let r=d[i], g=d[i+1], b=d[i+2];
                                 const lum = 0.299*r+0.587*g+0.114*b;
-
                                 if(lum > 180 && f.highlights !== 0) { const m=1+(f.highlights/200); d[i]*=m; d[i+1]*=m; d[i+2]*=m; }
                                 if(lum < 80 && f.shadows !== 0) { const m=1+(f.shadows/100); d[i]*=m; d[i+1]*=m; d[i+2]*=m; }
-                                if(lum > 120 && f.lights !== 0) { const m=1+(f.lights/250); d[i]*=m; d[i+1]*=m; d[i+2]*=m; }
-                                if(lum < 140 && f.darks !== 0) { const m=1+(f.darks/250); d[i]*=m; d[i+1]*=m; d[i+2]*=m; }
-
-                                if (lum < 100 && f['shadow-tint'] !== 0) { d[i+1] = Math.max(0, Math.min(255, d[i+1] + f['shadow-tint'] * 0.5)); }
-
-                                if (f['mix-sat'] !== 0) {
-                                    const max = Math.max(r,g,b), min = Math.min(r,g,b), diff = max-min;
-                                    let hue = 0;
-                                    if(diff!==0){ if(max===r) hue = ((g-b)/diff)%6; else if(max===g) hue = (b-r)/diff+2; else hue = (r-g)/diff+4; hue *= 60; if(hue<0) hue+=360; }
-                                    const colorMap = { red:[0,30,330,360], orange:[20,50], yellow:[45,80], green:[75,160], blue:[170,260], magenta:[270,330] };
-                                    const range = colorMap[selectedMixColor];
-                                    let match = false;
-                                    if (range.length === 2) match = hue >= range[0] && hue <= range[1];
-                                    else match = (hue >= range[0] && hue <= range[1]) || (hue >= range[2] && hue <= range[3]);
-                                    if (match) { const satShift = 1 + (f['mix-sat']/100); d[i]*=satShift; d[i+1]*=satShift; d[i+2]*=satShift; }
-                                }
-
-                                if(r>70 && g>45 && r>g && (f.smoothing > 0 || f.lipstick > 0 || f.blush > 0)) {
+                                if(r>70 && g>45 && r>g && (f.smoothing > 0 || f.lipstick > 0)) {
                                     if(f.smoothing > 0 && y>rad && y<h-rad && x>rad && x<w-rad) {
                                         let sr=0,sg=0,sb=0,sc=0;
                                         for(let ky=-rad; ky<=rad; ky+=rad) for(let kx=-rad; kx<=rad; kx+=rad) { const ki=((y+ky)*w+(x+kx))*4; sr+=copy[ki]; sg+=copy[ki+1]; sb+=copy[ki+2]; sc++; }
-                                        d[i]=copy[i]*(1-smFactor)+(sr/sc)*smFactor; d[i+1]=copy[i+1]*(1-smFactor)+(sg/sc)*smFactor; d[i+2]=copy[i+2]*(1-smFactor)+(sb/sc)*smFactor;
+                                        d[i]=copy[i]*(1-factor)+(sr/sc)*factor; d[i+1]=copy[i+1]*(1-factor)+(sg/sc)*factor; d[i+2]=copy[i+2]*(1-factor)+(sb/sc)*factor;
                                     }
                                     if(f.lipstick > 0 && r > g * 1.3) { d[i]=Math.min(255,d[i]+f.lipstick*0.4); d[i+1]=Math.max(0,d[i+1]-f.lipstick*0.2); }
-                                    if(f.blush > 0 && r > g && g > b) { d[i]=Math.min(255,d[i]+f.blush*0.25); }
                                 }
-                                if(f.grain > 0) { const n=(Math.random()-0.5)*f.grain; d[i]+=n; d[i+1]+=n; d[i+2]+=n; }
                             }
                         }
                         bX.putImageData(idata, 0, 0);
                     }
-
                     ctx.filter = `brightness(${f.exposure}%) contrast(${f.contrast}%) saturate(${f.saturation || 100}%)`;
                     ctx.drawImage(buf, 0, 0);
-
                     if(f.temp !== 0 || f.tint !== 0) {
                         ctx.globalCompositeOperation = 'overlay';
                         if (f.temp !== 0) { ctx.fillStyle = f.temp > 0 ? `rgba(255,180,0,${Math.abs(f.temp)/350})` : `rgba(0,100,255,${Math.abs(f.temp)/350})`; ctx.fillRect(0,0,w,h); }
                         if (f.tint !== 0) { ctx.fillStyle = f.tint > 0 ? `rgba(255,0,255,${Math.abs(f.tint)/500})` : `rgba(0,255,0,${Math.abs(f.tint)/500})`; ctx.fillRect(0,0,w,h); }
-                    }
-
-                    if(f.vignette !== 0) {
-                        const grd = ctx.createRadialGradient(w/2, h/2, 0, w/2, h/2, Math.sqrt(w*w+h*h)/2);
-                        grd.addColorStop(0, 'transparent'); grd.addColorStop(1, f.vignette < 0 ? `rgba(0,0,0,${Math.abs(f.vignette)/100})` : `rgba(255,255,255,${f.vignette/100})`);
-                        ctx.globalCompositeOperation = 'source-over'; ctx.fillStyle = grd; ctx.fillRect(0,0,w,h);
                     }
                     isRendering = false;
                 });
@@ -477,38 +357,39 @@
 
             const renderStrip = () => { els.strip.innerHTML = ''; batch.forEach((it, i) => { const div = document.createElement('div'); div.className=`batch-item ${i===activeIdx?'active':''}`; div.innerHTML=`<img src="${it.data}" class="w-full h-full object-cover">`; div.onclick=()=>loadPhoto(i); els.strip.appendChild(div); }); };
             const getUI = () => { const o={}; SLIDERS.forEach(s => { const el=get(s); if(el) o[s]=parseInt(el.value); }); return o; };
-            const setUI = o => { SLIDERS.forEach(s => { const el=get(s); if(el) { el.value=o[s]; const v=get(s+'-v'); if(v) v.innerText=(s==='smoothing'||s==='intensity'||s==='lipstick'||s==='blush')?o[s]+'%':o[s]; } }); };
+            const setUI = o => { SLIDERS.forEach(s => { const el=get(s); if(el) { el.value=o[s]; const v=get(s+'-v'); if(v) v.innerText=(['smoothing','intensity','lipstick'].includes(s))?o[s]+'%':o[s]; } }); };
 
-            SLIDERS.forEach(s => { const el=get(s); if(el) el.oninput=()=>{ const v=get(s+'-v'); if(v) v.innerText=(s==='smoothing'||s==='intensity'||s==='lipstick'||s==='blush')?el.value+'%':el.value; render(); } });
+            SLIDERS.forEach(s => { const el=get(s); if(el) el.oninput=()=>{ const v=get(s+'-v'); if(v) v.innerText=(['smoothing','intensity','lipstick'].includes(s))?el.value+'%':el.value; render(); } });
 
-            window.toggleAcc = el => { const item = el.parentElement; const isActive = item.classList.contains('active'); document.querySelectorAll('.accordion-item').forEach(acc => acc.classList.remove('active')); if(!isActive) item.classList.add('active'); };
+            window.toggleAcc = el => { const item = el.parentElement; const active = item.classList.contains('active'); document.querySelectorAll('.accordion-item').forEach(acc => acc.classList.remove('active')); if(!active) item.classList.add('active'); };
             window.resetAll = () => { setUI(defS()); zoomL=1.0; updateZoom(); render(); };
-            window.zoomAdjust = m => { zoomL *= m; if(zoomL < 0.1) zoomL = 0.1; if(zoomL > 10) zoomL = 10; updateZoom(); };
-            window.fitView = () => { zoomL = 1.0; updateZoom(); els.cont.scrollLeft=0; els.cont.scrollTop=0; };
-            window.updateZoom = () => {
-                const item = batch[activeIdx]; if(!item) return;
-                const s = fitS * zoomL;
-                els.canvas.style.width = (item.img.width * s) + 'px';
-                els.canvas.style.height = (item.img.height * s) + 'px';
-                els.zoomVal.innerText = Math.round(zoomL * 100) + '%';
-            };
-            window.copySets = () => { copied = getUI(); els.toast.classList.remove('hidden'); setTimeout(()=>els.toast.classList.add('hidden'),1500); };
+            window.zoomAdjust = m => { zoomL *= m; if(zoomL<0.1) zoomL=0.1; updateZoom(); };
+            window.fitView = () => { zoomL=1.0; updateZoom(); els.cont.scrollLeft=0; els.cont.scrollTop=0; };
+            window.updateZoom = () => { const item=batch[activeIdx]; if(!item) return; const s=fitS*zoomL; els.canvas.style.width=(item.img.width*s)+'px'; els.canvas.style.height=(item.img.height*s)+'px'; els.zoomVal.innerText=Math.round(zoomL*100)+'%'; };
+            window.copySets = () => { copied=getUI(); els.toast.classList.remove('hidden'); setTimeout(()=>els.toast.classList.add('hidden'),1500); };
             window.pasteSets = () => { if(copied) { setUI(copied); render(); } };
-            window.applyAll = () => { const s=getUI(); batch.forEach(it=>it.settings={...s}); alert('Settings Synced to All ✓'); };
-            window.dlActive = () => { const a=document.createElement('a'); a.download=`Tahir_Result_${activeIdx+1}.jpg`; a.href=els.canvas.toDataURL('image/jpeg',0.98); a.click(); };
+            window.applyAll = () => { const s=getUI(); batch.forEach(it=>it.settings={...s}); alert('Settings Synced ✓'); };
+            window.setMixColor = (c, hex) => { selectedMixColor = c; get('mix-title').innerText = `Saturation (${c})`; get('mix-title').style.color = hex; document.querySelectorAll('.hsl-btn').forEach(b => b.classList.remove('active')); event.target.classList.add('active'); render(); };
             
-            window.setMixColor = (c, hex) => { selectedMixColor = c; get('mix-title').innerText = `Saturation (${c.charAt(0).toUpperCase() + c.slice(1)})`; get('mix-title').style.color = hex; document.querySelectorAll('.hsl-btn').forEach(btn => btn.classList.remove('active')); event.target.classList.add('active'); render(); };
+            // --- HIGH QUALITY EXPORT SYSTEM ---
+            window.dlActive = () => { 
+                const link = document.createElement('a');
+                link.download = `Tahir_Tahir_HighRes_${activeIdx+1}.jpg`;
+                // Set to 1.0 for absolute maximum quality JPEG
+                link.href = els.canvas.toDataURL('image/jpeg', 1.0);
+                link.click();
+            };
 
             window.exportLUT = () => {
                 if (!srcStats || !pBaseC) return;
                 const size = 33; let cube = `TITLE "TAHIR_TAHIR_LUT"\nLUT_3D_SIZE ${size}\n\n`;
-                const dr = (srcStats.mean.r - 128) / 255; const dg = (srcStats.mean.g - 128) / 255; const db = (srcStats.mean.b - 128) / 255;
-                for (let b = 0; b < size; b++) for (let g = 0; g < size; g++) for (let r = 0; r < size; r++) cube += `${Math.max(0, Math.min(1, r/(size-1) + dr)).toFixed(6)} ${Math.max(0, Math.min(1, g/(size-1) + dg)).toFixed(6)} ${Math.max(0, Math.min(1, b/(size-1) + db)).toFixed(6)}\n`;
+                const dr=(srcStats.mean.r-128)/255; const dg=(srcStats.mean.g-128)/255; const db=(srcStats.mean.b-128)/255;
+                for(let b=0; b<size; b++) for(let g=0; g<size; g++) for(let r=0; r<size; r++) cube+=`${Math.max(0, Math.min(1, r/(size-1)+dr)).toFixed(6)} ${Math.max(0, Math.min(1, g/(size-1)+dg)).toFixed(6)} ${Math.max(0, Math.min(1, b/(size-1)+db)).toFixed(6)}\n`;
                 const blob = new Blob([cube], { type: 'text/plain' }); const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = "Tahir_Tahir_Style.cube"; a.click();
             };
 
             let isD=false, sx, sy, sl, st;
-            els.cont.onmousedown = e => { if(zoomL <= 1) return; isD=true; sx=e.pageX-els.cont.offsetLeft; sy=e.pageY-els.cont.offsetTop; sl=els.cont.scrollLeft; st=els.cont.scrollTop; };
+            els.cont.onmousedown = e => { if(zoomL<=1) return; isD=true; sx=e.pageX-els.cont.offsetLeft; sy=e.pageY-els.cont.offsetTop; sl=els.cont.scrollLeft; st=els.cont.scrollTop; };
             window.addEventListener('mouseup',()=>isD=false);
             els.cont.onmousemove = e => { if(!isD) return; els.cont.scrollLeft=sl-(e.pageX-els.cont.offsetLeft-sx); els.cont.scrollTop=st-(e.pageY-els.cont.offsetTop-sy); };
 
