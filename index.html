@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tahir Tahir - AI Pro v32.0 Hyper Neural</title>
+    <title>Tahir Tahir - AI Pro v33.0 Hyper Neural Sync</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
     <style>
@@ -54,8 +54,8 @@
             <div class="w-24 h-24 border-4 border-blue-500/20 rounded-full"></div>
             <div class="absolute inset-0 w-24 h-24 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
         </div>
-        <h2 class="text-2xl font-black uppercase tracking-[0.2em] text-white mt-8 italic">Hyper Neural Processing</h2>
-        <p id="loading-status" class="mt-2 text-slate-500 font-bold uppercase tracking-widest italic">v32.0 Extreme Engine</p>
+        <h2 class="text-2xl font-black uppercase tracking-[0.2em] text-white mt-8 italic">هاوتاکردنی گشتی...</h2>
+        <p id="loading-status" class="mt-2 text-slate-500 font-bold uppercase tracking-widest italic text-center px-4">ئەم کارە کەمێک کات دەبات چونکە وێنەکان زۆر وردن</p>
     </div>
 
     <div class="max-w-[2000px] mx-auto h-screen flex flex-col overflow-hidden relative text-right">
@@ -65,7 +65,7 @@
                 <div class="w-14 h-14 bg-gradient-to-br from-blue-600 to-indigo-700 rounded-2xl flex items-center justify-center shadow-2xl font-black text-2xl text-white">T</div>
                 <div class="hidden sm:block text-right text-white">
                     <h1 class="text-3xl font-black tracking-tighter uppercase italic leading-none">Tahir <span class="text-blue-500">Tahir</span></h1>
-                    <p class="text-[10px] text-slate-500 font-bold uppercase tracking-[0.4em] mt-1 italic">Hyper-Neural v32.0 Extreme</p>
+                    <p class="text-[10px] text-slate-500 font-bold uppercase tracking-[0.4em] mt-1 italic">Hyper-Neural v33.0 Sync</p>
                 </div>
             </div>
             
@@ -77,15 +77,16 @@
 
         <div class="flex-1 flex overflow-hidden">
             
-            <!-- LEFT: Preset Library -->
+            <!-- LEFT: Preset Library (The Permanent Library) -->
             <div class="library-panel w-[340px] glass border-r border-white/5 flex flex-col p-8 hidden lg:flex">
                 <div class="flex items-center justify-between mb-8">
-                    <h3 class="text-[11px] font-black uppercase tracking-widest text-slate-500 italic">HYPER LIBRARY</h3>
+                    <h3 class="text-[11px] font-black uppercase tracking-widest text-slate-500 italic">MY PERMANENT LIBRARY</h3>
                     <button onclick="document.getElementById('import-json').click()" class="text-blue-500 text-[10px] font-black hover:underline uppercase tracking-widest">Import</button>
                     <input type="file" id="import-json" class="hidden" accept=".json" onchange="window.importPresetFile(event)">
                 </div>
+                <p class="text-[9px] text-slate-600 font-bold mb-4 uppercase leading-relaxed italic">لێرە دەتوانیت ئەو ڕەنگانەی پێشتر هەناردەت کردوون بۆ کۆمپیوتەرەکەت، جارێکی تر باریان بکەیتەوە.</p>
                 <div id="preset-list" class="flex-1 space-y-3 overflow-y-auto custom-scrollbar pr-1">
-                    <div class="text-center py-20 opacity-20 text-[10px] font-bold italic uppercase tracking-widest leading-loose">هیچ پرێسێتێک نییە<br>دانەیەک سەیڤ بکە</div>
+                    <div class="text-center py-20 opacity-20 text-[10px] font-bold italic uppercase tracking-widest leading-loose">کتێبخانەکە چۆڵە</div>
                 </div>
             </div>
 
@@ -100,7 +101,7 @@
                             <div id="src-hold" class="text-center opacity-30 group-hover:opacity-100 transition-all scale-90 group-hover:scale-100 duration-500">
                                 <svg class="mx-auto mb-6" width="72" height="72" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2"><rect width="18" height="18" x="3" y="3" rx="2" ry="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/></svg>
                                 <p class="text-[14px] font-black uppercase tracking-[0.3em]">١. ستایلی سەرەکی (Reference)</p>
-                                <p class="text-[9px] mt-2 text-blue-500 italic font-bold">ڕایبکێشە بۆ ئێرە</p>
+                                <p class="text-[9px] mt-2 text-blue-500 italic font-bold text-center">ئەو وێنەیە هەڵبژێرە کە دەتەوێت ڕەنگەکەی کۆپی بکەیت</p>
                             </div>
                             <input type="file" id="src-in" class="hidden" accept="image/*" onchange="window.handleSrcUpload(this)">
                         </label>
@@ -108,7 +109,7 @@
                             <div id="tar-hold" class="text-center opacity-30 group-hover:opacity-100 transition-all scale-90 group-hover:scale-100 duration-500">
                                 <svg class="mx-auto mb-6" width="72" height="72" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4m2-5 5 5 5-5m-5 5V3" /></svg>
                                 <p class="text-[14px] font-black uppercase tracking-[0.3em]">٢. وێنەکانت (Batch Processing)</p>
-                                <p class="text-[9px] mt-2 text-purple-500 italic font-bold">تاوەکو ٣٠ وێنە هەڵبژێرە</p>
+                                <p class="text-[9px] mt-2 text-purple-500 italic font-bold">هەموو ئەو وێنە نوێیانە هەڵبژێرە کە دەتەوێت ئیدیت ببن</p>
                             </div>
                             <div id="tar-grid" class="hidden grid grid-cols-4 gap-4 p-10 w-full h-full overflow-y-auto custom-scrollbar"></div>
                             <input type="file" id="tar-in" class="hidden" accept="image/*" multiple onchange="window.handleTarUpload(this)">
@@ -142,39 +143,40 @@
                     </div>
 
                     <!-- Sidebar -->
-                    <div class="sidebar lg:w-[500px] glass p-10 flex flex-col gap-10 shadow-2xl z-50 overflow-y-auto custom-scrollbar h-full">
+                    <div class="sidebar lg:w-[500px] glass p-10 flex flex-col gap-8 shadow-2xl z-50 overflow-y-auto custom-scrollbar h-full">
                         
-                        <!-- Persistent Save -->
+                        <!-- File Export (Save for other photos) -->
                         <div class="p-7 bg-white/5 rounded-[2.5rem] border border-white/10 flex flex-col gap-5 shadow-inner">
-                            <h4 class="text-[11px] font-black uppercase tracking-[0.2em] text-slate-500 text-center italic">سەیڤکردن بۆ کتێبخانە و کۆمپیوتەر</h4>
+                            <h4 class="text-[10px] font-black uppercase tracking-widest text-slate-400 text-center italic">سەیڤکردن بۆ وێنەی تر (Export)</h4>
                             <div class="flex gap-3">
-                                <input type="text" id="save-name" placeholder="ناوی پرێسێت..." class="flex-1 bg-black/40 border border-white/10 rounded-2xl px-5 py-4 text-md font-bold text-white outline-none focus:border-blue-500 shadow-inner">
+                                <input type="text" id="save-name" placeholder="ناوی ستایل..." class="flex-1 bg-black/40 border border-white/10 rounded-2xl px-5 py-4 text-md font-bold text-white outline-none focus:border-blue-500 shadow-inner">
                                 <button onclick="window.exportPresetFile()" class="px-8 py-4 btn-zaxm text-white rounded-2xl font-black text-xs uppercase italic tracking-tighter shadow-lg hover:scale-105 active:scale-95 transition-all">Export</button>
                             </div>
                         </div>
 
-                        <!-- Strength Controller -->
-                        <div class="p-10 bg-blue-600/15 rounded-[3.5rem] border border-blue-500/30 shadow-[inset_0_0_50px_rgba(59,130,246,0.2)]">
-                            <div class="flex justify-between text-[14px] font-black text-blue-400 uppercase mb-6 italic tracking-widest"><span>هێزی Neural Match</span><span id="intensity-v">100%</span></div>
+                        <!-- Sync Feature -->
+                        <button onclick="window.syncAllBatch()" class="w-full py-5 bg-purple-600/10 text-purple-400 rounded-3xl font-black text-[11px] uppercase tracking-[0.2em] border border-purple-500/20 hover:bg-purple-600/30 transition-all shadow-xl">Apply to All Photos (Sync)</button>
+
+                        <div class="p-8 bg-blue-600/15 rounded-[3.5rem] border border-blue-500/30 shadow-inner">
+                            <div class="flex justify-between text-[14px] font-black text-blue-400 uppercase mb-6 italic tracking-widest"><span>هێزی ئیفێکت (Strength)</span><span id="intensity-v">100%</span></div>
                             <input type="range" id="intensity" min="0" max="100" value="100" class="accent-blue-500 h-1.5" oninput="window.render()">
                         </div>
 
                         <!-- Professional Advanced RAW -->
                         <div class="space-y-4 flex-1">
                             <div class="accordion-item active">
-                                <div class="accordion-header" onclick="window.toggleAcc(this)"><span class="text-[13px] font-black uppercase tracking-[0.2em] text-slate-100 italic">Master Correction Panel</span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="m6 9 6 6 6-6"/></svg></div>
+                                <div class="accordion-header" onclick="window.toggleAcc(this)"><span class="text-[13px] font-black uppercase tracking-[0.2em] text-slate-100 italic">Advanced Master Panel</span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="m6 9 6 6 6-6"/></svg></div>
                                 <div class="accordion-content space-y-8 pt-8 px-2 text-right">
-                                    <div class="space-y-3"><div class="flex justify-between text-[11px] font-bold text-slate-500 uppercase italic"><span>ڕووناکی (Exposure)</span><span id="exposure-v" class="text-white">100</span></div><input type="range" id="exposure" min="20" max="180" value="100" oninput="window.render()"></div>
-                                    <div class="space-y-3"><div class="flex justify-between text-[11px] font-bold text-slate-500 uppercase italic"><span>کۆنتراست (Contrast)</span><span id="contrast-v" class="text-white">100</span></div><input type="range" id="contrast" min="30" max="170" value="100" oninput="window.render()"></div>
+                                    <div class="space-y-3"><div class="flex justify-between text-[11px] font-bold text-slate-500 uppercase italic"><span>Exposure (ڕووناکی)</span><span id="exposure-v" class="text-white">100</span></div><input type="range" id="exposure" min="20" max="180" value="100" oninput="window.render()"></div>
+                                    <div class="space-y-3"><div class="flex justify-between text-[11px] font-bold text-slate-500 uppercase italic"><span>Contrast (کۆنتراست)</span><span id="contrast-v" class="text-white">100</span></div><input type="range" id="contrast" min="30" max="170" value="100" oninput="window.render()"></div>
                                     <div class="space-y-3"><div class="flex justify-between text-[11px] font-bold text-slate-500 uppercase italic"><span>Highlights</span><span id="highlights-v" class="text-white">0</span></div><input type="range" id="highlights" min="-70" max="70" value="0" oninput="window.render()"></div>
                                     <div class="space-y-3"><div class="flex justify-between text-[11px] font-bold text-slate-500 uppercase italic"><span>Shadows</span><span id="shadows-v" class="text-white">0</span></div><input type="range" id="shadows" min="-70" max="70" value="0" oninput="window.render()"></div>
-                                    <div class="space-y-3"><div class="flex justify-between text-[11px] font-bold text-slate-500 uppercase italic"><span>Temperature</span><span id="temp-v" class="text-blue-400">0</span></div><input type="range" id="temp" min="-60" max="60" value="0" oninput="window.render()"></div>
                                     <div class="space-y-3"><div class="flex justify-between text-[11px] font-bold text-slate-500 uppercase italic"><span>Clarity (تیژی تۆن)</span><span id="clarity-v" class="text-white">0</span></div><input type="range" id="clarity" min="0" max="100" value="0" oninput="window.render()"></div>
                                 </div>
                             </div>
 
                             <div class="accordion-item">
-                                <div class="accordion-header" onclick="window.toggleAcc(this)"><span class="text-[13px] font-black uppercase tracking-[0.2em] text-slate-100 italic">Face & Texture Engine</span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="m6 9 6 6 6-6"/></svg></div>
+                                <div class="accordion-header" onclick="window.toggleAcc(this)"><span class="text-[13px] font-black uppercase tracking-[0.2em] text-slate-100 italic">Retouch Engine</span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="m6 9 6 6 6-6"/></svg></div>
                                 <div class="accordion-content space-y-8 pt-8 px-2 text-right">
                                     <div class="space-y-3"><div class="flex justify-between text-[12px] font-black text-pink-400 uppercase tracking-widest italic"><span>Skin Smoothing</span><span id="smoothing-v">0%</span></div><input type="range" id="smoothing" min="0" max="100" value="0" class="accent-pink-500" oninput="window.render()"></div>
                                     <div class="space-y-3"><div class="flex justify-between text-[11px] font-bold text-slate-500 uppercase italic"><span>Grain (نۆیز)</span><span id="grain-v">0</span></div><input type="range" id="grain" min="0" max="100" value="0" oninput="window.render()"></div>
@@ -202,26 +204,22 @@
         let pBaseC = document.createElement('canvas');
         let copiedSettings = null;
         const get = id => document.getElementById(id);
-        const SLIDERS = ['intensity', 'exposure', 'contrast', 'highlights', 'shadows', 'temp', 'smoothing', 'grain', 'clarity'];
+        const SLIDERS = ['intensity', 'exposure', 'contrast', 'highlights', 'shadows', 'smoothing', 'grain', 'clarity'];
 
-        // --- HYPER-NEURAL RGB ENGINE (Multi-Channel Match) ---
+        // --- HYPER-NEURAL RGB ENGINE ---
         function analyze(ctx, w, h) {
             const d = ctx.getImageData(0,0,w,h).data;
             const c = d.length/4;
             const rHist = new Array(256).fill(0), gHist = new Array(256).fill(0), bHist = new Array(256).fill(0);
             let rSum=0, gSum=0, bSum=0;
-
             for(let i=0; i<d.length; i+=4){ 
                 rHist[d[i]]++; gHist[d[i+1]]++; bHist[d[i+2]]++;
                 rSum+=d[i]; gSum+=d[i+1]; bSum+=d[i+2];
             }
             const mean = { r: rSum/c, g: gSum/c, b: bSum/c };
-            
-            // Stats for standard deviation (Used for balance)
             let vr=0, vg=0, vb=0;
             for(let i=0; i<d.length; i+=4){ vr+=Math.pow(d[i]-mean.r,2); vg+=Math.pow(d[i+1]-mean.g,2); vb+=Math.pow(d[i+2]-mean.b,2); }
             const std = { r:Math.sqrt(vr/c)||1, g:Math.sqrt(vg/c)||1, b:Math.sqrt(vb/c)||1 };
-
             return { rHist, gHist, bHist, mean, std };
         }
 
@@ -233,11 +231,11 @@
             tX.drawImage(item.img,0,0,256,256);
             const tStats = analyze(tX, 256, 256);
 
-            // Channel-wise LUT building (RGB Matching)
             const buildLUT = (sH, tH) => {
-                const sCDF = new Array(256).fill(0), tCDF = new Array(256).fill(0);
-                let sSum=0, tSum=0, sTotal=sH.reduce((a,b)=>a+b,0), tTotal=tH.reduce((a,b)=>a+b,0);
-                for(let i=0; i<256; i++){ sSum+=sH[i]; sCDF[i]=sSum/sTotal; tSum+=tH[i]; tCDF[i]=tSum/tTotal; }
+                const sCDF = new Array(256).fill(0); let sSum=0, sTotal=sH.reduce((a,b)=>a+b,0);
+                for(let i=0; i<256; i++){ sSum+=sH[i]; sCDF[i]=sSum/sTotal; }
+                const tCDF = new Array(256).fill(0); let tSum=0, tTotal=tH.reduce((a,b)=>a+b,0);
+                for(let i=0; i<256; i++){ tSum+=tH[i]; tCDF[i]=tSum/tTotal; }
                 let lut = new Array(256);
                 for(let i=0; i<256; i++){ let j=0; while(j<255 && sCDF[j]<tCDF[i]) j++; lut[i]=j; }
                 return lut;
@@ -246,16 +244,12 @@
             const rLUT = buildLUT(sStats.rHist, tStats.rHist);
             const gLUT = buildLUT(sStats.gHist, tStats.gHist);
             const bLUT = buildLUT(sStats.bHist, tStats.bHist);
-
-            // Tonal Scaling Factors
             const sR = sStats.std.r/tStats.std.r, sG = sStats.std.g/tStats.std.g, sB = sStats.std.b/tStats.std.b;
 
             for(let j=0; j<d.length; j+=4) {
-                // Blend statistical mapping with Histogram mapping for 100% precision
                 const nr = (d[j]-tStats.mean.r)*sR + sStats.mean.r;
                 const ng = (d[j+1]-tStats.mean.g)*sG + sStats.mean.g;
                 const nb = (d[j+2]-tStats.mean.b)*sB + sStats.mean.b;
-                
                 d[j] = Math.max(0,Math.min(255, nr*0.8 + rLUT[d[j]]*0.2));
                 d[j+1] = Math.max(0,Math.min(255, ng*0.8 + gLUT[d[j+1]]*0.2));
                 d[j+2] = Math.max(0,Math.min(255, nb*0.8 + bLUT[d[j+2]]*0.2));
@@ -263,14 +257,13 @@
             ctx.putImageData(idata, 0, 0); window.render();
         }
 
-        // --- CORE FUNCTIONS ---
+        // --- GLOBAL FUNCTIONS ---
         window.handleSrcUpload = el => {
             const f = el.files[0]; if(!f) return;
             const r = new FileReader(); r.onload = ev => {
                 const img = new Image(); img.onload = () => {
                     get('src-pre').src = ev.target.result; get('src-pre').classList.remove('hidden'); get('src-hold').classList.add('hidden');
-                    const tx = document.createElement('canvas').getContext('2d'); tx.canvas.width=256; tx.canvas.height=256;
-                    tx.drawImage(img,0,0,256,256);
+                    const tx = document.createElement('canvas').getContext('2d'); tx.canvas.width=256; tx.canvas.height=256; tx.drawImage(img,0,0,256,256);
                     srcStats = analyze(tx, 256, 256); checkReady();
                 }; img.src = ev.target.result;
             }; r.readAsDataURL(f);
@@ -284,14 +277,14 @@
                 const r = new FileReader(); r.onload = ev => {
                     const img = new Image(); img.onload = () => {
                         batch.push({ img, data: ev.target.result, settings: defS(), name: f.name });
-                        const t = document.createElement('img'); t.src = ev.target.result; t.className = "w-full aspect-square object-cover rounded-xl shadow-xl hover:scale-105 transition-all duration-300"; get('tar-grid').appendChild(t);
+                        const t = document.createElement('img'); t.src = ev.target.result; t.className = "w-full aspect-square object-cover rounded-xl shadow-lg"; get('tar-grid').appendChild(t);
                         loaded++; if(loaded === fs.length) checkReady();
                     }; img.src = ev.target.result;
                 }; r.readAsDataURL(f);
             });
         };
 
-        const defS = () => ({ intensity:100, exposure:100, contrast:100, highlights:0, shadows:0, temp:0, tint:0, smoothing:0, sharpen:0, grain:0, clarity:0 });
+        const defS = () => ({ intensity:100, exposure:100, contrast:100, highlights:0, shadows:0, smoothing:0, grain:0, clarity:0 });
         const checkReady = () => { if(srcStats && batch.length) { get('proc-btn').disabled = false; get('proc-btn').style.opacity = 1; } };
         window.startEditor = () => { get('upload-section').classList.add('hidden'); get('editor-section').classList.remove('hidden'); window.loadPhoto(0); };
 
@@ -307,27 +300,19 @@
         window.render = (targetC = get('main-canvas'), sets = getUI(), sImg = batch[activeIdx]?.img) => {
             if(!sImg) return; const ctx = targetC.getContext('2d'); const w = sImg.width, h = sImg.height; targetC.width = w; targetC.height = h;
             if(isComparing && targetC === get('main-canvas')) { ctx.drawImage(sImg, 0, 0); return; }
-            
             const blend = sets.intensity / 100;
             const buf = document.createElement('canvas'); buf.width=w; buf.height=h; const bX = buf.getContext('2d');
             bX.drawImage(sImg, 0, 0); bX.globalAlpha = blend; bX.drawImage(pBaseC, 0, 0); bX.globalAlpha = 1.0;
 
-            const idata = bX.getImageData(0,0,w,h); const d = idata.data;
-            const copy = new Uint8ClampedArray(d);
-            const step = w > 2000 ? 3 : 1; 
-            const rad = Math.max(1, Math.floor(sets.smoothing/15));
+            const idata = bX.getImageData(0,0,w,h); const d = idata.data; const copy = new Uint8ClampedArray(d);
+            const step = w > 2000 ? 3 : 1; const rad = Math.max(1, Math.floor(sets.smoothing/15));
 
             for(let y=0; y<h; y+=step) for(let x=0; x<w; x+=step) {
                 const i = (y*w+x)*4; const lum = 0.299*d[i]+0.587*d[i+1]+0.114*d[i+2];
-                // Highlights / Shadows
                 if(lum > 190 && sets.highlights !== 0) { const m=1+(sets.highlights/200); d[i]*=m; d[i+1]*=m; d[i+2]*=m; }
                 if(lum < 70 && sets.shadows !== 0) { const m=1+(sets.shadows/100); d[i]*=m; d[i+1]*=m; d[i+2]*=m; }
-                
-                // Clarity Logic (Contrast enhancement in Midtones)
                 if(sets.clarity > 0 && lum > 80 && lum < 180) { const cF=1+(sets.clarity/300); d[i]*=cF; d[i+1]*=cF; d[i+2]*=cF; }
-
-                // Precision Skin Smooth
-                if(sets.smoothing > 0 && d[i]>80 && d[i+1]>60 && d[i]>d[i+1] && d[i]>d[i+2]) {
+                if(sets.smoothing > 0 && d[i]>80 && d[i+1]>60 && d[i]>d[i+1]) {
                     if(y>rad && y<h-rad && x>rad && x<w-rad) {
                         let sr=0,sg=0,sb=0,sc=0; for(let ky=-rad;ky<=rad;ky+=rad)for(let kx=-rad;kx<=rad;kx+=rad){ const ki=((y+ky)*w+(x+kx))*4; sr+=copy[ki]; sg+=copy[ki+1]; sb+=copy[ki+2]; sc++; }
                         const fact = sets.smoothing/220; d[i]=copy[i]*(1-fact)+(sr/sc)*fact; d[i+1]=copy[i+1]*(1-fact)+(sg/sc)*fact; d[i+2]=copy[i+2]*(1-fact)+(sb/sc)*fact;
@@ -336,14 +321,15 @@
                 if(sets.grain > 0) { const g=(Math.random()-0.5)*sets.grain; d[i]+=g; d[i+1]+=g; d[i+2]+=g; }
             }
             bX.putImageData(idata,0,0);
-            ctx.filter = `brightness(${sets.exposure}%) contrast(${sets.contrast}%)`; 
-            ctx.drawImage(buf, 0, 0);
+            ctx.filter = `brightness(${sets.exposure}%) contrast(${sets.contrast}%)`; ctx.drawImage(buf, 0, 0); window.updateZoom();
+        };
 
-            if(sets.temp !== 0) {
-                ctx.globalCompositeOperation = 'overlay';
-                ctx.fillStyle = sets.temp > 0 ? `rgba(255,180,0,${Math.abs(sets.temp)/350})` : `rgba(0,100,255,${Math.abs(sets.temp)/350})`; ctx.fillRect(0,0,w,h);
-            }
-            window.updateZoom();
+        // --- SYNC ENGINE ---
+        window.syncAllBatch = () => {
+            const currentSets = getUI();
+            batch.forEach(it => it.settings = { ...currentSets });
+            get('toast').innerText = "بە سەرکەوتوویی لە هەموو وێنەکان درا! ✓";
+            get('toast').classList.remove('hidden'); setTimeout(()=>get('toast').classList.add('hidden'),2000);
         };
 
         // --- PRESET LOCAL SYSTEM ---
@@ -353,7 +339,7 @@
             const blob = new Blob([JSON.stringify(data)], {type:"application/json"});
             const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = `${name}.json`; a.click();
             localPresets.push(data); renderPresetList();
-            get('toast').innerText="سەیڤ کرا! ✓"; get('toast').classList.remove('hidden'); setTimeout(()=>get('toast').classList.add('hidden'),2000);
+            get('toast').innerText="سەیڤ کرا بۆ ناو کۆمپیوتەر! ✓"; get('toast').classList.remove('hidden'); setTimeout(()=>get('toast').classList.add('hidden'),2000);
         };
 
         window.importPresetFile = e => {
@@ -366,39 +352,38 @@
             get('preset-list').innerHTML = localPresets.map((p, i) => `
                 <div class="preset-pill group" onclick="window.applyLibPreset(${i})">
                     <span class="truncate">${p.name}</span>
-                    <button onclick="event.stopPropagation(); localPresets.splice(${i},1); renderPresetList();" class="text-white/20 hover:text-red-500 transition-all">✕</button>
+                    <button onclick="event.stopPropagation(); localPresets.splice(${i},1); renderPresetList();" class="text-white/20 hover:text-red-500">✕</button>
                 </div>
             `).join('') || '<div class="text-center py-20 opacity-20 text-[10px] font-bold">چۆڵە</div>';
         };
 
         window.applyLibPreset = i => { 
-            srcStats = localPresets[i].stats; 
-            if(localPresets[i].settings) setUI(localPresets[i].settings);
+            srcStats = localPresets[i].stats; if(localPresets[i].settings) setUI(localPresets[i].settings);
             if(batch[activeIdx]) window.loadPhoto(activeIdx); 
         };
 
         // --- UTILS ---
-        const getUI = () => { const o={}; SLIDERS.forEach(s=>o[s]=parseInt(get(s).value)); return o; };
-        const setUI = o => { SLIDERS.forEach(s=>{ get(s).value=o[s]; const v=get(s+'-v'); if(v) v.innerText=(['smoothing','intensity'].includes(s))?o[s]+'%':o[s]; }); };
+        const getUI = () => { const o={}; ['intensity','exposure','contrast','highlights','shadows','smoothing','grain','clarity'].forEach(s=>o[s]=parseInt(get(s).value)); return o; };
+        const setUI = o => { ['intensity','exposure','contrast','highlights','shadows','smoothing','grain','clarity'].forEach(s=>{ get(s).value=o[s]; const v=get(s+'-v'); if(v) v.innerText=(['smoothing','intensity'].includes(s))?o[s]+'%':o[s]; }); };
         window.toggleAcc = el => el.parentElement.classList.toggle('active');
         window.zoomAdjust = m => { zoomL*=m; if(zoomL<0.05) zoomL=0.05; window.updateZoom(); };
         window.fitView = () => { zoomL=1.0; window.updateZoom(); get('container').scrollLeft=0; get('container').scrollTop=0; };
         window.updateZoom = () => { const it=batch[activeIdx]; if(!it) return; const s=fitS*zoomL; get('main-canvas').style.width=(it.img.width*s)+'px'; get('main-canvas').style.height=(it.img.height*s)+'px'; get('zoom-val').innerText=Math.round(zoomL*100)+'%'; };
         window.copySets = () => { copiedSettings = getUI(); get('toast').innerText="کۆپی کرا! ✓"; get('toast').classList.remove('hidden'); setTimeout(()=>get('toast').classList.add('hidden'),1500); };
         window.pasteSets = () => { if(copiedSettings) { setUI(copiedSettings); window.render(); } };
-        window.dlActive = () => { const a=document.createElement('a'); a.download=`Result.jpg`; a.href=get('main-canvas').toDataURL('image/jpeg',1.0); a.click(); };
+        window.dlActive = () => { const a=document.createElement('a'); a.download=`Photo.jpg`; a.href=get('main-canvas').toDataURL('image/jpeg',1.0); a.click(); };
 
         window.dlAllZIP = async () => {
             if(!batch.length) return; const zip = new JSZip(); get('overlay-loading').style.display='flex';
             const tempC = document.createElement('canvas');
             for(let i=0; i<batch.length; i++){
-                window.loadPhoto(i); await new Promise(r=>setTimeout(r,150));
+                window.loadPhoto(i); await new Promise(r=>setTimeout(r,200));
                 window.render(tempC, batch[i].settings, batch[i].img);
                 const blob = await new Promise(r => tempC.toBlob(r, 'image/jpeg', 1.0));
-                zip.file(`Photo_${i+1}.jpg`, blob);
+                zip.file(`Result_${i+1}.jpg`, blob);
             }
             const content = await zip.generateAsync({type:"blob"});
-            const a = document.createElement('a'); a.href = URL.createObjectURL(content); a.download = "Tahir_Bulk_Export.zip"; a.click();
+            const a = document.createElement('a'); a.href = URL.createObjectURL(content); a.download = "Tahir_Export.zip"; a.click();
             get('overlay-loading').style.display = 'none';
         };
 
@@ -410,34 +395,13 @@
         setupDD(get('src-drop'), get('src-in'));
         setupDD(get('tar-drop'), get('tar-in'));
 
-        const comp = get('comp-btn');
-        comp.onmousedown = () => { isComparing=true; window.render(); };
-        comp.onmouseup = () => { isComparing=false; window.render(); };
-
+        get('comp-btn').onmousedown = () => { isComparing=true; window.render(); };
+        get('comp-btn').onmouseup = () => { isComparing=false; window.render(); };
+        
         let isD=false, sx, sy, sl, st;
         get('container').onmousedown = e => { if(zoomL<=1) return; isD=true; sx=e.pageX-get('container').offsetLeft; sy=e.pageY-get('container').offsetTop; sl=get('container').scrollLeft; st=get('container').scrollTop; };
         window.addEventListener('mouseup',()=>isD=false);
         get('container').onmousemove = e => { if(!isD) return; get('container').scrollLeft=sl-(e.pageX-get('container').offsetLeft-sx); get('container').scrollTop=st-(e.pageY-get('container').offsetTop-sy); };
-
-        window.toggleLibrary = () => {
-            const panel = get('library-panel'); const handle = get('library-handle');
-            if (panel.classList.contains('w-0')) {
-                panel.classList.remove('w-0', 'opacity-0', 'p-0'); panel.classList.add('w-[300px]', 'p-8');
-                handle.classList.add('hidden');
-            } else {
-                panel.classList.add('w-0', 'opacity-0', 'p-0'); panel.classList.remove('w-[300px]', 'p-8');
-                handle.classList.remove('hidden'); handle.classList.add('flex');
-            }
-        };
-
-        window.switchMode = m => {
-            get('btn-mode-creator').classList.toggle('active', m==='creator'); get('btn-mode-editor').classList.toggle('active', m==='editor');
-            get('view-creator').style.display = m==='creator' ? 'flex' : 'none';
-            if(m==='editor') {
-                if(batch.length > 0) { get('view-editor').classList.remove('hidden'); get('view-empty').classList.add('hidden'); }
-                else { get('view-editor').classList.add('hidden'); get('view-empty').classList.remove('hidden'); }
-            } else { get('view-editor').classList.add('hidden'); get('view-empty').classList.add('hidden'); }
-        };
     </script>
 </body>
 </html>
