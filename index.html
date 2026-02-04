@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tahir Tahir - AI Vision Ultra v15</title>
+    <title>Tahir Tahir - AI Vision Ultra v15.5</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap');
@@ -64,7 +64,7 @@
                 <div class="w-12 h-12 bg-gradient-to-br from-blue-600 to-indigo-700 rounded-2xl flex items-center justify-center shadow-2xl font-black text-xl">T</div>
                 <div>
                     <h1 class="text-2xl font-black tracking-tighter uppercase italic leading-none">Tahir <span class="text-blue-500">Tahir</span></h1>
-                    <p class="text-[9px] text-slate-500 font-bold uppercase tracking-[0.4em] mt-1 italic">Hyper AI Match Engine v15.0</p>
+                    <p class="text-[9px] text-slate-500 font-bold uppercase tracking-[0.4em] mt-1 italic">Hyper AI Match Engine v15.5</p>
                 </div>
             </div>
             <div class="flex items-center gap-4">
@@ -211,6 +211,9 @@
         let zoomLevel = 1.0, fitScale = 1.0, isComparing = false, isRendering = false;
         let pBaseC = document.createElement('canvas');
         let selectedMixColor = 'red';
+        
+        // Storage for AI-calculated offsets to include in XMP
+        let aiCapture = { exposure: 0, contrast: 0, temp: 0 };
 
         const SLIDERS = ['temp', 'tint', 'smoothing', 'intensity', 'exposure', 'contrast', 'highlights', 'shadows', 'mix-sat', 'lipstick', 'sharpen', 'grain', 'vignette'];
 
@@ -305,12 +308,20 @@
                 tX.drawImage(item.img,0,0,256,256);
                 const tStats = getStats(tX, 256, 256);
 
-                const buildCDF = h => { let cdf=new Array(256).fill(0), sum=0, tot=h.reduce((a,b)=>a+b,0); for(let i=0;i<256;i++){ sum+=h[i]; cdf[i]=sum/tot; } return cdf; };
-                const sCDF = buildCDF(srcStats.histogram), tCDF = buildCDF(tStats.histogram);
+                const buildCDF = h => { let cdf=new Array(256).fill(0), sum=0, tot=h.reduce((a,b)=>a+b,0); for(let i=0;i<256;i++){ sum+=h[i]; cdf[i]=sum/total; } return cdf; };
+                const total = tStats.histogram.reduce((a, b) => a + b, 0);
+                const buildCDFLocal = h => { let cdf=new Array(256).fill(0), sum=0; for(let i=0;i<256;i++){ sum+=h[i]; cdf[i]=sum/total; } return cdf; };
+                
+                const sCDF = buildCDFLocal(srcStats.histogram), tCDF = buildCDFLocal(tStats.histogram);
                 let toneLUT = new Array(256);
                 for(let i=0; i<256; i++){ let j=0; while(j<255 && sCDF[j]<tCDF[i]) j++; toneLUT[i]=j; }
 
                 const sR = srcStats.std.r / tStats.std.r; const sG = srcStats.std.g / tStats.std.g; const sB = srcStats.std.b / tStats.std.b;
+
+                // --- CAPTURING AI OFFSETS FOR XMP ---
+                aiCapture.exposure = (srcStats.mean.r + srcStats.mean.g + srcStats.mean.b) / 3 - (tStats.mean.r + tStats.mean.g + tStats.mean.b) / 3;
+                aiCapture.contrast = (sR + sG + sB) / 3;
+                aiCapture.temp = srcStats.mean.r - tStats.mean.r;
 
                 for(let j=0; j<d.length; j+=4) {
                     const lum = Math.round(0.299*d[j] + 0.587*d[j+1] + 0.114*d[j+2]);
@@ -416,8 +427,12 @@
 
             window.exportXMP = () => {
                 const f = getUI();
-                const exposure = (f.exposure - 100) / 20;
-                const contrast = (f.contrast - 100) * 1.5;
+                
+                // COMBINING AI MATCHING WITH MANUAL SLIDERS
+                const exposure = ((f.exposure - 100) / 20) + (aiCapture.exposure / 25);
+                const contrast = ((f.contrast - 100) * 1.5) + ((aiCapture.contrast - 1) * 50);
+                const tempShift = (f.temp * 20) + (aiCapture.temp * 25);
+
                 const xmp = `<x:xmpmeta xmlns:x="adobe:ns:meta/">
  <rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
   <rdf:Description rdf:about="" xmlns:crs="http://ns.adobe.com/camera-raw-settings/1.0/"
@@ -427,14 +442,14 @@
    crs:Contrast2012="${contrast.toFixed(0)}"
    crs:Highlights2012="${f.highlights.toFixed(0)}"
    crs:Shadows2012="${f.shadows.toFixed(0)}"
-   crs:Temperature="${(f.temp * 20).toFixed(0)}"
+   crs:Temperature="${tempShift.toFixed(0)}"
    crs:Tint="${f.tint.toFixed(0)}"
    crs:Saturation="${(f['mix-sat']).toFixed(0)}"
    crs:Sharpness="${f.sharpen.toFixed(0)}"
    crs:VignetteAmount="${f.vignette.toFixed(0)}"
    crs:GrainAmount="${f.grain || 0}"
    crs:HasSettings="True">
-   <crs:Name><rdf:Alt><rdf:li xml:lang="x-default">Tahir Pro v15</rdf:li></rdf:Alt></crs:Name>
+   <crs:Name><rdf:Alt><rdf:li xml:lang="x-default">Tahir AI Match v15.5</rdf:li></rdf:Alt></crs:Name>
   </rdf:Description>
  </rdf:RDF>
 </x:xmpmeta>`.trim();
@@ -448,7 +463,6 @@
                 document.body.appendChild(a);
                 a.click();
                 
-                // Visual Feedback
                 els.toast.innerText = "XMP سەیڤ کرا! ✓";
                 els.toast.classList.remove('hidden');
                 setTimeout(() => {
