@@ -3,483 +3,418 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tahir Tahir - AI Vision Ultra v16.0</title>
+    <title>Tahir Tahir - AI Preset Library v19.5</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap');
-        :root { --primary: #3b82f6; --accent: #8b5cf6; --bg: #050505; --glass: rgba(12, 12, 12, 0.85); }
+        :root { --primary: #3b82f6; --accent: #8b5cf6; --bg: #050505; --glass: rgba(15, 15, 15, 0.85); }
         body { font-family: 'Inter', sans-serif; background-color: var(--bg); color: #f1f5f9; margin: 0; overflow: hidden; }
-        .glass { background: var(--glass); backdrop-filter: blur(40px); border: 1px solid rgba(255, 255, 255, 0.1); }
+        .glass { background: var(--glass); backdrop-filter: blur(40px); border: 1px solid rgba(255, 255, 255, 0.08); }
         .btn-zaxm { background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%); transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
         
-        input[type=range] { -webkit-appearance: none; background: rgba(255, 255, 255, 0.1); height: 5px; border-radius: 10px; width: 100%; }
-        input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; height: 18px; width: 18px; border-radius: 50%; background: white; cursor: pointer; border: 2px solid var(--primary); box-shadow: 0 0 15px rgba(0,0,0,0.5); }
+        .mode-btn { padding: 10px 20px; font-weight: 900; font-size: 11px; text-transform: uppercase; letter-spacing: 1px; transition: 0.3s; border-radius: 12px; border: 1px solid rgba(255,255,255,0.05); color: #64748b; }
+        .mode-btn.active { background: var(--primary); color: white; border-color: var(--primary); box-shadow: 0 5px 20px rgba(59, 130, 246, 0.4); }
+
+        .preset-card { transition: all 0.3s; border: 2px solid transparent; cursor: pointer; }
+        .preset-card:hover { transform: translateY(-4px); border-color: rgba(59, 130, 246, 0.4); }
+        .preset-card.active { border-color: var(--primary); box-shadow: 0 0 25px rgba(59, 130, 246, 0.3); }
+
+        input[type=range] { -webkit-appearance: none; background: rgba(255, 255, 255, 0.1); height: 4px; border-radius: 10px; width: 100%; }
+        input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; height: 16px; width: 16px; border-radius: 50%; background: white; cursor: pointer; border: 2px solid var(--primary); }
         
+        .canvas-container { overflow: auto; display: flex; align-items: center; justify-content: center; width: 100%; height: 100%; background: #000; position: relative; padding: 20px; }
+        #main-canvas { box-shadow: 0 40px 150px rgba(0,0,0,1); border-radius: 6px; max-width: 100%; max-height: 100%; object-fit: contain; }
+
+        .batch-item { flex-shrink: 0; width: 65px; height: 65px; border-radius: 14px; overflow: hidden; border: 2px solid transparent; cursor: pointer; opacity: 0.5; transition: 0.3s; }
+        .batch-item.active { border-color: var(--primary); opacity: 1; transform: scale(1.1); }
+
+        #loading-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 1000; display: none; flex-direction: column; align-items: center; justify-content: center; }
+
         .accordion-content { max-height: 0; overflow: hidden; transition: max-height 0.4s cubic-bezier(0.4, 0, 0.2, 1); }
         .accordion-item.active .accordion-content { max-height: 1200px; padding-bottom: 1.5rem; }
-        .accordion-header { cursor: pointer; display: flex; justify-content: space-between; align-items: center; padding: 15px 12px; border-bottom: 1px solid rgba(255,255,255,0.05); transition: 0.3s; }
-        .accordion-header:hover { background: rgba(255,255,255,0.03); }
-        
-        .canvas-container { 
-            overflow: hidden; 
-            display: flex; 
-            align-items: center; 
-            justify-content: center; 
-            width: 100%; 
-            height: 100%; 
-            background: #000; 
-            position: relative; 
-            padding: 30px;
-        }
-        
-        #main-canvas { 
-            box-shadow: 0 40px 150px rgba(0,0,0,1);
-            border-radius: 6px;
-            max-width: 100%;
-            max-height: 100%;
-            object-fit: contain;
-        }
-
-        .batch-item { flex-shrink: 0; width: 70px; height: 70px; border-radius: 18px; overflow: hidden; border: 2.5px solid transparent; cursor: pointer; opacity: 0.5; transition: 0.3s; }
-        .batch-item.active { border-color: var(--primary); opacity: 1; transform: scale(1.1); box-shadow: 0 10px 20px rgba(59, 130, 246, 0.4); }
-
-        .hsl-btn { width: 28px; height: 28px; border-radius: 50%; border: 2.5px solid transparent; transition: 0.2s; }
-        .hsl-btn.active { transform: scale(1.3); border-color: white; }
+        .accordion-header { cursor: pointer; display: flex; justify-content: space-between; align-items: center; padding: 15px 12px; border-bottom: 1px solid rgba(255,255,255,0.05); }
 
         @media (max-width: 1024px) {
             .sidebar { position: absolute !important; bottom: 0; left: 0; width: 100% !important; height: 50vh !important; z-index: 100; border-radius: 3rem 3rem 0 0 !important; background: rgba(10, 10, 10, 0.95) !important; }
             .viewport { height: 100vh !important; width: 100vw !important; }
-            .batch-strip { position: absolute; top: 120px; left: 15px; z-index: 90; width: 75px !important; }
-            header { position: absolute; top: 0; width: 100%; z-index: 110; background: linear-gradient(to bottom, rgba(0,0,0,0.9), transparent); }
-            .canvas-container { padding: 10px; }
+            .batch-strip { position: absolute; top: 110px; left: 15px; z-index: 90; width: 75px !important; }
+            header { position: absolute; top: 0; width: 100%; z-index: 110; background: linear-gradient(to bottom, rgba(0,0,0,0.95), transparent); }
         }
     </style>
 </head>
 <body>
 
+    <div id="loading-overlay">
+        <div class="w-16 h-16 border-4 border-blue-500 border-t-transparent rounded-full animate-spin mb-4"></div>
+        <p id="loading-text" class="text-xs font-black uppercase tracking-widest text-slate-400">خەریکی گواستنەوەی ڕەنگە...</p>
+    </div>
+
     <div class="max-w-[2000px] mx-auto h-screen flex flex-col overflow-hidden relative">
         <!-- Header -->
         <header class="flex items-center justify-between p-5 flex-shrink-0">
-            <div class="flex items-center gap-4 text-white">
-                <div class="w-12 h-12 bg-gradient-to-br from-blue-600 to-indigo-700 rounded-2xl flex items-center justify-center shadow-2xl font-black text-xl">T</div>
-                <div>
-                    <h1 class="text-2xl font-black tracking-tighter uppercase italic leading-none">Tahir <span class="text-blue-500">Tahir</span></h1>
-                    <p class="text-[9px] text-slate-500 font-bold uppercase tracking-[0.4em] mt-1 italic text-right">AI XMP Master Engine v16.0</p>
+            <div class="flex items-center gap-5">
+                <div class="w-12 h-12 bg-gradient-to-br from-blue-600 to-indigo-700 rounded-2xl flex items-center justify-center shadow-2xl font-black text-xl text-white">T</div>
+                <div class="hidden sm:block">
+                    <h1 class="text-2xl font-black tracking-tighter uppercase italic leading-none text-white">Tahir <span class="text-blue-500">Tahir</span></h1>
+                    <p class="text-[9px] text-slate-500 font-bold uppercase tracking-[0.3em] mt-1">Preset Manager v19.5</p>
                 </div>
             </div>
-            <div class="flex items-center gap-4">
-                <div id="toast" class="hidden glass px-6 py-2 rounded-full text-[11px] font-black text-blue-400 border border-blue-500/20 shadow-2xl animate-pulse">ڕێکخستنەکان کۆپی کرا! ✓</div>
+
+            <!-- Mode Switcher -->
+            <div class="flex glass p-1.5 rounded-2xl gap-2">
+                <button onclick="switchMode('creator')" id="btn-mode-creator" class="mode-btn active">Create Preset</button>
+                <button onclick="switchMode('editor')" id="btn-mode-editor" class="mode-btn">Use Library</button>
+            </div>
+
+            <div class="flex items-center gap-3">
+                <div id="toast" class="hidden glass px-6 py-2 rounded-full text-[11px] font-black text-blue-400 border border-blue-500/20 shadow-2xl animate-pulse">Save Successful! ✓</div>
                 <button onclick="location.reload()" class="w-11 h-11 glass rounded-full flex items-center justify-center hover:bg-red-500/20 transition-all text-white">✕</button>
             </div>
         </header>
 
-        <!-- Step 1: Upload UI -->
-        <div id="upload-section" class="flex-1 flex flex-col justify-center items-center gap-12 animate-in fade-in duration-700 bg-[#080808] z-50">
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-12 w-full max-w-6xl px-10">
-                <label id="src-drop" class="glass rounded-[3.5rem] aspect-video flex flex-col items-center justify-center cursor-pointer border-dashed border-2 border-white/10 hover:border-blue-500/40 transition-all group overflow-hidden shadow-2xl">
-                    <img id="src-pre" class="hidden w-full h-full object-cover">
-                    <div id="src-hold" class="text-center opacity-40 group-hover:opacity-100 transition-all">
-                        <svg class="mx-auto mb-5" width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect width="18" height="18" x="3" y="3" rx="2" ry="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/></svg>
-                        <p class="text-[13px] font-black uppercase tracking-[0.2em]">١. شێوازی پرێسێت (Style Source)</p>
-                    </div>
-                    <input type="file" id="src-in" class="hidden" accept="image/*">
-                </label>
-                <label id="tar-drop" class="glass rounded-[3.5rem] aspect-video flex flex-col items-center justify-center cursor-pointer border-dashed border-2 border-white/10 hover:border-purple-500/40 transition-all group overflow-hidden shadow-2xl">
-                    <div id="tar-hold" class="text-center opacity-40 group-hover:opacity-100 transition-all">
-                        <svg class="mx-auto mb-5" width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4m2-5 5 5 5-5m-5 5V3" /></svg>
-                        <p class="text-[13px] font-black uppercase tracking-[0.2em]">٢. وێنەکانت (Batch Upload)</p>
-                    </div>
-                    <div id="tar-grid" class="hidden grid grid-cols-4 gap-4 p-10 w-full h-full overflow-y-auto custom-scrollbar"></div>
-                    <input type="file" id="tar-in" class="hidden" accept="image/*" multiple>
-                </label>
-            </div>
-            <button id="proc-btn" disabled class="px-32 py-8 bg-slate-900 text-slate-700 rounded-full font-black text-3xl shadow-2xl transition-all uppercase italic border border-white/5 tracking-tighter">بە زیرەکی ڕێندەری بکە</button>
-        </div>
-
-        <!-- Step 2: Editor UI -->
-        <div id="editor-section" class="hidden flex flex-col lg:flex-row flex-1 overflow-hidden relative">
-            <div id="filmstrip" class="batch-strip flex lg:flex-col gap-5 overflow-x-auto lg:overflow-y-auto p-5 lg:w-32 flex-shrink-0 bg-black/40 shadow-2xl"></div>
-
-            <div class="viewport flex-1 relative overflow-hidden bg-[#020202]">
-                <div class="canvas-container" id="container">
-                    <canvas id="main-canvas"></canvas>
-                </div>
-                <!-- HUD Tools -->
-                <div class="absolute bottom-10 left-1/2 -translate-x-1/2 flex items-center gap-6 glass px-12 py-5 rounded-full border border-white/10 shadow-[0_20px_80px_rgba(0,0,0,1)] z-20">
-                    <button onclick="zoomAdjust(0.7)" class="p-2 hover:text-blue-500 transition-all"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><line x1="5" y1="12" x2="19" y2="12"/></svg></button>
-                    <button onclick="fitView()" class="text-[12px] font-black uppercase text-blue-400 border border-blue-500/30 px-6 py-2 rounded-xl hover:bg-blue-600 hover:text-white transition-all tracking-widest">Fit View</button>
-                    <span id="zoom-val" class="text-[13px] font-black w-16 text-center text-slate-100">100%</span>
-                    <button onclick="zoomAdjust(1.4)" class="p-2 hover:text-blue-500 transition-all"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></button>
-                </div>
-                <div class="absolute top-24 lg:top-8 left-8 flex gap-4 z-30">
-                    <button onclick="copySets()" class="glass px-6 py-3 rounded-full text-[11px] font-black uppercase text-blue-400 hover:bg-blue-600 hover:text-white transition-all shadow-xl">Copy</button>
-                    <button onclick="pasteSets()" class="glass px-6 py-3 rounded-full text-[11px] font-black uppercase text-purple-400 hover:bg-purple-600 hover:text-white transition-all shadow-xl">Paste</button>
-                    <button id="comp-btn" class="glass px-8 py-3 text-[11px] font-black uppercase text-white rounded-full active:bg-blue-600 select-none transition-all shadow-xl">Compare</button>
+        <!-- Main Content -->
+        <div class="flex-1 flex overflow-hidden">
+            
+            <!-- LEFT: Preset Gallery -->
+            <div class="w-[300px] glass border-r border-white/5 flex flex-col p-6 hidden lg:flex">
+                <h3 class="text-[10px] font-black uppercase tracking-widest text-slate-500 mb-6 flex items-center gap-2 italic">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><path d="M9 3v18M15 3v18M3 9h18M3 15h18"/></svg>
+                    PRESET LIBRARY
+                </h3>
+                <div id="preset-list" class="flex-1 space-y-4 overflow-y-auto custom-scrollbar pr-2">
+                    <div class="text-center py-20 opacity-20"><p class="text-[10px] font-bold">باردەبێت...</p></div>
                 </div>
             </div>
 
-            <!-- Pro Sidebar -->
-            <div class="sidebar lg:w-[460px] glass p-8 flex flex-col gap-8 shadow-2xl overflow-y-auto custom-scrollbar flex-shrink-0 h-full">
-                <div class="flex items-center justify-between border-b border-white/5 pb-6">
-                    <h3 class="text-xs font-black uppercase tracking-[0.3em] text-slate-400 italic">Advanced Raw Panel</h3>
-                    <button onclick="resetAll()" class="p-2 glass rounded-xl hover:bg-white/10 opacity-60 transition-all"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8m0-5v5h5" /></svg></button>
-                </div>
-
-                <!-- 1. STYLE STRENGTH -->
-                <div class="p-8 bg-blue-600/15 rounded-[2.5rem] border border-blue-500/30 shadow-inner">
-                    <div class="flex justify-between text-[12px] font-black text-blue-400 uppercase tracking-[0.15em] mb-5 italic"><span>هێزی ستایل (Match Intensity)</span><span id="intensity-v">100%</span></div>
-                    <input type="range" id="intensity" min="0" max="100" value="100" class="accent-blue-500">
-                </div>
-
-                <div class="space-y-3 flex-1 pr-1">
-                    <!-- Basic panel -->
-                    <div class="accordion-item active">
-                        <div class="accordion-header" onclick="toggleAcc(this)">
-                            <span class="text-[12px] font-black uppercase tracking-widest text-slate-100 italic">Basic Corrections</span>
-                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="m6 9 6 6 6-6"/></svg>
+            <!-- RIGHT: Dynamic Work Area -->
+            <div class="flex-1 flex flex-col overflow-hidden relative">
+                
+                <!-- CREATOR VIEW -->
+                <div id="view-creator" class="flex-1 flex flex-col items-center justify-center p-10 animate-in fade-in duration-500">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-10 w-full max-w-5xl">
+                        <label class="glass rounded-[3.5rem] aspect-square flex flex-col items-center justify-center cursor-pointer border-dashed border-2 border-white/10 hover:border-blue-500/40 transition-all overflow-hidden group shadow-2xl relative">
+                            <img id="creator-src-img" class="hidden w-full h-full object-cover">
+                            <div id="creator-src-hold" class="text-center opacity-40 group-hover:opacity-100">
+                                <svg class="mx-auto mb-5" width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect width="18" height="18" x="3" y="3" rx="2" ry="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/></svg>
+                                <p class="text-[13px] font-black uppercase tracking-[0.2em]">وێنەی پرێسێت بار بکە</p>
+                            </div>
+                            <input type="file" id="creator-src-in" class="hidden" accept="image/*">
+                        </label>
+                        <div class="flex flex-col justify-center gap-6">
+                            <div class="space-y-2">
+                                <label class="text-[10px] font-black text-slate-500 uppercase tracking-widest px-2 italic">ناوی پرێسێت</label>
+                                <input type="text" id="preset-name" placeholder="بۆ نموونە: Dark Cinema" class="w-full bg-white/5 border border-white/10 p-5 rounded-3xl text-white font-bold outline-none focus:border-blue-500 transition-all">
+                            </div>
+                            <button id="save-preset-btn" disabled class="w-full py-7 btn-zaxm text-white rounded-[2.5rem] font-black text-xl shadow-2xl opacity-20 cursor-not-allowed transition-all">سەیڤکردن بۆ کتێبخانە</button>
+                            <p class="text-[10px] text-slate-500 text-center italic">تێبینی: سیستەمی Neural شێوازی ڕووناکی و ڕەنگی ئەم وێنەیە بۆت دەپارێزێت.</p>
                         </div>
-                        <div class="accordion-content space-y-7 pt-6 px-1">
-                            <div class="space-y-4">
-                                <div class="space-y-2"><div class="flex justify-between text-[10px] font-black text-slate-500 uppercase"><span>Temperature</span><span id="temp-v" class="text-blue-400">0</span></div><input type="range" id="temp" min="-50" max="50" value="0" class="temp-slider"></div>
-                                <div class="space-y-2"><div class="flex justify-between text-[10px] font-black text-slate-500 uppercase"><span>Tint</span><span id="tint-v" class="text-purple-400">0</span></div><input type="range" id="tint" min="-50" max="50" value="0" class="tint-slider"></div>
-                                <div class="space-y-2"><div class="flex justify-between text-[10px] font-black text-slate-500 uppercase"><span>Exposure (ڕووناکی)</span><span id="exposure-v" class="text-white">100</span></div><input type="range" id="exposure" min="40" max="180" value="100"></div>
-                                <div class="space-y-2"><div class="flex justify-between text-[10px] font-black text-slate-500 uppercase"><span>Contrast (کۆنتراست)</span><span id="contrast-v" class="text-white">100</span></div><input type="range" id="contrast" min="40" max="180" value="100"></div>
-                                <div class="space-y-2"><div class="flex justify-between text-[10px] font-black text-slate-500 uppercase"><span>Highlights</span><span id="highlights-v" class="text-white">0</span></div><input type="range" id="highlights" min="-60" max="60" value="0"></div>
-                                <div class="space-y-2"><div class="flex justify-between text-[10px] font-black text-slate-500 uppercase"><span>Shadows (سێبەر)</span><span id="shadows-v" class="text-white">0</span></div><input type="range" id="shadows" min="-60" max="60" value="0"></div>
+                    </div>
+                </div>
+
+                <!-- EDITOR VIEW -->
+                <div id="view-editor" class="hidden flex-1 flex flex-col lg:flex-row overflow-hidden relative">
+                    <div id="filmstrip" class="batch-strip flex lg:flex-col gap-5 overflow-x-auto lg:overflow-y-auto p-5 lg:w-32 flex-shrink-0 bg-black/40 shadow-2xl"></div>
+                    
+                    <div class="viewport flex-1 relative overflow-hidden bg-[#020202]">
+                        <div class="canvas-container" id="container">
+                            <canvas id="main-canvas"></canvas>
+                        </div>
+                        <!-- UI Overlays -->
+                        <div class="absolute bottom-10 left-1/2 -translate-x-1/2 flex items-center gap-6 glass px-12 py-5 rounded-full border border-white/10 shadow-[0_20px_80px_rgba(0,0,0,1)] z-20">
+                            <button onclick="zoomAdjust(0.7)" class="p-2 hover:text-blue-500"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><line x1="5" y1="12" x2="19" y2="12"/></svg></button>
+                            <button onclick="fitView()" class="text-[12px] font-black uppercase text-blue-400">Fit View</button>
+                            <span id="zoom-val" class="text-[13px] font-black w-16 text-center text-slate-100">100%</span>
+                            <button onclick="zoomAdjust(1.4)" class="p-2 hover:text-blue-500"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></button>
+                        </div>
+                        <div class="absolute top-24 lg:top-8 left-8 flex gap-4 z-30">
+                            <button onclick="copySets()" class="glass px-6 py-3 rounded-full text-[11px] font-black uppercase text-blue-400">Copy</button>
+                            <button onclick="pasteSets()" class="glass px-6 py-3 rounded-full text-[11px] font-black uppercase text-purple-400">Paste</button>
+                            <button id="comp-btn" class="glass px-8 py-3 text-[11px] font-black uppercase text-white rounded-full active:bg-blue-600">Compare</button>
+                        </div>
+                    </div>
+
+                    <div class="sidebar lg:w-[420px] glass p-8 flex flex-col gap-6 overflow-y-auto custom-scrollbar shadow-2xl z-50">
+                        <div class="p-8 bg-blue-600/15 rounded-[2.5rem] border border-blue-500/30">
+                            <div class="flex justify-between text-[12px] font-black text-blue-400 uppercase mb-4 italic"><span>هێزی پرێسێت (Match)</span><span id="intensity-v">100%</span></div>
+                            <input type="range" id="intensity" min="0" max="100" value="100" class="accent-blue-500">
+                        </div>
+
+                        <div class="space-y-3 flex-1">
+                            <div class="accordion-item active">
+                                <div class="accordion-header" onclick="toggleAcc(this)"><span class="text-[11px] font-black uppercase tracking-widest text-slate-200 italic">ڕێکخستنی دەستی</span><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="m6 9 6 6 6-6"/></svg></div>
+                                <div class="accordion-content space-y-7 pt-6 px-1">
+                                    <div class="space-y-2"><div class="flex justify-between text-[10px] font-bold text-slate-500 uppercase"><span>Exposure</span><span id="exposure-v">100</span></div><input type="range" id="exposure" min="40" max="180" value="100"></div>
+                                    <div class="space-y-2"><div class="flex justify-between text-[10px] font-bold text-slate-500 uppercase"><span>Contrast</span><span id="contrast-v">100</span></div><input type="range" id="contrast" min="40" max="180" value="100"></div>
+                                    <div class="space-y-2"><div class="flex justify-between text-[11px] font-black text-pink-400 uppercase tracking-widest"><span>Skin Smoothing</span><span id="smoothing-v">0%</span></div><input type="range" id="smoothing" min="0" max="100" value="0" class="accent-pink-500"></div>
+                                </div>
                             </div>
                         </div>
-                    </div>
 
-                    <!-- Face & Retouch panel -->
-                    <div class="accordion-item">
-                        <div class="accordion-header" onclick="toggleAcc(this)">
-                            <span class="text-[12px] font-black uppercase tracking-widest text-slate-100 italic">Face & Retouching</span>
-                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="m6 9 6 6 6-6"/></svg>
-                        </div>
-                        <div class="accordion-content space-y-7 pt-6 px-1">
-                            <div class="space-y-2"><div class="flex justify-between text-[11px] font-black text-pink-400 uppercase tracking-[0.2em]"><span>Skin Smoothing</span><span id="smoothing-v">0%</span></div><input type="range" id="smoothing" min="0" max="100" value="0" class="accent-pink-500"></div>
-                            <div class="space-y-2"><div class="flex justify-between text-[11px] font-black text-purple-400 uppercase tracking-[0.2em]"><span>Lipstick (ڕەنگی لێو)</span><span id="lipstick-v">0%</span></div><input type="range" id="lipstick" min="0" max="100" value="0" class="accent-purple-500"></div>
-                        </div>
-                    </div>
-
-                    <!-- HSL Mixer panel -->
-                    <div class="accordion-item">
-                        <div class="accordion-header" onclick="toggleAcc(this)">
-                            <span class="text-[12px] font-black uppercase tracking-widest text-slate-100 italic">Color Mixer (HSL)</span>
-                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="m6 9 6 6 6-6"/></svg>
-                        </div>
-                        <div class="accordion-content space-y-7 pt-6 px-1">
-                            <div class="flex flex-wrap justify-center gap-4 mb-4">
-                                <button onclick="setMixColor('red','#ef4444')" class="hsl-btn bg-red-500 active"></button>
-                                <button onclick="setMixColor('orange','#f97316')" class="hsl-btn bg-orange-500"></button>
-                                <button onclick="setMixColor('yellow','#eab308')" class="hsl-btn bg-yellow-500"></button>
-                                <button onclick="setMixColor('green','#22c55e')" class="hsl-btn bg-green-500"></button>
-                                <button onclick="setMixColor('blue','#3b82f6')" class="hsl-btn bg-blue-500"></button>
-                            </div>
-                            <div class="space-y-2"><div class="flex justify-between text-[10px] font-bold text-slate-500 uppercase italic"><span id="mix-title">Saturation (Red)</span><span id="mix-sat-v">0</span></div><input type="range" id="mix-sat" min="-60" max="60" value="0"></div>
-                        </div>
-                    </div>
-
-                    <!-- Detail & Calibration -->
-                    <div class="accordion-item">
-                        <div class="accordion-header" onclick="toggleAcc(this)">
-                            <span class="text-[12px] font-black uppercase tracking-widest text-slate-100 italic">Detail & Calibration</span>
-                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="m6 9 6 6 6-6"/></svg>
-                        </div>
-                        <div class="accordion-content space-y-7 pt-6 px-1">
-                            <div class="space-y-2"><div class="flex justify-between text-[10px] font-black text-slate-500 uppercase"><span>Sharpening (تیژی)</span><span id="sharpen-v">0</span></div><input type="range" id="sharpen" min="0" max="100" value="0"></div>
-                            <div class="space-y-2"><div class="flex justify-between text-[10px] font-black text-slate-500 uppercase"><span>Grain (نۆیز)</span><span id="grain-v">0</span></div><input type="range" id="grain" min="0" max="100" value="0"></div>
-                            <div class="space-y-2"><div class="flex justify-between text-[10px] font-black text-slate-500 uppercase"><span>Vignette</span><span id="vignette-v">0</span></div><input type="range" id="vignette" min="-100" max="100" value="0"></div>
+                        <div class="space-y-4 pt-8 border-t border-white/5">
+                            <button onclick="dlAllZIP()" class="w-full py-5 bg-blue-600/10 text-blue-400 rounded-2xl font-black text-xs uppercase tracking-widest border border-blue-500/20">داگرتنی گشت وێنەکان (ZIP)</button>
+                            <button onclick="dlActive()" class="w-full py-7 btn-zaxm text-white rounded-[2.5rem] font-black text-lg shadow-2xl italic tracking-tighter">دابەزاندنی ئەم وێنەیە</button>
                         </div>
                     </div>
                 </div>
 
-                <!-- Final Actions -->
-                <div class="space-y-4 pt-8 border-t border-white/5 flex-shrink-0">
-                    <button onclick="dlActive()" class="w-full py-7 btn-zaxm text-white rounded-[2.5rem] font-black text-lg shadow-2xl hover:scale-[1.02] active:scale-95 transition-all uppercase italic tracking-tighter">دابەزاندنی وێنە (100%)</button>
-                    <div class="grid grid-cols-2 gap-4">
-                        <button onclick="exportXMP()" class="py-4 glass text-[11px] text-blue-400 font-black uppercase rounded-[1.5rem] border border-blue-500/20 hover:bg-blue-600 hover:text-white transition-all">Export XMP</button>
-                        <button onclick="applyAll()" class="py-4 glass text-[11px] text-slate-400 font-black uppercase rounded-[1.5rem] hover:text-white transition-all">Sync Batch</button>
+                <!-- EMPTY STATE -->
+                <div id="view-empty" class="hidden flex-1 flex flex-col items-center justify-center p-20 bg-[#080808]">
+                    <div class="text-center space-y-6 max-w-md">
+                        <div class="w-24 h-24 bg-white/5 rounded-full flex items-center justify-center mx-auto mb-8 border border-white/10"><svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4m2-5 5 5 5-5m-5 5V3" /></svg></div>
+                        <h2 class="text-3xl font-black uppercase italic tracking-tighter">وێنەکانت بار بکە</h2>
+                        <p class="text-slate-500 text-sm font-bold">بۆ ئەوەی پرێسێتەکانی کتێبخانەکەت بەکاربهێنیت، وێنەکانت لێرە بار بکە.</p>
+                        <button onclick="document.getElementById('tar-in-hidden').click()" class="px-12 py-6 bg-white text-black rounded-full font-black uppercase text-xs tracking-widest hover:scale-105 active:scale-95 transition-all">Select Photos</button>
+                        <input type="file" id="tar-in-hidden" class="hidden" accept="image/*" multiple>
                     </div>
                 </div>
+
             </div>
         </div>
     </div>
 
-    <script>
-        let srcStats = null, batch = [], activeIdx = 0, copied = null;
-        let zoomLevel = 1.0, fitScale = 1.0, isComparing = false, isRendering = false;
-        let pBaseC = document.createElement('canvas');
-        let selectedMixColor = 'red';
-        
-        // Storage for captured AI translation data for XMP matching
-        let aiCapturedTranslation = { exposure: 0, contrast: 0, shadows: 0, highlights: 0, temp: 0, tint: 0 };
+    <!-- Scripts -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getFirestore, collection, addDoc, onSnapshot, query, doc, deleteDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
 
-        const SLIDERS = ['temp', 'tint', 'smoothing', 'intensity', 'exposure', 'contrast', 'highlights', 'shadows', 'mix-sat', 'lipstick', 'sharpen', 'grain', 'vignette'];
+        // Initialization
+        const firebaseConfig = JSON.parse(__firebase_config);
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        const auth = getAuth(app);
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'tahir-preset-app';
 
-        window.onload = () => {
-            const get = (id) => document.getElementById(id);
-            const els = {
-                srcIn: get('src-in'), tarIn: get('tar-in'), srcHold: get('src-hold'), tarGrid: get('tar-grid'),
-                procBtn: get('proc-btn'), upSec: get('upload-section'), edSec: get('editor-section'),
-                canvas: get('main-canvas'), strip: get('filmstrip'), zoomVal: get('zoom-val'),
-                cont: get('container'), srcDrop: get('src-drop'), tarDrop: get('tar-drop'), bCount: get('batch-count'),
-                toast: get('toast')
-            };
+        window.db = db; window.appId = appId; // Export for global usage
 
-            function getStats(ctx, w, h) {
-                const d = ctx.getImageData(0,0,w,h).data;
-                let r=0, g=0, b=0, c=d.length/4;
-                let histogram = new Array(256).fill(0);
-                for(let i=0; i<d.length; i+=4){ 
-                    const l = Math.round(0.299*d[i] + 0.587*d[i+1] + 0.114*d[i+2]);
-                    histogram[l]++; r+=d[i]; g+=d[i+1]; b+=d[i+2];
-                }
-                const m = { r:r/c, g:g/c, b:b/c };
-                let vr=0, vg=0, vb=0;
-                for(let i=0; i<d.length; i+=4){ vr+=Math.pow(d[i]-m.r,2); vg+=Math.pow(d[i+1]-m.g,2); vb+=Math.pow(d[i+2]-m.b,2); }
-                return { mean:m, std:{ r:Math.sqrt(vr/c)||1, g:Math.sqrt(vg/c)||1, b:Math.sqrt(vb/c)||1 }, histogram };
+        // Core State
+        let presets = []; let batch = []; let activeIdx = 0; let selectedPreset = null;
+        let zoomL = 1.0, fitS = 1.0; let pBaseC = document.createElement('canvas');
+        let isRendering = false, isComparing = false;
+        const SLIDERS = ['intensity', 'exposure', 'contrast', 'smoothing'];
+
+        const get = id => document.getElementById(id);
+
+        // --- AUTH & DATA SYNC ---
+        const init = async () => {
+            if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
+                await signInWithCustomToken(auth, __initial_auth_token);
+            } else {
+                await signInAnonymously(auth);
             }
+            onAuthStateChanged(auth, user => {
+                if (!user) return;
+                const q = collection(db, 'artifacts', appId, 'public', 'data', 'presets');
+                onSnapshot(q, snap => {
+                    presets = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+                    renderPresetList();
+                });
+            });
+        };
+        init();
 
-            const setupDD = (drop, inp) => {
-                drop.addEventListener('dragover', e => { e.preventDefault(); drop.style.borderColor = "#3b82f6"; drop.style.background = "rgba(59, 130, 246, 0.05)"; });
-                drop.addEventListener('dragleave', () => { drop.style.borderColor = ""; drop.style.background = ""; });
-                drop.addEventListener('drop', e => { e.preventDefault(); drop.style.borderColor = ""; drop.style.background = ""; if (e.dataTransfer.files.length) { inp.files = e.dataTransfer.files; inp.dispatchEvent(new Event('change')); } });
+        // --- PRESET CREATION ---
+        let tempSrcStats = null;
+        get('creator-src-in').onchange = e => {
+            const f = e.target.files[0]; if(!f) return;
+            const r = new FileReader();
+            r.onload = ev => {
+                const img = new Image();
+                img.onload = () => {
+                    get('creator-src-img').src = ev.target.result;
+                    get('creator-src-img').classList.remove('hidden'); get('creator-src-hold').classList.add('hidden');
+                    const tx = document.createElement('canvas').getContext('2d'); tx.canvas.width=256; tx.canvas.height=256;
+                    tx.drawImage(img,0,0,256,256);
+                    tempSrcStats = getStats(tx, 256, 256);
+                    get('save-preset-btn').disabled = false;
+                    get('save-preset-btn').classList.remove('opacity-20','cursor-not-allowed');
+                };
+                img.src = ev.target.result;
             };
-            setupDD(els.srcDrop, els.srcIn); setupDD(els.tarDrop, els.tarIn);
+            r.readAsDataURL(f);
+        };
 
-            els.srcIn.onchange = e => {
-                const f = e.target.files[0]; if(!f) return;
+        window.saveAppPreset = async () => {
+            const name = get('preset-name').value.trim() || "New Preset";
+            if(!tempSrcStats) return;
+            get('loading-overlay').style.display = 'flex';
+            try {
+                await addDoc(collection(db, 'artifacts', appId, 'public', 'data', 'presets'), {
+                    name, stats: JSON.stringify(tempSrcStats), thumb: get('creator-src-img').src, createdAt: Date.now()
+                });
+                get('preset-name').value = ''; 
+                get('creator-src-img').classList.add('hidden'); get('creator-src-hold').classList.remove('hidden');
+                get('toast').classList.remove('hidden'); setTimeout(()=>get('toast').classList.add('hidden'),2000);
+            } catch(e) { console.error(e); }
+            get('loading-overlay').style.display = 'none';
+        };
+        get('save-preset-btn').onclick = window.saveAppPreset;
+
+        // --- EDITOR ENGINE ---
+        get('tar-in-hidden').onchange = e => {
+            const fs = Array.from(e.target.files).slice(0, 30); if(!fs.length) return;
+            batch = []; let loaded = 0;
+            fs.forEach(f => {
                 const r = new FileReader();
                 r.onload = ev => {
                     const img = new Image();
                     img.onload = () => {
-                        get('src-pre').src = ev.target.result; get('src-pre').classList.remove('hidden'); els.srcHold.classList.add('hidden');
-                        const t = document.createElement('canvas'); t.width=256; t.height=256; const tx = t.getContext('2d'); tx.drawImage(img,0,0,256,256);
-                        srcStats = getStats(tx, 256, 256); checkReady();
+                        batch.push({ img, data: ev.target.result, settings: {intensity:100, exposure:100, contrast:100, smoothing:0} });
+                        loaded++;
+                        if(loaded === fs.length) {
+                            get('view-empty').classList.add('hidden'); get('view-editor').classList.remove('hidden');
+                            loadPhoto(0);
+                        }
                     };
                     img.src = ev.target.result;
                 };
                 r.readAsDataURL(f);
-            };
+            });
+        };
 
-            els.tarIn.onchange = e => {
-                const fs = Array.from(e.target.files).slice(0, 30); if(!fs.length) return;
-                batch = []; els.tarGrid.innerHTML = ''; els.tarGrid.classList.remove('hidden'); get('tar-hold').classList.add('hidden');
-                let loaded = 0;
-                fs.forEach(f => {
-                    const r = new FileReader();
-                    r.onload = ev => {
-                        const img = new Image();
-                        img.onload = () => {
-                            batch.push({img, data: ev.target.result, settings: defS()});
-                            const t = document.createElement('img'); t.src = ev.target.result; t.className = "w-full aspect-square object-cover rounded-2xl"; els.tarGrid.appendChild(t);
-                            loaded++; if(els.bCount) els.bCount.innerText = `${loaded} Photos Ready`;
-                            if(loaded === fs.length) checkReady();
-                        };
-                        img.src = ev.target.result;
-                    };
-                    r.readAsDataURL(f);
-                });
-            };
-
-            const defS = () => ({ temp:0, tint:0, smoothing:0, intensity:100, exposure:100, contrast:100, highlights:0, shadows:0, 'mix-sat':0, lipstick:0, sharpen:0, grain:0, vignette:0 });
-            const checkReady = () => { if(srcStats && batch.length) { els.procBtn.disabled=false; els.procBtn.className="px-32 py-8 btn-zaxm text-white rounded-full font-black text-3xl shadow-2xl transition-all cursor-pointer uppercase italic"; } };
-
-            els.procBtn.onclick = () => { els.upSec.classList.add('hidden'); els.edSec.classList.remove('hidden'); loadPhoto(0); };
-
-            const loadPhoto = idx => {
-                if(batch[activeIdx]) batch[activeIdx].settings = getUI();
-                activeIdx = idx; renderStrip();
-                const item = batch[idx];
-                
-                const cw = els.cont.clientWidth - 60;
-                const ch = els.cont.clientHeight - 60;
-                fitScale = Math.min(cw / item.img.width, ch / item.img.height);
-                zoomLevel = 1.0; 
-
-                const ctx = pBaseC.getContext('2d');
-                pBaseC.width = item.img.width; pBaseC.height = item.img.height;
-                ctx.drawImage(item.img, 0, 0);
-                const idata = ctx.getImageData(0,0,item.img.width,item.img.height);
-                const d = idata.data;
-
-                const tX = document.createElement('canvas').getContext('2d'); tX.canvas.width=256; tX.canvas.height=256;
-                tX.drawImage(item.img,0,0,256,256);
-                const tStats = getStats(tX, 256, 256);
-
-                const buildCDF = h => { let cdf=new Array(256).fill(0), sum=0, tot=h.reduce((a,b)=>a+b,0); for(let i=0;i<256;i++){ sum+=h[i]; cdf[i]=sum/tot; } return cdf; };
-                const sCDF = buildCDF(srcStats.histogram), tCDF = buildCDF(tStats.histogram);
-                let toneLUT = new Array(256);
-                for(let i=0; i<256; i++){ let j=0; while(j<255 && sCDF[j]<tCDF[i]) j++; toneLUT[i]=j; }
-
-                const sR = srcStats.std.r / tStats.std.r; const sG = srcStats.std.g / tStats.std.g; const sB = srcStats.std.b / tStats.std.b;
-
-                // --- CAPTURING AI OFFSETS FOR XMP MASTERING ---
-                // We calculate how much the AI shifted exposure and contrast to map it into ACR sliders
-                aiCapturedTranslation.exposure = ((srcStats.mean.r + srcStats.mean.g + srcStats.mean.b) / 3) - ((tStats.mean.r + tStats.mean.g + tStats.mean.b) / 3);
-                aiCapturedTranslation.contrast = (sR + sG + sB) / 3;
-                aiCapturedTranslation.temp = srcStats.mean.r - tStats.mean.r;
-                aiCapturedTranslation.tint = srcStats.mean.g - tStats.mean.g;
-
-                for(let j=0; j<d.length; j+=4) {
-                    const lum = Math.round(0.299*d[j] + 0.587*d[j+1] + 0.114*d[j+2]);
-                    const mappedLum = toneLUT[lum];
-                    const ratio = mappedLum / (lum || 1);
-                    
-                    let nr = (d[j]-tStats.mean.r)*sR + srcStats.mean.r;
-                    let ng = (d[j+1]-tStats.mean.g)*sG + srcStats.mean.g;
-                    let nb = (d[j+2]-tStats.mean.b)*sB + srcStats.mean.b;
-                    
-                    d[j] = Math.max(0,Math.min(255, nr*0.85 + (d[j]*ratio)*0.15));
-                    d[j+1] = Math.max(0,Math.min(255, ng*0.85 + (d[j+1]*ratio)*0.15));
-                    d[j+2] = Math.max(0,Math.min(255, nb*0.85 + (d[j+2]*ratio)*0.15));
-                }
-                ctx.putImageData(idata, 0, 0);
+        const loadPhoto = idx => {
+            if(batch[activeIdx]) batch[activeIdx].settings = getUI();
+            activeIdx = idx; renderFilmstrip();
+            const item = batch[idx];
+            fitS = Math.min((get('container').clientWidth-40) / item.img.width, (get('container').clientHeight-40) / item.img.height);
+            zoomL = 1.0; 
+            if(selectedPreset) applyPresetLogic(item, selectedPreset);
+            else {
+                const ctx = pBaseC.getContext('2d'); pBaseC.width=item.img.width; pBaseC.height=item.img.height;
+                ctx.drawImage(item.img,0,0);
                 setUI(item.settings); updateZoom(); render();
-            };
+            }
+        };
 
-            const render = () => {
-                if(isRendering) return;
-                isRendering = true;
-                requestAnimationFrame(() => {
-                    const c = els.canvas, ctx = c.getContext('2d');
-                    const item = batch[activeIdx]; if(!item) { isRendering=false; return; }
-                    const w = item.img.width, h = item.img.height;
-                    c.width = w; c.height = h;
+        const applyPresetLogic = (item, preset) => {
+            const srcStats = JSON.parse(preset.stats);
+            const ctx = pBaseC.getContext('2d'); pBaseC.width=item.img.width; pBaseC.height=item.img.height;
+            ctx.drawImage(item.img, 0, 0);
+            const idata = ctx.getImageData(0,0,item.img.width,item.img.height);
+            const d = idata.data;
+            const tX = document.createElement('canvas').getContext('2d'); tX.canvas.width=256; tX.canvas.height=256;
+            tX.drawImage(item.img,0,0,256,256);
+            const tStats = getStats(tX, 256, 256);
 
-                    if(isComparing) { ctx.drawImage(item.img, 0, 0); isRendering=false; return; }
+            const buildCDF = h => { let cdf=new Array(256).fill(0), sum=0, tot=h.reduce((a,b)=>a+b,0); for(let i=0;i<256;i++){ sum+=h[i]; cdf[i]=sum/tot; } return cdf; };
+            const sCDF = buildCDF(srcStats.histogram), tCDF = buildCDF(tStats.histogram);
+            let LUT = new Array(256);
+            for(let i=0; i<256; i++){ let j=0; while(j<255 && sCDF[j]<tCDF[i]) j++; LUT[i]=j; }
+            const sR = srcStats.std.r/tStats.std.r, sG = srcStats.std.g/tStats.std.g, sB = srcStats.std.b/tStats.std.b;
 
-                    const f = getUI();
-                    const blend = f.intensity / 100;
-                    const buf = document.createElement('canvas'); buf.width=w; buf.height=h; const bX = buf.getContext('2d');
+            for(let j=0; j<d.length; j+=4) {
+                const lum = Math.round(0.299*d[j] + 0.587*d[j+1] + 0.114*d[j+2]);
+                const ratio = LUT[lum] / (lum || 1);
+                d[j] = Math.max(0,Math.min(255, ((d[j]-tStats.mean.r)*sR + srcStats.mean.r)*0.85 + (d[j]*ratio)*0.15));
+                d[j+1] = Math.max(0,Math.min(255, ((d[j+1]-tStats.mean.g)*sG + srcStats.mean.g)*0.85 + (d[j+1]*ratio)*0.15));
+                d[j+2] = Math.max(0,Math.min(255, ((d[j+2]-tStats.mean.b)*sB + srcStats.mean.b)*0.85 + (d[j+2]*ratio)*0.15));
+            }
+            ctx.putImageData(idata, 0, 0);
+            setUI(item.settings); updateZoom(); render();
+        };
 
-                    if(blend >= 1.0) bX.drawImage(pBaseC, 0, 0);
-                    else { bX.drawImage(item.img, 0, 0); bX.globalAlpha = blend; bX.drawImage(pBaseC, 0, 0); bX.globalAlpha = 1.0; }
+        const render = (targetCanvas = get('main-canvas'), settings = getUI(), sourceImg = batch[activeIdx]?.img, matchedImg = pBaseC) => {
+            if(!sourceImg) return;
+            const ctx = targetCanvas.getContext('2d');
+            const w = sourceImg.width, h = sourceImg.height;
+            targetCanvas.width = w; targetCanvas.height = h;
 
-                    const idata = bX.getImageData(0,0,w,h); const d = idata.data;
-                    const copy = new Uint8ClampedArray(d);
-                    const step = w > 2000 ? 3 : 1; const rad = Math.max(1, Math.floor(f.smoothing/15)); const smFactor = f.smoothing/220;
+            if(isComparing && targetCanvas === get('main-canvas')) { ctx.drawImage(sourceImg, 0, 0); return; }
 
-                    for(let y=0; y<h; y+=step) {
-                        for(let x=0; x<w; x+=step) {
-                            const i = (y*w+x)*4; let r=d[i], g=d[i+1], b=d[i+2];
-                            const lum = 0.299*r+0.587*g+0.114*b;
-                            
-                            if(lum > 180 && f.highlights !== 0) { const m=1+(f.highlights/200); d[i]*=m; d[i+1]*=m; d[i+2]*=m; }
-                            if(lum < 80 && f.shadows !== 0) { const m=1+(f.shadows/120); d[i]*=m; d[i+1]*=m; d[i+2]*=m; }
+            const blend = settings.intensity / 100;
+            const buf = document.createElement('canvas'); buf.width=w; buf.height=h; const bX = buf.getContext('2d');
+            bX.drawImage(sourceImg, 0, 0); bX.globalAlpha = blend; bX.drawImage(matchedImg, 0, 0); bX.globalAlpha = 1.0;
 
-                            if (f['mix-sat'] !== 0) {
-                                const max=Math.max(r,g,b), min=Math.min(r,g,b), diff=max-min; let hue=0;
-                                if(diff!==0){ if(max===r) hue=((g-b)/diff)%6; else if(max===g) hue=(b-r)/diff+2; else hue=(r-g)/diff+4; hue*=60; if(hue<0) hue+=360; }
-                                const cMap={red:[0,30,330,360], orange:[20,50], yellow:[45,80], green:[75,160], blue:[170,260], magenta:[270,330]};
-                                const rge=cMap[selectedMixColor]; let match=rge.length===2?hue>=rge[0]&&hue<=rge[1]:(hue>=rge[0]&&hue<=rge[1])||(hue>=rge[2]&&hue<=rge[3]);
-                                if(match){ const sS=1+(f['mix-sat']/100); d[i]*=sS; d[i+1]*=sS; d[i+2]*=sS; }
+            if(settings.smoothing > 0) {
+                const idata = bX.getImageData(0,0,w,h); const d = idata.data; const copy = new Uint8ClampedArray(d);
+                const step = w > 1600 ? 3 : 1; const rad = Math.max(1, Math.floor(settings.smoothing/15)); const smFactor = settings.smoothing/220;
+                for(let y=0; y<h; y+=step) {
+                    for(let x=0; x<w; x+=step) {
+                        const i = (y*w+x)*4;
+                        if(d[i]>75 && d[i+1]>50 && d[i]>d[i+1]) {
+                            if(y>rad && y<h-rad && x>rad && x<w-rad) {
+                                let sr=0,sg=0,sb=0,sc=0;
+                                for(let ky=-rad; ky<=rad; ky+=rad) for(let kx=-rad; kx<=rad; kx+=rad) { const ki=((y+ky)*w+(x+kx))*4; sr+=copy[ki]; sg+=copy[ki+1]; sb+=copy[ki+2]; sc++; }
+                                d[i]=copy[i]*(1-smFactor)+(sr/sc)*smFactor; d[i+1]=copy[i+1]*(1-smFactor)+(sg/sc)*smFactor; d[i+2]=copy[i+2]*(1-smFactor)+(sb/sc)*smFactor;
                             }
-                            if(r>70 && g>45 && r>g && (f.smoothing > 0 || f.lipstick > 0)) {
-                                if(f.smoothing > 0 && y>rad && y<h-rad && x>rad && x<w-rad) {
-                                    let sr=0,sg=0,sb=0,sc=0;
-                                    for(let ky=-rad; ky<=rad; ky+=rad) for(let kx=-rad; kx<=rad; kx+=rad) { const ki=((y+ky)*w+(x+kx))*4; sr+=copy[ki]; sg+=copy[ki+1]; sb+=copy[ki+2]; sc++; }
-                                    d[i]=copy[i]*(1-smFactor)+(sr/sc)*smFactor; d[i+1]=copy[i+1]*(1-smFactor)+(sg/sc)*smFactor; d[i+2]=copy[i+2]*(1-smFactor)+(sb/sc)*smFactor;
-                                }
-                                if(f.lipstick > 0 && r > g * 1.4) { d[i]=Math.min(255,d[i]+f.lipstick*0.5); d[i+1]=Math.max(0,d[i+1]-f.lipstick*0.2); }
-                            }
-                            if(f.grain > 0) { const n=(Math.random()-0.5)*f.grain; d[i]+=n; d[i+1]+=n; d[i+2]+=n; }
                         }
                     }
-                    bX.putImageData(idata, 0, 0);
-                    
-                    ctx.filter = `brightness(${f.exposure}%) contrast(${f.contrast}%)`;
-                    ctx.drawImage(buf, 0, 0);
+                }
+                bX.putImageData(idata,0,0);
+            }
 
-                    if(f.temp !== 0 || f.tint !== 0) {
-                        ctx.globalCompositeOperation = 'overlay';
-                        if(f.temp !== 0) { ctx.fillStyle = f.temp > 0 ? `rgba(255,180,0,${Math.abs(f.temp)/350})` : `rgba(0,100,255,${Math.abs(f.temp)/350})`; ctx.fillRect(0,0,w,h); }
-                        if(f.tint !== 0) { ctx.fillStyle = f.tint > 0 ? `rgba(255,0,255,${Math.abs(f.tint)/500})` : `rgba(0,255,0,${Math.abs(f.tint)/500})`; ctx.fillRect(0,0,w,h); }
-                    }
-                    
-                    if(f.vignette !== 0) {
-                        const grd = ctx.createRadialGradient(w/2, h/2, 0, w/2, h/2, Math.sqrt(w*w+h*h)/2);
-                        grd.addColorStop(0, 'transparent'); grd.addColorStop(1, f.vignette < 0 ? `rgba(0,0,0,${Math.abs(f.vignette)/100})` : `rgba(255,255,255,${f.vignette/100})`);
-                        ctx.globalCompositeOperation = 'source-over'; ctx.fillStyle = grd; ctx.fillRect(0,0,w,h);
-                    }
-                    isRendering = false;
-                });
-            };
-
-            const renderStrip = () => { els.strip.innerHTML = ''; batch.forEach((it, i) => { const div = document.createElement('div'); div.className=`batch-item ${i===activeIdx?'active':''}`; div.innerHTML=`<img src="${it.data}" class="w-full h-full object-cover">`; div.onclick=()=>loadPhoto(i); els.strip.appendChild(div); }); };
-            const getUI = () => { const o={}; SLIDERS.forEach(s => { const el=get(s); if(el) o[s]=parseInt(el.value); }); return o; };
-            const setUI = o => { SLIDERS.forEach(s => { const el=get(s); if(el) { el.value=o[s]; const v=get(s+'-v'); if(v) v.innerText=(['smoothing','intensity','lipstick'].includes(s))?o[s]+'%':o[s]; } }); };
-
-            SLIDERS.forEach(s => { const el=get(s); if(el) el.oninput=()=>{ const v=get(s+'-v'); if(v) v.innerText=(['smoothing','intensity','lipstick'].includes(s))?el.value+'%':el.value; render(); } });
-
-            window.toggleAcc = el => { const item = el.parentElement; const active = item.classList.contains('active'); document.querySelectorAll('.accordion-item').forEach(acc => acc.classList.remove('active')); if(!active) item.classList.add('active'); };
-            window.resetAll = () => { setUI(defS()); zoomLevel=1.0; updateZoom(); render(); };
-            window.zoomAdjust = m => { zoomLevel *= m; if(zoomLevel<0.05) zoomLevel=0.05; updateZoom(); };
-            window.fitView = () => { zoomLevel=1.0; updateZoom(); els.cont.scrollLeft=0; els.cont.scrollTop=0; };
-            window.updateZoom = () => { const it=batch[activeIdx]; if(!it) return; const s=fitScale*zoomLevel; els.canvas.style.width=(it.img.width*s)+'px'; els.canvas.style.height=(it.img.height*s)+'px'; els.zoomVal.innerText=Math.round(zoomLevel * 100)+'%'; };
-            window.copySets = () => { copied=getUI(); els.toast.innerText="ڕێکخستنەکان کۆپی کرا! ✓"; els.toast.classList.remove('hidden'); setTimeout(()=>els.toast.classList.add('hidden'),1500); };
-            window.pasteSets = () => { if(copied) { setUI(copied); render(); } };
-            window.applyAll = () => { const s=getUI(); batch.forEach(it=>it.settings={...s}); alert('ڕێکخستنەکان بۆ هەموو وێنەکان جێبەجێ کرا! ✓'); };
-            window.setMixColor = (c, hex) => { selectedMixColor = c; get('mix-title').innerText = `Saturation (${c})`; get('mix-title').style.color = hex; document.querySelectorAll('.hsl-btn').forEach(b => b.classList.remove('active')); event.target.classList.add('active'); render(); };
-            window.dlActive = () => { const link = document.createElement('a'); link.download = `Tahir_Tahir_Pro.jpg`; link.href = els.canvas.toDataURL('image/jpeg', 1.0); link.click(); };
-
-            // --- ADVANCED XMP EXPORT ENGINE (REBUILT FOR ACCURACY) ---
-            window.exportXMP = () => {
-                const f = getUI();
-                
-                // We combine the AI Match difference with the user's manual adjustments
-                // ACR Scales: Exposure (+/- 5.0), Contrast (+/- 100), Temp (+/- 5000)
-                const finalExposure = ((f.exposure - 100) / 20) + (aiCapturedTranslation.exposure / 30);
-                const finalContrast = ((f.contrast - 100) * 1.5) + ((aiCapturedTranslation.contrast - 1) * 60);
-                const finalTemp = (f.temp * 25) + (aiCapturedTranslation.temp * 20);
-                const finalTint = f.tint + (aiCapturedTranslation.tint / 2);
-
-                const xmp = `<x:xmpmeta xmlns:x="adobe:ns:meta/">
- <rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
-  <rdf:Description rdf:about="" xmlns:crs="http://ns.adobe.com/camera-raw-settings/1.0/"
-   crs:Version="16.0"
-   crs:ProcessVersion="11.0"
-   crs:Exposure2012="${finalExposure.toFixed(2)}"
-   crs:Contrast2012="${Math.round(finalContrast)}"
-   crs:Highlights2012="${Math.round(f.highlights)}"
-   crs:Shadows2012="${Math.round(f.shadows)}"
-   crs:Temperature="${Math.round(finalTemp)}"
-   crs:Tint="${Math.round(finalTint)}"
-   crs:Saturation="${Math.round(f['mix-sat'])}"
-   crs:Sharpness="${Math.round(f.sharpen)}"
-   crs:VignetteAmount="${Math.round(f.vignette)}"
-   crs:GrainAmount="${Math.round(f.grain || 0)}"
-   crs:HasSettings="True">
-   <crs:Name><rdf:Alt><rdf:li xml:lang="x-default">Tahir Tahir AI Preset v16</rdf:li></rdf:Alt></crs:Name>
-  </rdf:Description>
- </rdf:RDF>
-</x:xmpmeta>`.trim();
-                
-                const blob = new Blob([xmp], { type: 'text/xml' });
-                const url = URL.createObjectURL(blob);
-                const a = document.createElement('a');
-                a.href = url;
-                a.download = "Tahir_Tahir_Pro.xmp";
-                document.body.appendChild(a);
-                a.click();
-                
-                els.toast.innerText = "XMP سەیڤ کرا! ✓";
-                els.toast.classList.remove('hidden');
-                setTimeout(() => {
-                    els.toast.classList.add('hidden');
-                    window.URL.revokeObjectURL(url);
-                    document.body.removeChild(a);
-                }, 2000);
-            };
-
-            let isD=false, sx, sy, sl, st;
-            els.cont.onmousedown = e => { if(zoomLevel<=1) return; isD=true; sx=e.pageX-els.cont.offsetLeft; sy=e.pageY-els.cont.offsetTop; sl=els.cont.scrollLeft; st=els.cont.scrollTop; };
-            window.addEventListener('mouseup',()=>isD=false);
-            els.cont.onmousemove = e => { if(!isD) return; els.cont.scrollLeft=sl-(e.pageX-els.cont.offsetLeft-sx); els.cont.scrollTop=st-(e.pageY-els.cont.offsetTop-sy); };
-            get('comp-btn').onmousedown = () => { isComparing=true; render(); };
-            get('comp-btn').onmouseup = () => { isComparing=false; render(); };
+            ctx.filter = `brightness(${settings.exposure}%) contrast(${settings.contrast}%)`;
+            ctx.drawImage(buf, 0, 0);
         };
+
+        // --- UI RE-RENDERERS ---
+        window.switchMode = mode => {
+            get('btn-mode-creator').classList.toggle('active', mode==='creator');
+            get('btn-mode-editor').classList.toggle('active', mode==='editor');
+            get('view-creator').style.display = mode==='creator' ? 'flex' : 'none';
+            if(mode==='editor') {
+                if(batch.length > 0) { get('view-editor').classList.remove('hidden'); get('view-empty').classList.add('hidden'); }
+                else { get('view-editor').classList.add('hidden'); get('view-empty').classList.remove('hidden'); }
+            } else { get('view-editor').classList.add('hidden'); get('view-empty').classList.add('hidden'); }
+        };
+
+        const renderPresetList = () => {
+            const list = get('preset-list');
+            list.innerHTML = presets.map(p => `
+                <div class="preset-card glass rounded-2xl p-2 relative ${selectedPreset?.id === p.id ? 'active' : ''}" onclick="selectPreset('${p.id}')">
+                    <img src="${p.thumb}" class="w-full aspect-video object-cover rounded-xl mb-3">
+                    <div class="px-2 pb-1 flex justify-between items-center">
+                        <span class="text-[10px] font-black uppercase truncate">${p.name}</span>
+                        <button onclick="event.stopPropagation(); deletePreset('${p.id}')" class="text-red-500 opacity-40 hover:opacity-100 transition-all"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg></button>
+                    </div>
+                </div>
+            `).join('') || '<div class="text-center py-20 opacity-20"><p class="text-[10px] font-bold">کتێبخانەکە چۆڵە</p></div>';
+        };
+
+        window.selectPreset = id => { selectedPreset = presets.find(p => p.id === id); renderPresetList(); if(batch[activeIdx]) loadPhoto(activeIdx); };
+        window.deletePreset = async id => { if(confirm("دڵنیای؟")) await deleteDoc(doc(db, 'artifacts', appId, 'public', 'data', 'presets', id)); };
+        const renderFilmstrip = () => { get('filmstrip').innerHTML = batch.map((it, i) => `<div class="batch-item ${i===activeIdx?'active':''}" onclick="loadPhoto(${i})"><img src="${it.data}" class="w-full h-full object-cover"></div>`).join(''); };
+        const getStats = (ctx, w, h) => {
+            const d = ctx.getImageData(0,0,w,h).data; let r=0,g=0,b=0,c=d.length/4,hist=new Array(256).fill(0);
+            for(let i=0;i<d.length;i+=4){ const l=Math.round(0.299*d[i]+0.587*d[i+1]+0.114*d[i+2]); hist[l]++; r+=d[i]; g+=d[i+1]; b+=d[i+2]; }
+            const m={r:r/c,g:g/c,b:b/c}; let vr=0,vg=0,vb=0; for(let i=0;i<d.length;i+=4){ vr+=Math.pow(d[i]-m.r,2); vg+=Math.pow(d[i+1]-m.g,2); vb+=Math.pow(d[i+2]-m.b,2); }
+            return {mean:m, std:{r:Math.sqrt(vr/c)||1, g:Math.sqrt(vg/c)||1, b:Math.sqrt(vb/c)||1}, histogram: hist};
+        };
+
+        const getUI = () => { const o={}; SLIDERS.forEach(s=>o[s]=parseInt(get(s).value)); return o; };
+        const setUI = o => { SLIDERS.forEach(s=>{ get(s).value=o[s]; const v=get(s+'-v'); if(v) v.innerText=(s==='smoothing'||s==='intensity')?o[s]+'%':o[s]; }); };
+        SLIDERS.forEach(s => get(s).oninput = () => { const v=get(s+'-v'); if(v) v.innerText=(s==='smoothing'||s==='intensity')?get(s).value+'%':get(s).value; render(); });
+
+        window.toggleAcc = el => el.parentElement.classList.toggle('active');
+        window.zoomAdjust = m => { zoomL*=m; if(zoomL<0.05) zoomL=0.05; updateZoom(); };
+        window.fitView = () => { zoomL=1.0; updateZoom(); get('container').scrollLeft=0; get('container').scrollTop=0; };
+        window.updateZoom = () => { const it=batch[activeIdx]; if(!it) return; const s=fitS*zoomL; get('main-canvas').style.width=(it.img.width*s)+'px'; get('main-canvas').style.height=(it.img.height*s)+'px'; get('zoom-val').innerText=Math.round(zoomL*100)+'%'; };
+        window.dlActive = () => { const a=document.createElement('a'); a.download=`Tahir_Edit.jpg`; a.href=get('main-canvas').toDataURL('image/jpeg',1.0); a.click(); };
+
+        window.dlAllZIP = async () => {
+            if(!batch.length || !selectedPreset) return;
+            const zip = new JSZip(); get('loading-overlay').style.display='flex'; get('loading-text').innerText="ئامادە دەکرێت...";
+            const tempC = document.createElement('canvas');
+            for(let i=0; i<batch.length; i++){
+                get('loading-text').innerText = `${i+1} / ${batch.length} Processing...`;
+                loadPhoto(i); await new Promise(r=>setTimeout(r,100));
+                render(tempC, batch[i].settings, batch[i].img, pBaseC);
+                const blob = await new Promise(r => tempC.toBlob(r, 'image/jpeg', 1.0));
+                zip.file(`Tahir_Batch_${i+1}.jpg`, blob);
+            }
+            const content = await zip.generateAsync({type:"blob"});
+            const a = document.createElement('a'); a.href = URL.createObjectURL(content); a.download = "Tahir_Batch.zip"; a.click();
+            get('loading-overlay').style.display = 'none';
+        };
+
+        // Panning
+        let isD=false, sx, sy, sl, st;
+        get('container').onmousedown = e => { if(zoomL<=1) return; isD=true; sx=e.pageX-get('container').offsetLeft; sy=e.pageY-get('container').offsetTop; sl=get('container').scrollLeft; st=get('container').scrollTop; };
+        window.addEventListener('mouseup',()=>isD=false);
+        get('container').onmousemove = e => { if(!isD) return; get('container').scrollLeft=sl-(e.pageX-get('container').offsetLeft-sx); get('container').scrollTop=st-(e.pageY-get('container').offsetTop-sy); };
+        get('comp-btn').onmousedown = () => { isComparing=true; render(); };
+        get('comp-btn').onmouseup = () => { isComparing=false; render(); };
     </script>
 </body>
 </html>
