@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tahir Tahir - AI Pro v33.0 Hyper Neural Sync</title>
+    <title>Tahir Tahir - AI Pro v37.0 Hyper Master</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
     <style>
@@ -14,18 +14,18 @@
         .btn-zaxm { background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%); transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
         .btn-zaxm:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 10px 30px rgba(59, 130, 246, 0.4); }
         
-        input[type=range] { -webkit-appearance: none; background: rgba(255, 255, 255, 0.1); height: 5px; border-radius: 10px; width: 100%; }
-        input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; height: 18px; width: 18px; border-radius: 50%; background: white; cursor: pointer; border: 2px solid var(--primary); }
+        input[type=range] { -webkit-appearance: none; background: rgba(255, 255, 255, 0.1); height: 4px; border-radius: 10px; width: 100%; }
+        input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; height: 16px; width: 16px; border-radius: 50%; background: white; cursor: pointer; border: 2px solid var(--primary); }
         
         .canvas-container { overflow: auto; display: flex; align-items: center; justify-content: center; width: 100%; height: 100%; background: #000; position: relative; padding: 20px; }
-        #main-canvas { box-shadow: 0 50px 180px rgba(0,0,0,1); border-radius: 8px; max-width: 100%; max-height: 100%; object-fit: contain; image-rendering: high-quality; }
+        #main-canvas { box-shadow: 0 40px 150px rgba(0,0,0,1); border-radius: 8px; max-width: 100%; max-height: 100%; object-fit: contain; image-rendering: high-quality; }
 
         .batch-item { flex-shrink: 0; width: 75px; height: 75px; border-radius: 18px; overflow: hidden; border: 2.5px solid transparent; cursor: pointer; transition: 0.3s; opacity: 0.6; }
         .batch-item.active { border-color: var(--primary); transform: scale(1.1); opacity: 1; box-shadow: 0 10px 20px rgba(59, 130, 246, 0.3); }
 
-        .preset-pill { transition: all 0.2s; cursor: pointer; border-radius: 14px; border: 1px solid rgba(255,255,255,0.05); background: rgba(255,255,255,0.02); padding: 14px; font-size: 11px; font-weight: 900; text-transform: uppercase; display: flex; justify-content: space-between; align-items: center; }
+        .preset-pill { transition: all 0.2s; cursor: pointer; border-radius: 12px; border: 1px solid rgba(255,255,255,0.05); background: rgba(255,255,255,0.02); padding: 14px; font-size: 11px; font-weight: 900; text-transform: uppercase; display: flex; justify-content: space-between; align-items: center; }
         .preset-pill:hover { background: rgba(59, 130, 246, 0.12); border-color: rgba(59, 130, 246, 0.4); }
-        .preset-pill.active { background: var(--primary); border-color: var(--primary); box-shadow: 0 5px 15px rgba(59, 130, 246, 0.4); }
+        .preset-pill.active { background: var(--primary); border-color: var(--primary); box-shadow: 0 5px 15px rgba(59, 130, 246, 0.4); color: white; }
 
         #overlay-loading { position: fixed; inset: 0; background: rgba(0,0,0,0.96); z-index: 2000; display: none; flex-direction: column; align-items: center; justify-content: center; backdrop-filter: blur(15px); }
         
@@ -36,10 +36,10 @@
         .custom-scrollbar::-webkit-scrollbar { width: 4px; height: 4px; }
         .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.15); border-radius: 10px; }
 
-        .drag-active { border: 3px dashed var(--primary) !important; background: rgba(59, 130, 246, 0.1) !important; }
+        .drag-active { border: 3px dashed var(--primary) !important; background: rgba(59, 130, 246, 0.1) !important; scale: 1.02; }
 
         @media (max-width: 1024px) {
-            .sidebar { position: absolute !important; bottom: 0; left: 0; width: 100% !important; height: 50vh !important; z-index: 100; border-radius: 3rem 3rem 0 0 !important; background: rgba(12, 12, 12, 0.98) !important; padding: 25px !important; }
+            .sidebar { position: absolute !important; bottom: 0; left: 0; width: 100% !important; height: 48vh !important; z-index: 100; border-radius: 3rem 3rem 0 0 !important; background: rgba(10, 10, 10, 0.98) !important; padding: 20px !important; }
             .viewport { height: 100vh !important; width: 100vw !important; }
             .library-panel { display: none !important; }
             header { position: absolute; top: 0; width: 100%; z-index: 110; background: linear-gradient(to bottom, rgba(0,0,0,0.95), transparent); }
@@ -48,14 +48,14 @@
 </head>
 <body>
 
-    <!-- Hyper Loader -->
+    <!-- Professional Loader -->
     <div id="overlay-loading">
         <div class="relative">
             <div class="w-24 h-24 border-4 border-blue-500/20 rounded-full"></div>
             <div class="absolute inset-0 w-24 h-24 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
         </div>
-        <h2 class="text-2xl font-black uppercase tracking-[0.2em] text-white mt-8 italic">هاوتاکردنی گشتی...</h2>
-        <p id="loading-status" class="mt-2 text-slate-500 font-bold uppercase tracking-widest italic text-center px-4">ئەم کارە کەمێک کات دەبات چونکە وێنەکان زۆر وردن</p>
+        <h2 class="text-2xl font-black uppercase tracking-[0.2em] text-white mt-8 italic">Hyper-Neural Processing...</h2>
+        <p id="loading-status" class="mt-2 text-slate-500 font-bold uppercase tracking-widest italic">ئامادەکردنی ڕووناکی و ڕەنگ</p>
     </div>
 
     <div class="max-w-[2000px] mx-auto h-screen flex flex-col overflow-hidden relative text-right">
@@ -65,7 +65,7 @@
                 <div class="w-14 h-14 bg-gradient-to-br from-blue-600 to-indigo-700 rounded-2xl flex items-center justify-center shadow-2xl font-black text-2xl text-white">T</div>
                 <div class="hidden sm:block text-right text-white">
                     <h1 class="text-3xl font-black tracking-tighter uppercase italic leading-none">Tahir <span class="text-blue-500">Tahir</span></h1>
-                    <p class="text-[10px] text-slate-500 font-bold uppercase tracking-[0.4em] mt-1 italic">Hyper-Neural v33.0 Sync</p>
+                    <p class="text-[10px] text-slate-500 font-bold uppercase tracking-[0.4em] mt-1 italic">Hyper-Master v37.0</p>
                 </div>
             </div>
             
@@ -77,16 +77,16 @@
 
         <div class="flex-1 flex overflow-hidden">
             
-            <!-- LEFT: Preset Library (The Permanent Library) -->
+            <!-- LEFT: Preset Library -->
             <div class="library-panel w-[340px] glass border-r border-white/5 flex flex-col p-8 hidden lg:flex">
                 <div class="flex items-center justify-between mb-8">
-                    <h3 class="text-[11px] font-black uppercase tracking-widest text-slate-500 italic">MY PERMANENT LIBRARY</h3>
+                    <h3 class="text-[11px] font-black uppercase tracking-widest text-slate-500 italic">PRESET LIBRARY</h3>
                     <button onclick="document.getElementById('import-json').click()" class="text-blue-500 text-[10px] font-black hover:underline uppercase tracking-widest">Import</button>
                     <input type="file" id="import-json" class="hidden" accept=".json" onchange="window.importPresetFile(event)">
                 </div>
-                <p class="text-[9px] text-slate-600 font-bold mb-4 uppercase leading-relaxed italic">لێرە دەتوانیت ئەو ڕەنگانەی پێشتر هەناردەت کردوون بۆ کۆمپیوتەرەکەت، جارێکی تر باریان بکەیتەوە.</p>
+                <p class="text-[9px] text-slate-600 font-bold mb-6 uppercase leading-relaxed italic">پرێسێتێکی ئامادەکراو هەڵبژێره بۆ ئیدیتێکی خێرا.</p>
                 <div id="preset-list" class="flex-1 space-y-3 overflow-y-auto custom-scrollbar pr-1">
-                    <div class="text-center py-20 opacity-20 text-[10px] font-bold italic uppercase tracking-widest leading-loose">کتێبخانەکە چۆڵە</div>
+                    <div class="text-center py-20 opacity-20 text-[10px] font-bold italic uppercase tracking-widest">کتێبخانەکە چۆڵە</div>
                 </div>
             </div>
 
@@ -96,39 +96,38 @@
                 <!-- STEP 1: UPLOAD -->
                 <div id="upload-section" class="flex-1 flex flex-col justify-center items-center gap-12 animate-in fade-in duration-1000 bg-[#080808] z-50">
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-10 w-full max-w-6xl px-10">
-                        <label id="src-drop" class="glass rounded-[4rem] aspect-video flex flex-col items-center justify-center cursor-pointer border-dashed border-2 border-white/10 hover:border-blue-500/40 transition-all group overflow-hidden shadow-2xl relative">
+                        <!-- STYLE UPLOAD -->
+                        <div id="src-drop" class="glass rounded-[4rem] aspect-video flex flex-col items-center justify-center cursor-pointer border-dashed border-2 border-white/10 hover:border-blue-500/40 transition-all group overflow-hidden shadow-2xl relative">
                             <img id="src-pre" class="hidden w-full h-full object-cover">
-                            <div id="src-hold" class="text-center opacity-30 group-hover:opacity-100 transition-all scale-90 group-hover:scale-100 duration-500">
+                            <div id="src-hold" class="text-center opacity-30 group-hover:opacity-100 transition-all scale-90 group-hover:scale-100 duration-500" onclick="document.getElementById('src-in').click()">
                                 <svg class="mx-auto mb-6" width="72" height="72" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2"><rect width="18" height="18" x="3" y="3" rx="2" ry="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/></svg>
                                 <p class="text-[14px] font-black uppercase tracking-[0.3em]">١. ستایلی سەرەکی (Reference)</p>
-                                <p class="text-[9px] mt-2 text-blue-500 italic font-bold text-center">ئەو وێنەیە هەڵبژێرە کە دەتەوێت ڕەنگەکەی کۆپی بکەیت</p>
+                                <p class="text-[9px] mt-2 text-slate-500 italic font-bold">وێنەکە ڕابکێشە یان کلیک بکە</p>
                             </div>
                             <input type="file" id="src-in" class="hidden" accept="image/*" onchange="window.handleSrcUpload(this)">
-                        </label>
-                        <label id="tar-drop" class="glass rounded-[4rem] aspect-video flex flex-col items-center justify-center cursor-pointer border-dashed border-2 border-white/10 hover:border-purple-500/40 transition-all group overflow-hidden shadow-2xl relative">
-                            <div id="tar-hold" class="text-center opacity-30 group-hover:opacity-100 transition-all scale-90 group-hover:scale-100 duration-500">
+                        </div>
+                        <!-- TARGET IMAGES -->
+                        <div id="tar-drop" class="glass rounded-[4rem] aspect-video flex flex-col items-center justify-center cursor-pointer border-dashed border-2 border-white/10 hover:border-purple-500/40 transition-all group overflow-hidden shadow-2xl relative">
+                            <div id="tar-hold" class="text-center opacity-30 group-hover:opacity-100 transition-all scale-90 group-hover:scale-100 duration-500" onclick="document.getElementById('tar-in').click()">
                                 <svg class="mx-auto mb-6" width="72" height="72" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4m2-5 5 5 5-5m-5 5V3" /></svg>
                                 <p class="text-[14px] font-black uppercase tracking-[0.3em]">٢. وێنەکانت (Batch Processing)</p>
-                                <p class="text-[9px] mt-2 text-purple-500 italic font-bold">هەموو ئەو وێنە نوێیانە هەڵبژێرە کە دەتەوێت ئیدیت ببن</p>
+                                <p class="text-[9px] mt-2 text-purple-500 italic font-bold">وێنەکان ڕابکێشە بۆ ئێرە</p>
                             </div>
                             <div id="tar-grid" class="hidden grid grid-cols-4 gap-4 p-10 w-full h-full overflow-y-auto custom-scrollbar"></div>
                             <input type="file" id="tar-in" class="hidden" accept="image/*" multiple onchange="window.handleTarUpload(this)">
-                        </label>
+                        </div>
                     </div>
-                    <button id="proc-btn" disabled onclick="window.startEditor()" class="px-40 py-8 btn-zaxm text-white rounded-full font-black text-3xl shadow-2xl transition-all uppercase italic opacity-20 tracking-tighter">بە سوپەر زیرەکی ڕێندەری بکە</button>
+                    <button id="proc-btn" disabled onclick="window.startEditor()" class="px-40 py-8 btn-zaxm text-white rounded-full font-black text-3xl shadow-2xl transition-all uppercase italic opacity-20 tracking-tighter">بە زیرەکی ڕێندەری بکە</button>
                 </div>
 
                 <!-- STEP 2: EDITOR -->
                 <div id="editor-section" class="hidden flex-1 flex flex-col lg:flex-row overflow-hidden relative">
-                    <!-- Images Strip -->
                     <div id="filmstrip" class="batch-strip flex lg:flex-col gap-6 overflow-x-auto lg:overflow-y-auto p-8 lg:w-44 flex-shrink-0 bg-black/40 shadow-2xl border-l border-white/5 custom-scrollbar"></div>
                     
-                    <!-- Viewport -->
                     <div class="viewport flex-1 relative overflow-hidden bg-[#010101] flex items-center justify-center">
                         <div class="canvas-container" id="container">
                             <canvas id="main-canvas"></canvas>
                         </div>
-                        <!-- HUD -->
                         <div class="absolute bottom-10 left-1/2 -translate-x-1/2 flex items-center gap-10 glass px-14 py-6 rounded-full border border-white/10 shadow-[0_30px_120px_rgba(0,0,0,1)] z-20">
                             <button onclick="window.zoomAdjust(0.7)" class="p-2 hover:text-blue-500 transition-all hover:scale-125"><svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><line x1="5" y1="12" x2="19" y2="12"/></svg></button>
                             <button onclick="window.fitView()" class="text-[14px] font-black uppercase text-blue-400 tracking-[0.2em] hover:text-white transition-all">Fit View</button>
@@ -136,58 +135,46 @@
                             <button onclick="window.zoomAdjust(1.4)" class="p-2 hover:text-blue-500 transition-all hover:scale-125"><svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></button>
                         </div>
                         <div class="absolute top-24 lg:top-10 left-10 flex gap-5 z-30">
-                            <button onclick="window.copySets()" class="glass px-7 py-3.5 rounded-full text-[12px] font-black uppercase text-blue-400 hover:bg-blue-600 shadow-2xl transition-all hover:scale-105 active:scale-95">Copy</button>
-                            <button onclick="window.pasteSets()" class="glass px-7 py-3.5 rounded-full text-[12px] font-black uppercase text-purple-400 hover:bg-purple-600 shadow-2xl transition-all hover:scale-105 active:scale-95">Paste</button>
-                            <button id="comp-btn" class="glass px-10 py-3.5 text-[12px] font-black uppercase text-white rounded-full active:bg-blue-600 shadow-2xl select-none transition-all">Compare</button>
+                            <button onclick="window.copySets()" class="glass px-7 py-3.5 rounded-full text-[12px] font-black uppercase text-blue-400 hover:bg-blue-600 shadow-xl transition-all">Copy</button>
+                            <button onclick="window.pasteSets()" class="glass px-7 py-3.5 rounded-full text-[12px] font-black uppercase text-purple-400 hover:bg-purple-600 shadow-xl transition-all">Paste</button>
+                            <button id="comp-btn" class="glass px-10 py-3.5 text-[12px] font-black uppercase text-white rounded-full active:bg-blue-600 shadow-xl select-none transition-all">Compare</button>
                         </div>
                     </div>
 
-                    <!-- Sidebar -->
-                    <div class="sidebar lg:w-[500px] glass p-10 flex flex-col gap-8 shadow-2xl z-50 overflow-y-auto custom-scrollbar h-full">
+                    <div class="sidebar lg:w-[500px] glass p-10 flex flex-col gap-8 shadow-2xl z-50 overflow-y-auto custom-scrollbar h-full text-right">
                         
-                        <!-- File Export (Save for other photos) -->
+                        <!-- File Export -->
                         <div class="p-7 bg-white/5 rounded-[2.5rem] border border-white/10 flex flex-col gap-5 shadow-inner">
-                            <h4 class="text-[10px] font-black uppercase tracking-widest text-slate-400 text-center italic">سەیڤکردن بۆ وێنەی تر (Export)</h4>
+                            <h4 class="text-[10px] font-black uppercase tracking-widest text-slate-400 text-center italic">سەیڤکردنی ڕەنگ وەک فایل</h4>
                             <div class="flex gap-3">
                                 <input type="text" id="save-name" placeholder="ناوی ستایل..." class="flex-1 bg-black/40 border border-white/10 rounded-2xl px-5 py-4 text-md font-bold text-white outline-none focus:border-blue-500 shadow-inner">
                                 <button onclick="window.exportPresetFile()" class="px-8 py-4 btn-zaxm text-white rounded-2xl font-black text-xs uppercase italic tracking-tighter shadow-lg hover:scale-105 active:scale-95 transition-all">Export</button>
                             </div>
                         </div>
 
-                        <!-- Sync Feature -->
                         <button onclick="window.syncAllBatch()" class="w-full py-5 bg-purple-600/10 text-purple-400 rounded-3xl font-black text-[11px] uppercase tracking-[0.2em] border border-purple-500/20 hover:bg-purple-600/30 transition-all shadow-xl">Apply to All Photos (Sync)</button>
 
-                        <div class="p-8 bg-blue-600/15 rounded-[3.5rem] border border-blue-500/30 shadow-inner">
-                            <div class="flex justify-between text-[14px] font-black text-blue-400 uppercase mb-6 italic tracking-widest"><span>هێزی ئیفێکت (Strength)</span><span id="intensity-v">100%</span></div>
+                        <div class="p-8 bg-blue-600/15 rounded-[3.5rem] border border-blue-500/30 shadow-inner text-right">
+                            <div class="flex justify-between text-[14px] font-black text-blue-400 uppercase mb-6 italic tracking-widest"><span>هێزی ئیفێکت</span><span id="intensity-v">100%</span></div>
                             <input type="range" id="intensity" min="0" max="100" value="100" class="accent-blue-500 h-1.5" oninput="window.render()">
                         </div>
 
-                        <!-- Professional Advanced RAW -->
+                        <!-- Professional RAW -->
                         <div class="space-y-4 flex-1">
                             <div class="accordion-item active">
                                 <div class="accordion-header" onclick="window.toggleAcc(this)"><span class="text-[13px] font-black uppercase tracking-[0.2em] text-slate-100 italic">Advanced Master Panel</span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="m6 9 6 6 6-6"/></svg></div>
-                                <div class="accordion-content space-y-8 pt-8 px-2 text-right">
+                                <div class="accordion-content space-y-8 pt-8 px-2">
                                     <div class="space-y-3"><div class="flex justify-between text-[11px] font-bold text-slate-500 uppercase italic"><span>Exposure (ڕووناکی)</span><span id="exposure-v" class="text-white">100</span></div><input type="range" id="exposure" min="20" max="180" value="100" oninput="window.render()"></div>
                                     <div class="space-y-3"><div class="flex justify-between text-[11px] font-bold text-slate-500 uppercase italic"><span>Contrast (کۆنتراست)</span><span id="contrast-v" class="text-white">100</span></div><input type="range" id="contrast" min="30" max="170" value="100" oninput="window.render()"></div>
-                                    <div class="space-y-3"><div class="flex justify-between text-[11px] font-bold text-slate-500 uppercase italic"><span>Highlights</span><span id="highlights-v" class="text-white">0</span></div><input type="range" id="highlights" min="-70" max="70" value="0" oninput="window.render()"></div>
-                                    <div class="space-y-3"><div class="flex justify-between text-[11px] font-bold text-slate-500 uppercase italic"><span>Shadows</span><span id="shadows-v" class="text-white">0</span></div><input type="range" id="shadows" min="-70" max="70" value="0" oninput="window.render()"></div>
-                                    <div class="space-y-3"><div class="flex justify-between text-[11px] font-bold text-slate-500 uppercase italic"><span>Clarity (تیژی تۆن)</span><span id="clarity-v" class="text-white">0</span></div><input type="range" id="clarity" min="0" max="100" value="0" oninput="window.render()"></div>
-                                </div>
-                            </div>
-
-                            <div class="accordion-item">
-                                <div class="accordion-header" onclick="window.toggleAcc(this)"><span class="text-[13px] font-black uppercase tracking-[0.2em] text-slate-100 italic">Retouch Engine</span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="m6 9 6 6 6-6"/></svg></div>
-                                <div class="accordion-content space-y-8 pt-8 px-2 text-right">
-                                    <div class="space-y-3"><div class="flex justify-between text-[12px] font-black text-pink-400 uppercase tracking-widest italic"><span>Skin Smoothing</span><span id="smoothing-v">0%</span></div><input type="range" id="smoothing" min="0" max="100" value="0" class="accent-pink-500" oninput="window.render()"></div>
-                                    <div class="space-y-3"><div class="flex justify-between text-[11px] font-bold text-slate-500 uppercase italic"><span>Grain (نۆیز)</span><span id="grain-v">0</span></div><input type="range" id="grain" min="0" max="100" value="0" oninput="window.render()"></div>
+                                    <div class="space-y-3"><div class="flex justify-between text-[11px] font-bold text-slate-500 uppercase italic"><span>Clarity (تیژی)</span><span id="clarity-v" class="text-white">0</span></div><input type="range" id="clarity" min="0" max="100" value="0" oninput="window.render()"></div>
+                                    <div class="space-y-3"><div class="flex justify-between text-[12px] font-black text-pink-400 uppercase tracking-widest italic"><span>سافکردنی پێست (Neural)</span><span id="smoothing-v">0%</span></div><input type="range" id="smoothing" min="0" max="100" value="0" class="accent-pink-500" oninput="window.render()"></div>
                                 </div>
                             </div>
                         </div>
 
-                        <!-- Multi-Export -->
                         <div class="space-y-5 pt-10 border-t border-white/5">
-                            <button onclick="window.dlAllZIP()" class="w-full py-6 bg-blue-600/10 text-blue-400 rounded-[2.5rem] font-black text-[11px] uppercase tracking-[0.3em] border border-blue-500/20 hover:bg-blue-600/20 hover:scale-[1.02] active:scale-95 transition-all shadow-xl">DOWNLOAD ALL AS ZIP (ULTRA)</button>
-                            <button onclick="window.dlActive()" class="w-full py-8 btn-zaxm text-white rounded-[3.5rem] font-black text-2xl shadow-[0_20px_50px_rgba(59,130,246,0.4)] italic tracking-tighter uppercase hover:scale-105 active:scale-95 transition-all">داگرتنی وێنەی ئێستا</button>
+                            <button onclick="window.dlAllZIP()" class="w-full py-6 bg-blue-600/10 text-blue-400 rounded-[2.5rem] font-black text-[11px] uppercase tracking-[0.3em] border border-blue-500/20 hover:bg-blue-600/20 transition-all shadow-xl">DOWNLOAD ALL AS ZIP</button>
+                            <button onclick="window.dlActive()" class="w-full py-8 btn-zaxm text-white rounded-[3.5rem] font-black text-2xl shadow-2xl italic tracking-tighter uppercase">داگرتنی ئەم وێنەیە</button>
                         </div>
                     </div>
                 </div>
@@ -196,27 +183,28 @@
         </div>
     </div>
 
-    <!-- Application Script -->
     <script>
         // Core State
         let srcStats = null, batch = [], activeIdx = 0, localPresets = [];
-        let zoomL = 1.0, fitS = 1.0, isComparing = false; 
+        let zoomL = 1.0, fitS = 1.0, isComparing = false, selectedPresetIdx = -1; 
         let pBaseC = document.createElement('canvas');
         let copiedSettings = null;
         const get = id => document.getElementById(id);
         const SLIDERS = ['intensity', 'exposure', 'contrast', 'highlights', 'shadows', 'smoothing', 'grain', 'clarity'];
 
-        // --- HYPER-NEURAL RGB ENGINE ---
+        // --- HYPER-NEURAL ENGINE v37 (Independent RGB Channels + Exposure Sync) ---
         function analyze(ctx, w, h) {
             const d = ctx.getImageData(0,0,w,h).data;
             const c = d.length/4;
             const rHist = new Array(256).fill(0), gHist = new Array(256).fill(0), bHist = new Array(256).fill(0);
-            let rSum=0, gSum=0, bSum=0;
+            let rSum=0, gSum=0, bSum=0, lSum=0;
+
             for(let i=0; i<d.length; i+=4){ 
                 rHist[d[i]]++; gHist[d[i+1]]++; bHist[d[i+2]]++;
                 rSum+=d[i]; gSum+=d[i+1]; bSum+=d[i+2];
+                lSum += (0.299*d[i] + 0.587*d[i+1] + 0.114*d[i+2]);
             }
-            const mean = { r: rSum/c, g: gSum/c, b: bSum/c };
+            const mean = { r: rSum/c, g: gSum/c, b: bSum/c, lum: lSum/c };
             let vr=0, vg=0, vb=0;
             for(let i=0; i<d.length; i+=4){ vr+=Math.pow(d[i]-mean.r,2); vg+=Math.pow(d[i+1]-mean.g,2); vb+=Math.pow(d[i+2]-mean.b,2); }
             const std = { r:Math.sqrt(vr/c)||1, g:Math.sqrt(vg/c)||1, b:Math.sqrt(vb/c)||1 };
@@ -231,6 +219,9 @@
             tX.drawImage(item.img,0,0,256,256);
             const tStats = analyze(tX, 256, 256);
 
+            // Auto-Exposure Syncing
+            const exposureEqualizer = sStats.mean.lum / (tStats.mean.lum || 1);
+
             const buildLUT = (sH, tH) => {
                 const sCDF = new Array(256).fill(0); let sSum=0, sTotal=sH.reduce((a,b)=>a+b,0);
                 for(let i=0; i<256; i++){ sSum+=sH[i]; sCDF[i]=sSum/sTotal; }
@@ -240,37 +231,48 @@
                 for(let i=0; i<256; i++){ let j=0; while(j<255 && sCDF[j]<tCDF[i]) j++; lut[i]=j; }
                 return lut;
             };
-
             const rLUT = buildLUT(sStats.rHist, tStats.rHist);
             const gLUT = buildLUT(sStats.gHist, tStats.gHist);
             const bLUT = buildLUT(sStats.bHist, tStats.bHist);
+            
             const sR = sStats.std.r/tStats.std.r, sG = sStats.std.g/tStats.std.g, sB = sStats.std.b/tStats.std.b;
-
+            
             for(let j=0; j<d.length; j+=4) {
-                const nr = (d[j]-tStats.mean.r)*sR + sStats.mean.r;
-                const ng = (d[j+1]-tStats.mean.g)*sG + sStats.mean.g;
-                const nb = (d[j+2]-tStats.mean.b)*sB + sStats.mean.b;
-                d[j] = Math.max(0,Math.min(255, nr*0.8 + rLUT[d[j]]*0.2));
-                d[j+1] = Math.max(0,Math.min(255, ng*0.8 + gLUT[d[j+1]]*0.2));
-                d[j+2] = Math.max(0,Math.min(255, nb*0.8 + bLUT[d[j+2]]*0.2));
+                // Apply Initial Exposure Equalization
+                const ir = d[j] * exposureEqualizer;
+                const ig = d[j+1] * exposureEqualizer;
+                const ib = d[j+2] * exposureEqualizer;
+
+                // Neural Channel Mapping
+                const nr = (ir-tStats.mean.r)*sR + sStats.mean.r;
+                const ng = (ig-tStats.mean.g)*sG + sStats.mean.g;
+                const nb = (ib-tStats.mean.b)*sB + sStats.mean.b;
+                
+                d[j] = Math.max(0,Math.min(255, nr*0.8 + rLUT[Math.min(255, Math.round(ir))]*0.2));
+                d[j+1] = Math.max(0,Math.min(255, ng*0.8 + gLUT[Math.min(255, Math.round(ig))]*0.2));
+                d[j+2] = Math.max(0,Math.min(255, nb*0.8 + bLUT[Math.min(255, Math.round(ib))]*0.2));
             }
             ctx.putImageData(idata, 0, 0); window.render();
         }
 
-        // --- GLOBAL FUNCTIONS ---
+        // --- UI HANDLERS ---
         window.handleSrcUpload = el => {
-            const f = el.files[0]; if(!f) return;
+            const files = (el.files) || (el.dataTransfer && el.dataTransfer.files);
+            const f = files ? files[0] : null;
+            if(!f) return;
             const r = new FileReader(); r.onload = ev => {
                 const img = new Image(); img.onload = () => {
                     get('src-pre').src = ev.target.result; get('src-pre').classList.remove('hidden'); get('src-hold').classList.add('hidden');
                     const tx = document.createElement('canvas').getContext('2d'); tx.canvas.width=256; tx.canvas.height=256; tx.drawImage(img,0,0,256,256);
-                    srcStats = analyze(tx, 256, 256); checkReady();
+                    srcStats = analyze(tx, 256, 256); selectedPresetIdx = -1; renderPresetList(); checkReady();
                 }; img.src = ev.target.result;
             }; r.readAsDataURL(f);
         };
 
         window.handleTarUpload = el => {
-            const fs = Array.from(el.files).slice(0, 30); if(!fs.length) return;
+            const files = (el.files) || (el.dataTransfer && el.dataTransfer.files);
+            const fs = Array.from(files).slice(0, 30);
+            if(!fs.length) return;
             batch = []; get('tar-grid').innerHTML = ''; get('tar-grid').classList.remove('hidden'); get('tar-hold').classList.add('hidden');
             let loaded = 0;
             fs.forEach(f => {
@@ -285,13 +287,16 @@
         };
 
         const defS = () => ({ intensity:100, exposure:100, contrast:100, highlights:0, shadows:0, smoothing:0, grain:0, clarity:0 });
-        const checkReady = () => { if(srcStats && batch.length) { get('proc-btn').disabled = false; get('proc-btn').style.opacity = 1; } };
+        const checkReady = () => { 
+            const isReady = (batch.length > 0) && (srcStats !== null);
+            get('proc-btn').disabled = !isReady; get('proc-btn').style.opacity = isReady ? 1 : 0.2; 
+        };
+
         window.startEditor = () => { get('upload-section').classList.add('hidden'); get('editor-section').classList.remove('hidden'); window.loadPhoto(0); };
 
         window.loadPhoto = idx => {
             if(batch[activeIdx]) batch[activeIdx].settings = getUI();
-            activeIdx = idx; 
-            get('filmstrip').innerHTML = batch.map((it, i) => `<div class="batch-item ${i===activeIdx?'active':''}" onclick="window.loadPhoto(${i})"><img src="${it.data}" class="w-full h-full object-cover"></div>`).join('');
+            activeIdx = idx; renderFilmstrip();
             const item = batch[idx];
             fitS = Math.min((get('container').clientWidth-40) / item.img.width, (get('container').clientHeight-40) / item.img.height);
             zoomL = 1.0; setUI(item.settings); applyNeuralMatch(item, srcStats);
@@ -303,75 +308,74 @@
             const blend = sets.intensity / 100;
             const buf = document.createElement('canvas'); buf.width=w; buf.height=h; const bX = buf.getContext('2d');
             bX.drawImage(sImg, 0, 0); bX.globalAlpha = blend; bX.drawImage(pBaseC, 0, 0); bX.globalAlpha = 1.0;
-
             const idata = bX.getImageData(0,0,w,h); const d = idata.data; const copy = new Uint8ClampedArray(d);
-            const step = w > 2000 ? 3 : 1; const rad = Math.max(1, Math.floor(sets.smoothing/15));
+            const step = w > 2000 ? 3 : 1; const rad = Math.max(1, Math.floor(sets.smoothing/12));
 
             for(let y=0; y<h; y+=step) for(let x=0; x<w; x+=step) {
                 const i = (y*w+x)*4; const lum = 0.299*d[i]+0.587*d[i+1]+0.114*d[i+2];
-                if(lum > 190 && sets.highlights !== 0) { const m=1+(sets.highlights/200); d[i]*=m; d[i+1]*=m; d[i+2]*=m; }
-                if(lum < 70 && sets.shadows !== 0) { const m=1+(sets.shadows/100); d[i]*=m; d[i+1]*=m; d[i+2]*=m; }
-                if(sets.clarity > 0 && lum > 80 && lum < 180) { const cF=1+(sets.clarity/300); d[i]*=cF; d[i+1]*=cF; d[i+2]*=cF; }
-                if(sets.smoothing > 0 && d[i]>80 && d[i+1]>60 && d[i]>d[i+1]) {
+                // Advanced Clarity
+                if(sets.clarity > 0 && lum > 60 && lum < 190) { const cF=1+(sets.clarity/350); d[i]*=cF; d[i+1]*=cF; d[i+2]*=cF; }
+                // Smart Skin Smoothing (Neural Logic)
+                if(sets.smoothing > 0 && d[i]>90 && d[i+1]>70 && d[i]>d[i+1] && d[i]>d[i+2]) {
                     if(y>rad && y<h-rad && x>rad && x<w-rad) {
-                        let sr=0,sg=0,sb=0,sc=0; for(let ky=-rad;ky<=rad;ky+=rad)for(let kx=-rad;kx<=rad;kx+=rad){ const ki=((y+ky)*w+(x+kx))*4; sr+=copy[ki]; sg+=copy[ki+1]; sb+=copy[ki+2]; sc++; }
-                        const fact = sets.smoothing/220; d[i]=copy[i]*(1-fact)+(sr/sc)*fact; d[i+1]=copy[i+1]*(1-fact)+(sg/sc)*fact; d[i+2]=copy[i+2]*(1-fact)+(sb/sc)*fact;
+                        let sr=0,sg=0,sb=0,sc=0;
+                        // Sample 5-points for surface blur approximation
+                        const offsets = [0, -rad*w, rad*w, -rad, rad];
+                        for(let o=0; o<offsets.length; o++){ const ki=i+(offsets[o]*4); if(ki>=0 && ki<d.length){ sr+=copy[ki]; sg+=copy[ki+1]; sb+=copy[ki+2]; sc++; }}
+                        const fact = sets.smoothing/250; d[i]=copy[i]*(1-fact)+(sr/sc)*fact; d[i+1]=copy[i+1]*(1-fact)+(sg/sc)*fact; d[i+2]=copy[i+2]*(1-fact)+(sb/sc)*fact;
                     }
                 }
-                if(sets.grain > 0) { const g=(Math.random()-0.5)*sets.grain; d[i]+=g; d[i+1]+=g; d[i+2]+=g; }
             }
             bX.putImageData(idata,0,0);
             ctx.filter = `brightness(${sets.exposure}%) contrast(${sets.contrast}%)`; ctx.drawImage(buf, 0, 0); window.updateZoom();
         };
 
-        // --- SYNC ENGINE ---
         window.syncAllBatch = () => {
-            const currentSets = getUI();
-            batch.forEach(it => it.settings = { ...currentSets });
-            get('toast').innerText = "بە سەرکەوتوویی لە هەموو وێنەکان درا! ✓";
+            const currentSets = getUI(); batch.forEach(it => it.settings = { ...currentSets });
+            get('toast').innerText = "بە سەرکەوتوویی Sync کرا! ✓";
             get('toast').classList.remove('hidden'); setTimeout(()=>get('toast').classList.add('hidden'),2000);
         };
 
-        // --- PRESET LOCAL SYSTEM ---
         window.exportPresetFile = () => {
             const name = get('save-name').value.trim() || "Preset"; if(!srcStats) return;
             const data = { name, stats: srcStats, settings: getUI() };
             const blob = new Blob([JSON.stringify(data)], {type:"application/json"});
             const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = `${name}.json`; a.click();
             localPresets.push(data); renderPresetList();
-            get('toast').innerText="سەیڤ کرا بۆ ناو کۆمپیوتەر! ✓"; get('toast').classList.remove('hidden'); setTimeout(()=>get('toast').classList.add('hidden'),2000);
         };
 
         window.importPresetFile = e => {
             const f = e.target.files[0]; if(!f) return;
-            const r = new FileReader(); r.onload = ev => { try { const d = JSON.parse(ev.target.result); localPresets.push(d); renderPresetList(); } catch(e){ alert("Invalid File"); } };
+            const r = new FileReader(); r.onload = ev => { try { const d = JSON.parse(ev.target.result); localPresets.push(d); renderPresetList(); } catch(e){ alert("فایلەکە کێشەی تێدایە"); } };
             r.readAsText(f);
         };
 
         const renderPresetList = () => {
             get('preset-list').innerHTML = localPresets.map((p, i) => `
-                <div class="preset-pill group" onclick="window.applyLibPreset(${i})">
+                <div class="preset-pill group ${selectedPresetIdx === i ? 'active' : ''}" onclick="window.applyLibPreset(${i})">
                     <span class="truncate">${p.name}</span>
                     <button onclick="event.stopPropagation(); localPresets.splice(${i},1); renderPresetList();" class="text-white/20 hover:text-red-500">✕</button>
                 </div>
-            `).join('') || '<div class="text-center py-20 opacity-20 text-[10px] font-bold">چۆڵە</div>';
+            `).join('') || '<div class="text-center py-20 opacity-20 text-[10px] font-bold italic">کتێبخانەکە چۆڵە</div>';
         };
 
         window.applyLibPreset = i => { 
-            srcStats = localPresets[i].stats; if(localPresets[i].settings) setUI(localPresets[i].settings);
-            if(batch[activeIdx]) window.loadPhoto(activeIdx); 
+            selectedPresetIdx = i; srcStats = localPresets[i].stats; 
+            if(localPresets[i].settings) setUI(localPresets[i].settings);
+            renderPresetList(); checkReady();
+            if(!get('editor-section').classList.contains('hidden') && batch[activeIdx]) window.loadPhoto(activeIdx); 
         };
 
-        // --- UTILS ---
-        const getUI = () => { const o={}; ['intensity','exposure','contrast','highlights','shadows','smoothing','grain','clarity'].forEach(s=>o[s]=parseInt(get(s).value)); return o; };
-        const setUI = o => { ['intensity','exposure','contrast','highlights','shadows','smoothing','grain','clarity'].forEach(s=>{ get(s).value=o[s]; const v=get(s+'-v'); if(v) v.innerText=(['smoothing','intensity'].includes(s))?o[s]+'%':o[s]; }); };
+        const getUI = () => { const o={}; ['intensity','exposure','contrast','smoothing','clarity'].forEach(s=>o[s]=parseInt(get(s).value)); return o; };
+        const setUI = o => { ['intensity','exposure','contrast','smoothing','clarity'].forEach(s=>{ get(s).value=o[s]; const v=get(s+'-v'); if(v) v.innerText=(['smoothing','intensity'].includes(s))?o[s]+'%':o[s]; }); };
+        const renderFilmstrip = () => { get('filmstrip').innerHTML = batch.map((it, i) => `<div class="batch-item ${i===activeIdx?'active':''}" onclick="window.loadPhoto(${i})"><img src="${it.data}" class="w-full h-full object-cover"></div>`).join(''); };
         window.toggleAcc = el => el.parentElement.classList.toggle('active');
         window.zoomAdjust = m => { zoomL*=m; if(zoomL<0.05) zoomL=0.05; window.updateZoom(); };
         window.fitView = () => { zoomL=1.0; window.updateZoom(); get('container').scrollLeft=0; get('container').scrollTop=0; };
         window.updateZoom = () => { const it=batch[activeIdx]; if(!it) return; const s=fitS*zoomL; get('main-canvas').style.width=(it.img.width*s)+'px'; get('main-canvas').style.height=(it.img.height*s)+'px'; get('zoom-val').innerText=Math.round(zoomL*100)+'%'; };
         window.copySets = () => { copiedSettings = getUI(); get('toast').innerText="کۆپی کرا! ✓"; get('toast').classList.remove('hidden'); setTimeout(()=>get('toast').classList.add('hidden'),1500); };
         window.pasteSets = () => { if(copiedSettings) { setUI(copiedSettings); window.render(); } };
-        window.dlActive = () => { const a=document.createElement('a'); a.download=`Photo.jpg`; a.href=get('main-canvas').toDataURL('image/jpeg',1.0); a.click(); };
+        window.dlActive = () => { const a=document.createElement('a'); a.download=`Result.jpg`; a.href=get('main-canvas').toDataURL('image/jpeg',1.0); a.click(); };
 
         window.dlAllZIP = async () => {
             if(!batch.length) return; const zip = new JSZip(); get('overlay-loading').style.display='flex';
@@ -380,20 +384,21 @@
                 window.loadPhoto(i); await new Promise(r=>setTimeout(r,200));
                 window.render(tempC, batch[i].settings, batch[i].img);
                 const blob = await new Promise(r => tempC.toBlob(r, 'image/jpeg', 1.0));
-                zip.file(`Result_${i+1}.jpg`, blob);
+                zip.file(`Photo_${i+1}.jpg`, blob);
             }
             const content = await zip.generateAsync({type:"blob"});
-            const a = document.createElement('a'); a.href = URL.createObjectURL(content); a.download = "Tahir_Export.zip"; a.click();
+            const a = document.createElement('a'); a.href = URL.createObjectURL(content); a.download = "Tahir_Bulk_Export.zip"; a.click();
             get('overlay-loading').style.display = 'none';
         };
 
-        const setupDD = (zone, input) => {
+        // --- DRAG & DROP LOGIC ---
+        const setupDD = (zone, callback) => {
             ['dragenter', 'dragover'].forEach(e => zone.addEventListener(e, (ev) => { ev.preventDefault(); zone.classList.add('drag-active'); }));
             ['dragleave', 'drop'].forEach(e => zone.addEventListener(e, (ev) => { ev.preventDefault(); zone.classList.remove('drag-active'); }));
-            zone.addEventListener('drop', (ev) => { ev.preventDefault(); const files = ev.dataTransfer.files; if (files.length > 0) { input.files = files; input.dispatchEvent(new Event('change')); } });
+            zone.addEventListener('drop', (ev) => { ev.preventDefault(); callback(ev); });
         };
-        setupDD(get('src-drop'), get('src-in'));
-        setupDD(get('tar-drop'), get('tar-in'));
+        setupDD(get('src-drop'), (ev) => window.handleSrcUpload(ev));
+        setupDD(get('tar-drop'), (ev) => window.handleTarUpload(ev));
 
         get('comp-btn').onmousedown = () => { isComparing=true; window.render(); };
         get('comp-btn').onmouseup = () => { isComparing=false; window.render(); };
