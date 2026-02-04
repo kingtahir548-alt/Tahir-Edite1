@@ -220,7 +220,8 @@
                 srcIn: get('src-in'), tarIn: get('tar-in'), srcHold: get('src-hold'), tarGrid: get('tar-grid'),
                 procBtn: get('proc-btn'), upSec: get('upload-section'), edSec: get('editor-section'),
                 canvas: get('main-canvas'), strip: get('filmstrip'), zoomVal: get('zoom-val'),
-                cont: get('container'), srcDrop: get('src-drop'), tarDrop: get('tar-drop'), bCount: get('batch-count')
+                cont: get('container'), srcDrop: get('src-drop'), tarDrop: get('tar-drop'), bCount: get('batch-count'),
+                toast: get('toast')
             };
 
             function getStats(ctx, w, h) {
@@ -294,7 +295,6 @@
                 fitScale = Math.min(cw / item.img.width, ch / item.img.height);
                 zoomLevel = 1.0; 
 
-                // --- ULTRA NEURAL MATCHING ENGINE v15 ---
                 const ctx = pBaseC.getContext('2d');
                 pBaseC.width = item.img.width; pBaseC.height = item.img.height;
                 ctx.drawImage(item.img, 0, 0);
@@ -356,11 +356,9 @@
                             const i = (y*w+x)*4; let r=d[i], g=d[i+1], b=d[i+2];
                             const lum = 0.299*r+0.587*g+0.114*b;
                             
-                            // 1. Highlights & Shadows
                             if(lum > 180 && f.highlights !== 0) { const m=1+(f.highlights/200); d[i]*=m; d[i+1]*=m; d[i+2]*=m; }
                             if(lum < 80 && f.shadows !== 0) { const m=1+(f.shadows/120); d[i]*=m; d[i+1]*=m; d[i+2]*=m; }
 
-                            // 2. HSL Saturation logic
                             if (f['mix-sat'] !== 0) {
                                 const max=Math.max(r,g,b), min=Math.min(r,g,b), diff=max-min; let hue=0;
                                 if(diff!==0){ if(max===r) hue=((g-b)/diff)%6; else if(max===g) hue=(b-r)/diff+2; else hue=(r-g)/diff+4; hue*=60; if(hue<0) hue+=360; }
@@ -368,7 +366,6 @@
                                 const rge=cMap[selectedMixColor]; let match=rge.length===2?hue>=rge[0]&&hue<=rge[1]:(hue>=rge[0]&&hue<=rge[1])||(hue>=rge[2]&&hue<=rge[3]);
                                 if(match){ const sS=1+(f['mix-sat']/100); d[i]*=sS; d[i+1]*=sS; d[i+2]*=sS; }
                             }
-                            // 3. Smoothing & Lipstick
                             if(r>70 && g>45 && r>g && (f.smoothing > 0 || f.lipstick > 0)) {
                                 if(f.smoothing > 0 && y>rad && y<h-rad && x>rad && x<w-rad) {
                                     let sr=0,sg=0,sb=0,sc=0;
@@ -377,13 +374,11 @@
                                 }
                                 if(f.lipstick > 0 && r > g * 1.4) { d[i]=Math.min(255,d[i]+f.lipstick*0.5); d[i+1]=Math.max(0,d[i+1]-f.lipstick*0.2); }
                             }
-                            // 4. Grain
                             if(f.grain > 0) { const n=(Math.random()-0.5)*f.grain; d[i]+=n; d[i+1]+=n; d[i+2]+=n; }
                         }
                     }
                     bX.putImageData(idata, 0, 0);
                     
-                    // Final filters
                     ctx.filter = `brightness(${f.exposure}%) contrast(${f.contrast}%)`;
                     ctx.drawImage(buf, 0, 0);
 
@@ -413,7 +408,7 @@
             window.zoomAdjust = m => { zoomLevel *= m; if(zoomLevel<0.05) zoomLevel=0.05; updateZoom(); };
             window.fitView = () => { zoomLevel=1.0; updateZoom(); els.cont.scrollLeft=0; els.cont.scrollTop=0; };
             window.updateZoom = () => { const it=batch[activeIdx]; if(!it) return; const s=fitScale*zoomLevel; els.canvas.style.width=(it.img.width*s)+'px'; els.canvas.style.height=(it.img.height*s)+'px'; els.zoomVal.innerText=Math.round(zoomLevel * 100)+'%'; };
-            window.copySets = () => { copied=getUI(); els.toast.classList.remove('hidden'); setTimeout(()=>els.toast.classList.add('hidden'),1500); };
+            window.copySets = () => { copied=getUI(); els.toast.innerText="ڕێکخستنەکان کۆپی کرا! ✓"; els.toast.classList.remove('hidden'); setTimeout(()=>els.toast.classList.add('hidden'),1500); };
             window.pasteSets = () => { if(copied) { setUI(copied); render(); } };
             window.applyAll = () => { const s=getUI(); batch.forEach(it=>it.settings={...s}); alert('ڕێکخستنەکان بۆ هەموو وێنەکان جێبەجێ کرا! ✓'); };
             window.setMixColor = (c, hex) => { selectedMixColor = c; get('mix-title').innerText = `Saturation (${c})`; get('mix-title').style.color = hex; document.querySelectorAll('.hsl-btn').forEach(b => b.classList.remove('active')); event.target.classList.add('active'); render(); };
@@ -443,8 +438,24 @@
   </rdf:Description>
  </rdf:RDF>
 </x:xmpmeta>`.trim();
+                
                 const blob = new Blob([xmp], { type: 'text/xml' });
-                const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = "Tahir_v15.xmp"; a.click();
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.style.display = 'none';
+                a.href = url;
+                a.download = "Tahir_Preset.xmp";
+                document.body.appendChild(a);
+                a.click();
+                
+                // Visual Feedback
+                els.toast.innerText = "XMP سەیڤ کرا! ✓";
+                els.toast.classList.remove('hidden');
+                setTimeout(() => {
+                    els.toast.classList.add('hidden');
+                    window.URL.revokeObjectURL(url);
+                    document.body.removeChild(a);
+                }, 2000);
             };
 
             let isD=false, sx, sy, sl, st;
