@@ -3,172 +3,190 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tahir Tahir - AI Preset Library v19.6</title>
+    <title>Tahir Tahir - AI Pro v32.0 Hyper Neural</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap');
-        :root { --primary: #3b82f6; --accent: #8b5cf6; --bg: #050505; --glass: rgba(15, 15, 15, 0.85); }
+        :root { --primary: #3b82f6; --accent: #8b5cf6; --bg: #050505; --glass: rgba(18, 18, 18, 0.85); }
         body { font-family: 'Inter', sans-serif; background-color: var(--bg); color: #f1f5f9; margin: 0; overflow: hidden; }
         .glass { background: var(--glass); backdrop-filter: blur(40px); border: 1px solid rgba(255, 255, 255, 0.08); }
         .btn-zaxm { background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%); transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
+        .btn-zaxm:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 10px 30px rgba(59, 130, 246, 0.4); }
         
-        .mode-btn { padding: 10px 20px; font-weight: 900; font-size: 11px; text-transform: uppercase; letter-spacing: 1px; transition: 0.3s; border-radius: 12px; border: 1px solid rgba(255,255,255,0.05); color: #64748b; }
-        .mode-btn.active { background: var(--primary); color: white; border-color: var(--primary); box-shadow: 0 5px 20px rgba(59, 130, 246, 0.4); }
-
-        .preset-card { transition: all 0.3s; border: 2px solid transparent; cursor: pointer; }
-        .preset-card:hover { transform: translateY(-4px); border-color: rgba(59, 130, 246, 0.4); }
-        .preset-card.active { border-color: var(--primary); box-shadow: 0 0 25px rgba(59, 130, 246, 0.3); }
-
-        input[type=range] { -webkit-appearance: none; background: rgba(255, 255, 255, 0.1); height: 4px; border-radius: 10px; width: 100%; }
-        input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; height: 16px; width: 16px; border-radius: 50%; background: white; cursor: pointer; border: 2px solid var(--primary); }
+        input[type=range] { -webkit-appearance: none; background: rgba(255, 255, 255, 0.1); height: 5px; border-radius: 10px; width: 100%; }
+        input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; height: 18px; width: 18px; border-radius: 50%; background: white; cursor: pointer; border: 2px solid var(--primary); }
         
         .canvas-container { overflow: auto; display: flex; align-items: center; justify-content: center; width: 100%; height: 100%; background: #000; position: relative; padding: 20px; }
-        #main-canvas { box-shadow: 0 40px 150px rgba(0,0,0,1); border-radius: 6px; max-width: 100%; max-height: 100%; object-fit: contain; }
+        #main-canvas { box-shadow: 0 50px 180px rgba(0,0,0,1); border-radius: 8px; max-width: 100%; max-height: 100%; object-fit: contain; image-rendering: high-quality; }
 
-        .batch-item { flex-shrink: 0; width: 65px; height: 65px; border-radius: 14px; overflow: hidden; border: 2px solid transparent; cursor: pointer; opacity: 0.5; transition: 0.3s; }
-        .batch-item.active { border-color: var(--primary); opacity: 1; transform: scale(1.1); }
+        .batch-item { flex-shrink: 0; width: 75px; height: 75px; border-radius: 18px; overflow: hidden; border: 2.5px solid transparent; cursor: pointer; transition: 0.3s; opacity: 0.6; }
+        .batch-item.active { border-color: var(--primary); transform: scale(1.1); opacity: 1; box-shadow: 0 10px 20px rgba(59, 130, 246, 0.3); }
 
-        #loading-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 1000; display: none; flex-direction: column; align-items: center; justify-content: center; }
+        .preset-pill { transition: all 0.2s; cursor: pointer; border-radius: 14px; border: 1px solid rgba(255,255,255,0.05); background: rgba(255,255,255,0.02); padding: 14px; font-size: 11px; font-weight: 900; text-transform: uppercase; display: flex; justify-content: space-between; align-items: center; }
+        .preset-pill:hover { background: rgba(59, 130, 246, 0.12); border-color: rgba(59, 130, 246, 0.4); }
+        .preset-pill.active { background: var(--primary); border-color: var(--primary); box-shadow: 0 5px 15px rgba(59, 130, 246, 0.4); }
 
+        #overlay-loading { position: fixed; inset: 0; background: rgba(0,0,0,0.96); z-index: 2000; display: none; flex-direction: column; align-items: center; justify-content: center; backdrop-filter: blur(15px); }
+        
         .accordion-content { max-height: 0; overflow: hidden; transition: max-height 0.4s cubic-bezier(0.4, 0, 0.2, 1); }
-        .accordion-item.active .accordion-content { max-height: 1200px; padding-bottom: 1.5rem; }
-        .accordion-header { cursor: pointer; display: flex; justify-content: space-between; align-items: center; padding: 15px 12px; border-bottom: 1px solid rgba(255,255,255,0.05); }
+        .accordion-item.active .accordion-content { max-height: 800px; padding-bottom: 1.5rem; }
+        .accordion-header { cursor: pointer; display: flex; justify-content: space-between; align-items: center; padding: 18px 5px; border-bottom: 1px solid rgba(255,255,255,0.05); }
 
-        .drag-active { border-color: var(--primary) !important; background: rgba(59, 130, 246, 0.1) !important; }
+        .custom-scrollbar::-webkit-scrollbar { width: 4px; height: 4px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.15); border-radius: 10px; }
+
+        .drag-active { border: 3px dashed var(--primary) !important; background: rgba(59, 130, 246, 0.1) !important; }
 
         @media (max-width: 1024px) {
-            .sidebar { position: absolute !important; bottom: 0; left: 0; width: 100% !important; height: 50vh !important; z-index: 100; border-radius: 3rem 3rem 0 0 !important; background: rgba(10, 10, 10, 0.95) !important; }
+            .sidebar { position: absolute !important; bottom: 0; left: 0; width: 100% !important; height: 50vh !important; z-index: 100; border-radius: 3rem 3rem 0 0 !important; background: rgba(12, 12, 12, 0.98) !important; padding: 25px !important; }
             .viewport { height: 100vh !important; width: 100vw !important; }
-            .batch-strip { position: absolute; top: 110px; left: 15px; z-index: 90; width: 75px !important; }
+            .library-panel { display: none !important; }
             header { position: absolute; top: 0; width: 100%; z-index: 110; background: linear-gradient(to bottom, rgba(0,0,0,0.95), transparent); }
         }
     </style>
 </head>
 <body>
 
-    <div id="loading-overlay">
-        <div class="w-16 h-16 border-4 border-blue-500 border-t-transparent rounded-full animate-spin mb-4"></div>
-        <p id="loading-text" class="text-xs font-black uppercase tracking-widest text-slate-400">خەریکی گواستنەوەی ڕەنگە...</p>
+    <!-- Hyper Loader -->
+    <div id="overlay-loading">
+        <div class="relative">
+            <div class="w-24 h-24 border-4 border-blue-500/20 rounded-full"></div>
+            <div class="absolute inset-0 w-24 h-24 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
+        </div>
+        <h2 class="text-2xl font-black uppercase tracking-[0.2em] text-white mt-8 italic">Hyper Neural Processing</h2>
+        <p id="loading-status" class="mt-2 text-slate-500 font-bold uppercase tracking-widest italic">v32.0 Extreme Engine</p>
     </div>
 
-    <div class="max-w-[2000px] mx-auto h-screen flex flex-col overflow-hidden relative">
+    <div class="max-w-[2000px] mx-auto h-screen flex flex-col overflow-hidden relative text-right">
         <!-- Header -->
-        <header class="flex items-center justify-between p-5 flex-shrink-0">
+        <header class="flex items-center justify-between p-6 flex-shrink-0 z-[160]">
             <div class="flex items-center gap-5">
-                <div class="w-12 h-12 bg-gradient-to-br from-blue-600 to-indigo-700 rounded-2xl flex items-center justify-center shadow-2xl font-black text-xl text-white">T</div>
-                <div class="hidden sm:block">
-                    <h1 class="text-2xl font-black tracking-tighter uppercase italic leading-none text-white">Tahir <span class="text-blue-500">Tahir</span></h1>
-                    <p class="text-[9px] text-slate-500 font-bold uppercase tracking-[0.3em] mt-1">Preset Manager v19.6</p>
+                <div class="w-14 h-14 bg-gradient-to-br from-blue-600 to-indigo-700 rounded-2xl flex items-center justify-center shadow-2xl font-black text-2xl text-white">T</div>
+                <div class="hidden sm:block text-right text-white">
+                    <h1 class="text-3xl font-black tracking-tighter uppercase italic leading-none">Tahir <span class="text-blue-500">Tahir</span></h1>
+                    <p class="text-[10px] text-slate-500 font-bold uppercase tracking-[0.4em] mt-1 italic">Hyper-Neural v32.0 Extreme</p>
                 </div>
             </div>
-
-            <!-- Mode Switcher -->
-            <div class="flex glass p-1.5 rounded-2xl gap-2">
-                <button onclick="switchMode('creator')" id="btn-mode-creator" class="mode-btn active">Create Preset</button>
-                <button onclick="switchMode('editor')" id="btn-mode-editor" class="mode-btn">Use Library</button>
-            </div>
-
-            <div class="flex items-center gap-3">
-                <div id="toast" class="hidden glass px-6 py-2 rounded-full text-[11px] font-black text-blue-400 border border-blue-500/20 shadow-2xl animate-pulse">Save Successful! ✓</div>
-                <button onclick="location.reload()" class="w-11 h-11 glass rounded-full flex items-center justify-center hover:bg-red-500/20 transition-all text-white">✕</button>
+            
+            <div class="flex items-center gap-4">
+                <div id="toast" class="hidden glass px-6 py-3 rounded-full text-[11px] font-black text-blue-400 border border-blue-500/20 shadow-2xl animate-pulse italic">سەرکەوتوو بوو! ✓</div>
+                <button onclick="location.reload()" class="w-12 h-12 glass rounded-full flex items-center justify-center hover:bg-red-500/20 transition-all text-white shadow-xl">✕</button>
             </div>
         </header>
 
-        <!-- Main Content -->
         <div class="flex-1 flex overflow-hidden">
             
-            <!-- LEFT: Preset Gallery -->
-            <div class="w-[300px] glass border-r border-white/5 flex flex-col p-6 hidden lg:flex">
-                <h3 class="text-[10px] font-black uppercase tracking-widest text-slate-500 mb-6 flex items-center gap-2 italic">
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><path d="M9 3v18M15 3v18M3 9h18M3 15h18"/></svg>
-                    PRESET LIBRARY
-                </h3>
-                <div id="preset-list" class="flex-1 space-y-4 overflow-y-auto custom-scrollbar pr-2">
-                    <div class="text-center py-20 opacity-20"><p class="text-[10px] font-bold">باردەبێت...</p></div>
+            <!-- LEFT: Preset Library -->
+            <div class="library-panel w-[340px] glass border-r border-white/5 flex flex-col p-8 hidden lg:flex">
+                <div class="flex items-center justify-between mb-8">
+                    <h3 class="text-[11px] font-black uppercase tracking-widest text-slate-500 italic">HYPER LIBRARY</h3>
+                    <button onclick="document.getElementById('import-json').click()" class="text-blue-500 text-[10px] font-black hover:underline uppercase tracking-widest">Import</button>
+                    <input type="file" id="import-json" class="hidden" accept=".json" onchange="window.importPresetFile(event)">
+                </div>
+                <div id="preset-list" class="flex-1 space-y-3 overflow-y-auto custom-scrollbar pr-1">
+                    <div class="text-center py-20 opacity-20 text-[10px] font-bold italic uppercase tracking-widest leading-loose">هیچ پرێسێتێک نییە<br>دانەیەک سەیڤ بکە</div>
                 </div>
             </div>
 
-            <!-- RIGHT: Dynamic Work Area -->
+            <!-- RIGHT: Workspace -->
             <div class="flex-1 flex flex-col overflow-hidden relative">
                 
-                <!-- CREATOR VIEW -->
-                <div id="view-creator" class="flex-1 flex flex-col items-center justify-center p-10 animate-in fade-in duration-500">
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-10 w-full max-w-5xl">
-                        <label id="src-drop" class="glass rounded-[3.5rem] aspect-square flex flex-col items-center justify-center cursor-pointer border-dashed border-2 border-white/10 hover:border-blue-500/40 transition-all overflow-hidden group shadow-2xl relative">
-                            <img id="creator-src-img" class="hidden w-full h-full object-cover">
-                            <div id="creator-src-hold" class="text-center opacity-40 group-hover:opacity-100">
-                                <svg class="mx-auto mb-5" width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect width="18" height="18" x="3" y="3" rx="2" ry="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/></svg>
-                                <p class="text-[13px] font-black uppercase tracking-[0.2em]">وێنەی پرێسێت بار بکە</p>
-                                <p class="text-[9px] mt-2 text-blue-400 italic">وێنەکە ڕابکێشە بۆ ئێرە</p>
+                <!-- STEP 1: UPLOAD -->
+                <div id="upload-section" class="flex-1 flex flex-col justify-center items-center gap-12 animate-in fade-in duration-1000 bg-[#080808] z-50">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-10 w-full max-w-6xl px-10">
+                        <label id="src-drop" class="glass rounded-[4rem] aspect-video flex flex-col items-center justify-center cursor-pointer border-dashed border-2 border-white/10 hover:border-blue-500/40 transition-all group overflow-hidden shadow-2xl relative">
+                            <img id="src-pre" class="hidden w-full h-full object-cover">
+                            <div id="src-hold" class="text-center opacity-30 group-hover:opacity-100 transition-all scale-90 group-hover:scale-100 duration-500">
+                                <svg class="mx-auto mb-6" width="72" height="72" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2"><rect width="18" height="18" x="3" y="3" rx="2" ry="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/></svg>
+                                <p class="text-[14px] font-black uppercase tracking-[0.3em]">١. ستایلی سەرەکی (Reference)</p>
+                                <p class="text-[9px] mt-2 text-blue-500 italic font-bold">ڕایبکێشە بۆ ئێرە</p>
                             </div>
-                            <input type="file" id="creator-src-in" class="hidden" accept="image/*">
+                            <input type="file" id="src-in" class="hidden" accept="image/*" onchange="window.handleSrcUpload(this)">
                         </label>
-                        <div class="flex flex-col justify-center gap-6">
-                            <div class="space-y-2">
-                                <label class="text-[10px] font-black text-slate-500 uppercase tracking-widest px-2 italic">ناوی پرێسێت</label>
-                                <input type="text" id="preset-name" placeholder="بۆ نموونە: Dark Cinema" class="w-full bg-white/5 border border-white/10 p-5 rounded-3xl text-white font-bold outline-none focus:border-blue-500 transition-all">
+                        <label id="tar-drop" class="glass rounded-[4rem] aspect-video flex flex-col items-center justify-center cursor-pointer border-dashed border-2 border-white/10 hover:border-purple-500/40 transition-all group overflow-hidden shadow-2xl relative">
+                            <div id="tar-hold" class="text-center opacity-30 group-hover:opacity-100 transition-all scale-90 group-hover:scale-100 duration-500">
+                                <svg class="mx-auto mb-6" width="72" height="72" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4m2-5 5 5 5-5m-5 5V3" /></svg>
+                                <p class="text-[14px] font-black uppercase tracking-[0.3em]">٢. وێنەکانت (Batch Processing)</p>
+                                <p class="text-[9px] mt-2 text-purple-500 italic font-bold">تاوەکو ٣٠ وێنە هەڵبژێرە</p>
                             </div>
-                            <button id="save-preset-btn" disabled class="w-full py-7 btn-zaxm text-white rounded-[2.5rem] font-black text-xl shadow-2xl opacity-20 cursor-not-allowed transition-all">سەیڤکردن بۆ کتێبخانە</button>
-                            <p class="text-[10px] text-slate-500 text-center italic">تێبینی: سیستەمی Neural شێوازی ڕووناکی و ڕەنگی ئەم وێنەیە بۆت دەپارێزێت.</p>
-                        </div>
+                            <div id="tar-grid" class="hidden grid grid-cols-4 gap-4 p-10 w-full h-full overflow-y-auto custom-scrollbar"></div>
+                            <input type="file" id="tar-in" class="hidden" accept="image/*" multiple onchange="window.handleTarUpload(this)">
+                        </label>
                     </div>
+                    <button id="proc-btn" disabled onclick="window.startEditor()" class="px-40 py-8 btn-zaxm text-white rounded-full font-black text-3xl shadow-2xl transition-all uppercase italic opacity-20 tracking-tighter">بە سوپەر زیرەکی ڕێندەری بکە</button>
                 </div>
 
-                <!-- EDITOR VIEW -->
-                <div id="view-editor" class="hidden flex-1 flex flex-col lg:flex-row overflow-hidden relative">
-                    <div id="filmstrip" class="batch-strip flex lg:flex-col gap-5 overflow-x-auto lg:overflow-y-auto p-5 lg:w-32 flex-shrink-0 bg-black/40 shadow-2xl"></div>
+                <!-- STEP 2: EDITOR -->
+                <div id="editor-section" class="hidden flex-1 flex flex-col lg:flex-row overflow-hidden relative">
+                    <!-- Images Strip -->
+                    <div id="filmstrip" class="batch-strip flex lg:flex-col gap-6 overflow-x-auto lg:overflow-y-auto p-8 lg:w-44 flex-shrink-0 bg-black/40 shadow-2xl border-l border-white/5 custom-scrollbar"></div>
                     
-                    <div class="viewport flex-1 relative overflow-hidden bg-[#020202]">
+                    <!-- Viewport -->
+                    <div class="viewport flex-1 relative overflow-hidden bg-[#010101] flex items-center justify-center">
                         <div class="canvas-container" id="container">
                             <canvas id="main-canvas"></canvas>
                         </div>
-                        <!-- UI Overlays -->
-                        <div class="absolute bottom-10 left-1/2 -translate-x-1/2 flex items-center gap-6 glass px-12 py-5 rounded-full border border-white/10 shadow-[0_20px_80px_rgba(0,0,0,1)] z-20">
-                            <button onclick="zoomAdjust(0.7)" class="p-2 hover:text-blue-500"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><line x1="5" y1="12" x2="19" y2="12"/></svg></button>
-                            <button onclick="fitView()" class="text-[12px] font-black uppercase text-blue-400">Fit View</button>
-                            <span id="zoom-val" class="text-[13px] font-black w-16 text-center text-slate-100">100%</span>
-                            <button onclick="zoomAdjust(1.4)" class="p-2 hover:text-blue-500"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></button>
+                        <!-- HUD -->
+                        <div class="absolute bottom-10 left-1/2 -translate-x-1/2 flex items-center gap-10 glass px-14 py-6 rounded-full border border-white/10 shadow-[0_30px_120px_rgba(0,0,0,1)] z-20">
+                            <button onclick="window.zoomAdjust(0.7)" class="p-2 hover:text-blue-500 transition-all hover:scale-125"><svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><line x1="5" y1="12" x2="19" y2="12"/></svg></button>
+                            <button onclick="window.fitView()" class="text-[14px] font-black uppercase text-blue-400 tracking-[0.2em] hover:text-white transition-all">Fit View</button>
+                            <span id="zoom-val" class="text-[15px] font-black w-16 text-center text-white italic">100%</span>
+                            <button onclick="window.zoomAdjust(1.4)" class="p-2 hover:text-blue-500 transition-all hover:scale-125"><svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></button>
                         </div>
-                        <div class="absolute top-24 lg:top-8 left-8 flex gap-4 z-30">
-                            <button onclick="copySets()" class="glass px-6 py-3 rounded-full text-[11px] font-black uppercase text-blue-400">Copy</button>
-                            <button onclick="pasteSets()" class="glass px-6 py-3 rounded-full text-[11px] font-black uppercase text-purple-400">Paste</button>
-                            <button id="comp-btn" class="glass px-8 py-3 text-[11px] font-black uppercase text-white rounded-full active:bg-blue-600">Compare</button>
+                        <div class="absolute top-24 lg:top-10 left-10 flex gap-5 z-30">
+                            <button onclick="window.copySets()" class="glass px-7 py-3.5 rounded-full text-[12px] font-black uppercase text-blue-400 hover:bg-blue-600 shadow-2xl transition-all hover:scale-105 active:scale-95">Copy</button>
+                            <button onclick="window.pasteSets()" class="glass px-7 py-3.5 rounded-full text-[12px] font-black uppercase text-purple-400 hover:bg-purple-600 shadow-2xl transition-all hover:scale-105 active:scale-95">Paste</button>
+                            <button id="comp-btn" class="glass px-10 py-3.5 text-[12px] font-black uppercase text-white rounded-full active:bg-blue-600 shadow-2xl select-none transition-all">Compare</button>
                         </div>
                     </div>
 
-                    <div class="sidebar lg:w-[420px] glass p-8 flex flex-col gap-8 shadow-2xl z-50 overflow-y-auto custom-scrollbar h-full">
-                        <div class="p-8 bg-blue-600/15 rounded-[2.5rem] border border-blue-500/30 shadow-inner">
-                            <div class="flex justify-between text-[12px] font-black text-blue-400 uppercase mb-4 italic"><span>هێزی پرێسێت (Match)</span><span id="intensity-v">100%</span></div>
-                            <input type="range" id="intensity" min="0" max="100" value="100" class="accent-blue-500">
+                    <!-- Sidebar -->
+                    <div class="sidebar lg:w-[500px] glass p-10 flex flex-col gap-10 shadow-2xl z-50 overflow-y-auto custom-scrollbar h-full">
+                        
+                        <!-- Persistent Save -->
+                        <div class="p-7 bg-white/5 rounded-[2.5rem] border border-white/10 flex flex-col gap-5 shadow-inner">
+                            <h4 class="text-[11px] font-black uppercase tracking-[0.2em] text-slate-500 text-center italic">سەیڤکردن بۆ کتێبخانە و کۆمپیوتەر</h4>
+                            <div class="flex gap-3">
+                                <input type="text" id="save-name" placeholder="ناوی پرێسێت..." class="flex-1 bg-black/40 border border-white/10 rounded-2xl px-5 py-4 text-md font-bold text-white outline-none focus:border-blue-500 shadow-inner">
+                                <button onclick="window.exportPresetFile()" class="px-8 py-4 btn-zaxm text-white rounded-2xl font-black text-xs uppercase italic tracking-tighter shadow-lg hover:scale-105 active:scale-95 transition-all">Export</button>
+                            </div>
                         </div>
 
-                        <div class="space-y-3 flex-1">
+                        <!-- Strength Controller -->
+                        <div class="p-10 bg-blue-600/15 rounded-[3.5rem] border border-blue-500/30 shadow-[inset_0_0_50px_rgba(59,130,246,0.2)]">
+                            <div class="flex justify-between text-[14px] font-black text-blue-400 uppercase mb-6 italic tracking-widest"><span>هێزی Neural Match</span><span id="intensity-v">100%</span></div>
+                            <input type="range" id="intensity" min="0" max="100" value="100" class="accent-blue-500 h-1.5" oninput="window.render()">
+                        </div>
+
+                        <!-- Professional Advanced RAW -->
+                        <div class="space-y-4 flex-1">
                             <div class="accordion-item active">
-                                <div class="accordion-header" onclick="toggleAcc(this)"><span class="text-[11px] font-black uppercase tracking-widest text-slate-200 italic">ڕێکخستنی دەستی</span><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="m6 9 6 6 6-6"/></svg></div>
-                                <div class="accordion-content space-y-7 pt-6 px-1">
-                                    <div class="space-y-2"><div class="flex justify-between text-[10px] font-bold text-slate-500 uppercase"><span>Exposure</span><span id="exposure-v">100</span></div><input type="range" id="exposure" min="40" max="180" value="100"></div>
-                                    <div class="space-y-2"><div class="flex justify-between text-[10px] font-bold text-slate-500 uppercase"><span>Contrast</span><span id="contrast-v">100</span></div><input type="range" id="contrast" min="40" max="180" value="100"></div>
-                                    <div class="space-y-2"><div class="flex justify-between text-[11px] font-black text-pink-400 uppercase tracking-widest"><span>Skin Smoothing</span><span id="smoothing-v">0%</span></div><input type="range" id="smoothing" min="0" max="100" value="0" class="accent-pink-500"></div>
+                                <div class="accordion-header" onclick="window.toggleAcc(this)"><span class="text-[13px] font-black uppercase tracking-[0.2em] text-slate-100 italic">Master Correction Panel</span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="m6 9 6 6 6-6"/></svg></div>
+                                <div class="accordion-content space-y-8 pt-8 px-2 text-right">
+                                    <div class="space-y-3"><div class="flex justify-between text-[11px] font-bold text-slate-500 uppercase italic"><span>ڕووناکی (Exposure)</span><span id="exposure-v" class="text-white">100</span></div><input type="range" id="exposure" min="20" max="180" value="100" oninput="window.render()"></div>
+                                    <div class="space-y-3"><div class="flex justify-between text-[11px] font-bold text-slate-500 uppercase italic"><span>کۆنتراست (Contrast)</span><span id="contrast-v" class="text-white">100</span></div><input type="range" id="contrast" min="30" max="170" value="100" oninput="window.render()"></div>
+                                    <div class="space-y-3"><div class="flex justify-between text-[11px] font-bold text-slate-500 uppercase italic"><span>Highlights</span><span id="highlights-v" class="text-white">0</span></div><input type="range" id="highlights" min="-70" max="70" value="0" oninput="window.render()"></div>
+                                    <div class="space-y-3"><div class="flex justify-between text-[11px] font-bold text-slate-500 uppercase italic"><span>Shadows</span><span id="shadows-v" class="text-white">0</span></div><input type="range" id="shadows" min="-70" max="70" value="0" oninput="window.render()"></div>
+                                    <div class="space-y-3"><div class="flex justify-between text-[11px] font-bold text-slate-500 uppercase italic"><span>Temperature</span><span id="temp-v" class="text-blue-400">0</span></div><input type="range" id="temp" min="-60" max="60" value="0" oninput="window.render()"></div>
+                                    <div class="space-y-3"><div class="flex justify-between text-[11px] font-bold text-slate-500 uppercase italic"><span>Clarity (تیژی تۆن)</span><span id="clarity-v" class="text-white">0</span></div><input type="range" id="clarity" min="0" max="100" value="0" oninput="window.render()"></div>
+                                </div>
+                            </div>
+
+                            <div class="accordion-item">
+                                <div class="accordion-header" onclick="window.toggleAcc(this)"><span class="text-[13px] font-black uppercase tracking-[0.2em] text-slate-100 italic">Face & Texture Engine</span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="m6 9 6 6 6-6"/></svg></div>
+                                <div class="accordion-content space-y-8 pt-8 px-2 text-right">
+                                    <div class="space-y-3"><div class="flex justify-between text-[12px] font-black text-pink-400 uppercase tracking-widest italic"><span>Skin Smoothing</span><span id="smoothing-v">0%</span></div><input type="range" id="smoothing" min="0" max="100" value="0" class="accent-pink-500" oninput="window.render()"></div>
+                                    <div class="space-y-3"><div class="flex justify-between text-[11px] font-bold text-slate-500 uppercase italic"><span>Grain (نۆیز)</span><span id="grain-v">0</span></div><input type="range" id="grain" min="0" max="100" value="0" oninput="window.render()"></div>
                                 </div>
                             </div>
                         </div>
 
-                        <div class="space-y-4 pt-8 border-t border-white/5">
-                            <button onclick="dlAllZIP()" class="w-full py-5 bg-blue-600/10 text-blue-400 rounded-2xl font-black text-xs uppercase tracking-widest border border-blue-500/20">داگرتنی گشت وێنەکان (ZIP)</button>
-                            <button onclick="dlActive()" class="w-full py-7 btn-zaxm text-white rounded-[2.5rem] font-black text-lg shadow-2xl italic tracking-tighter">دابەزاندنی ئەم وێنەیە</button>
+                        <!-- Multi-Export -->
+                        <div class="space-y-5 pt-10 border-t border-white/5">
+                            <button onclick="window.dlAllZIP()" class="w-full py-6 bg-blue-600/10 text-blue-400 rounded-[2.5rem] font-black text-[11px] uppercase tracking-[0.3em] border border-blue-500/20 hover:bg-blue-600/20 hover:scale-[1.02] active:scale-95 transition-all shadow-xl">DOWNLOAD ALL AS ZIP (ULTRA)</button>
+                            <button onclick="window.dlActive()" class="w-full py-8 btn-zaxm text-white rounded-[3.5rem] font-black text-2xl shadow-[0_20px_50px_rgba(59,130,246,0.4)] italic tracking-tighter uppercase hover:scale-105 active:scale-95 transition-all">داگرتنی وێنەی ئێستا</button>
                         </div>
-                    </div>
-                </div>
-
-                <!-- EMPTY STATE (EDITOR DROP ZONE) -->
-                <div id="view-empty" class="hidden flex-1 flex flex-col items-center justify-center p-20 bg-[#080808] border-2 border-dashed border-transparent transition-all">
-                    <div class="text-center space-y-6 max-w-md pointer-events-none">
-                        <div class="w-24 h-24 bg-white/5 rounded-full flex items-center justify-center mx-auto mb-8 border border-white/10"><svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4m2-5 5 5 5-5m-5 5V3" /></svg></div>
-                        <h2 class="text-3xl font-black uppercase italic tracking-tighter text-white">وێنەکانت بار بکە</h2>
-                        <p class="text-slate-500 text-sm font-bold">وێنەکانت ڕابکێشە بۆ ئێرە یان کلیک لەسەر دوگمەی خوارەوە بکە.</p>
-                        <button onclick="document.getElementById('tar-in-hidden').click()" class="px-12 py-6 bg-white text-black rounded-full font-black uppercase text-xs tracking-widest hover:scale-105 active:scale-95 transition-all pointer-events-auto">Select Photos</button>
-                        <input type="file" id="tar-in-hidden" class="hidden" accept="image/*" multiple>
                     </div>
                 </div>
 
@@ -176,278 +194,250 @@
         </div>
     </div>
 
-    <!-- Scripts -->
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import { getFirestore, collection, addDoc, onSnapshot, query, doc, deleteDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
-        import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-
-        // Initialization
-        const firebaseConfig = JSON.parse(__firebase_config);
-        const app = initializeApp(firebaseConfig);
-        const db = getFirestore(app);
-        const auth = getAuth(app);
-        const appId = typeof __app_id !== 'undefined' ? __app_id : 'tahir-preset-app';
-
-        // State
-        let presets = []; let batch = []; let activeIdx = 0; let selectedPreset = null;
-        let zoomL = 1.0, fitS = 1.0; let pBaseC = document.createElement('canvas');
-        let isRendering = false, isComparing = false;
-        const SLIDERS = ['intensity', 'exposure', 'contrast', 'smoothing'];
-
+    <!-- Application Script -->
+    <script>
+        // Core State
+        let srcStats = null, batch = [], activeIdx = 0, localPresets = [];
+        let zoomL = 1.0, fitS = 1.0, isComparing = false; 
+        let pBaseC = document.createElement('canvas');
+        let copiedSettings = null;
         const get = id => document.getElementById(id);
+        const SLIDERS = ['intensity', 'exposure', 'contrast', 'highlights', 'shadows', 'temp', 'smoothing', 'grain', 'clarity'];
 
-        // --- AUTH & DATA SYNC ---
-        const init = async () => {
-            if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
-                await signInWithCustomToken(auth, __initial_auth_token);
-            } else {
-                await signInAnonymously(auth);
+        // --- HYPER-NEURAL RGB ENGINE (Multi-Channel Match) ---
+        function analyze(ctx, w, h) {
+            const d = ctx.getImageData(0,0,w,h).data;
+            const c = d.length/4;
+            const rHist = new Array(256).fill(0), gHist = new Array(256).fill(0), bHist = new Array(256).fill(0);
+            let rSum=0, gSum=0, bSum=0;
+
+            for(let i=0; i<d.length; i+=4){ 
+                rHist[d[i]]++; gHist[d[i+1]]++; bHist[d[i+2]]++;
+                rSum+=d[i]; gSum+=d[i+1]; bSum+=d[i+2];
             }
-            onAuthStateChanged(auth, user => {
-                if (!user) return;
-                const q = collection(db, 'artifacts', appId, 'public', 'data', 'presets');
-                onSnapshot(q, snap => {
-                    presets = snap.docs.map(d => ({ id: d.id, ...d.data() }));
-                    renderPresetList();
-                });
-            });
-        };
-        init();
+            const mean = { r: rSum/c, g: gSum/c, b: bSum/c };
+            
+            // Stats for standard deviation (Used for balance)
+            let vr=0, vg=0, vb=0;
+            for(let i=0; i<d.length; i+=4){ vr+=Math.pow(d[i]-mean.r,2); vg+=Math.pow(d[i+1]-mean.g,2); vb+=Math.pow(d[i+2]-mean.b,2); }
+            const std = { r:Math.sqrt(vr/c)||1, g:Math.sqrt(vg/c)||1, b:Math.sqrt(vb/c)||1 };
 
-        // --- DRAG AND DROP HANDLER ---
-        const setupDD = (dropZone, input) => {
-            ['dragenter', 'dragover'].forEach(eventName => {
-                dropZone.addEventListener(eventName, (e) => {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    dropZone.classList.add('drag-active');
-                }, false);
-            });
+            return { rHist, gHist, bHist, mean, std };
+        }
 
-            ['dragleave', 'drop'].forEach(eventName => {
-                dropZone.addEventListener(eventName, (e) => {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    dropZone.classList.remove('drag-active');
-                }, false);
-            });
-
-            dropZone.addEventListener('drop', (e) => {
-                const dt = e.dataTransfer;
-                const files = dt.files;
-                if (files.length > 0) {
-                    input.files = files;
-                    input.dispatchEvent(new Event('change'));
-                }
-            }, false);
-        };
-
-        // Wire up Drag and Drop
-        setupDD(get('src-drop'), get('creator-src-in'));
-        setupDD(get('view-empty'), get('tar-in-hidden'));
-
-        // --- PRESET CREATION ---
-        let tempSrcStats = null;
-        get('creator-src-in').onchange = e => {
-            const f = e.target.files[0]; if(!f) return;
-            const r = new FileReader();
-            r.onload = ev => {
-                const img = new Image();
-                img.onload = () => {
-                    get('creator-src-img').src = ev.target.result;
-                    get('creator-src-img').classList.remove('hidden'); get('creator-src-hold').classList.add('hidden');
-                    const tx = document.createElement('canvas').getContext('2d'); tx.canvas.width=256; tx.canvas.height=256;
-                    tx.drawImage(img,0,0,256,256);
-                    tempSrcStats = getStats(tx, 256, 256);
-                    get('save-preset-btn').disabled = false;
-                    get('save-preset-btn').classList.remove('opacity-20','cursor-not-allowed');
-                };
-                img.src = ev.target.result;
-            };
-            r.readAsDataURL(f);
-        };
-
-        window.saveAppPreset = async () => {
-            const name = get('preset-name').value.trim() || "New Preset";
-            if(!tempSrcStats) return;
-            get('loading-overlay').style.display = 'flex';
-            try {
-                await addDoc(collection(db, 'artifacts', appId, 'public', 'data', 'presets'), {
-                    name, stats: JSON.stringify(tempSrcStats), thumb: get('creator-src-img').src, createdAt: Date.now()
-                });
-                get('preset-name').value = ''; 
-                get('creator-src-img').classList.add('hidden'); get('creator-src-hold').classList.remove('hidden');
-                get('toast').classList.remove('hidden'); setTimeout(()=>get('toast').classList.add('hidden'),2000);
-            } catch(e) { console.error(e); }
-            get('loading-overlay').style.display = 'none';
-        };
-        get('save-preset-btn').onclick = window.saveAppPreset;
-
-        // --- EDITOR ENGINE ---
-        get('tar-in-hidden').onchange = e => {
-            const fs = Array.from(e.target.files).slice(0, 30); if(!fs.length) return;
-            batch = []; let loaded = 0;
-            fs.forEach(f => {
-                const r = new FileReader();
-                r.onload = ev => {
-                    const img = new Image();
-                    img.onload = () => {
-                        batch.push({ img, data: ev.target.result, settings: {intensity:100, exposure:100, contrast:100, smoothing:0} });
-                        loaded++;
-                        if(loaded === fs.length) {
-                            get('view-empty').classList.add('hidden'); get('view-editor').classList.remove('hidden');
-                            loadPhoto(0);
-                        }
-                    };
-                    img.src = ev.target.result;
-                };
-                r.readAsDataURL(f);
-            });
-        };
-
-        const loadPhoto = idx => {
-            if(batch[activeIdx]) batch[activeIdx].settings = getUI();
-            activeIdx = idx; renderFilmstrip();
-            const item = batch[idx];
-            fitS = Math.min((get('container').clientWidth-40) / item.img.width, (get('container').clientHeight-40) / item.img.height);
-            zoomL = 1.0; 
-            if(selectedPreset) applyPresetLogic(item, selectedPreset);
-            else {
-                const ctx = pBaseC.getContext('2d'); pBaseC.width=item.img.width; pBaseC.height=item.img.height;
-                ctx.drawImage(item.img,0,0);
-                setUI(item.settings); updateZoom(); render();
-            }
-        };
-
-        const applyPresetLogic = (item, preset) => {
-            const srcStats = JSON.parse(preset.stats);
+        function applyNeuralMatch(item, sStats) {
             const ctx = pBaseC.getContext('2d'); pBaseC.width=item.img.width; pBaseC.height=item.img.height;
             ctx.drawImage(item.img, 0, 0);
-            const idata = ctx.getImageData(0,0,item.img.width,item.img.height);
-            const d = idata.data;
+            const idata = ctx.getImageData(0,0,item.img.width,item.img.height); const d = idata.data;
             const tX = document.createElement('canvas').getContext('2d'); tX.canvas.width=256; tX.canvas.height=256;
             tX.drawImage(item.img,0,0,256,256);
-            const tStats = getStats(tX, 256, 256);
+            const tStats = analyze(tX, 256, 256);
 
-            const buildCDF = h => { let cdf=new Array(256).fill(0), sum=0, tot=h.reduce((a,b)=>a+b,0); for(let i=0;i<256;i++){ sum+=h[i]; cdf[i]=sum/tot; } return cdf; };
-            const sCDF = buildCDF(srcStats.histogram), tCDF = buildCDF(tStats.histogram);
-            let LUT = new Array(256);
-            for(let i=0; i<256; i++){ let j=0; while(j<255 && sCDF[j]<tCDF[i]) j++; LUT[i]=j; }
-            const sR = srcStats.std.r/tStats.std.r, sG = srcStats.std.g/tStats.std.g, sB = srcStats.std.b/tStats.std.b;
+            // Channel-wise LUT building (RGB Matching)
+            const buildLUT = (sH, tH) => {
+                const sCDF = new Array(256).fill(0), tCDF = new Array(256).fill(0);
+                let sSum=0, tSum=0, sTotal=sH.reduce((a,b)=>a+b,0), tTotal=tH.reduce((a,b)=>a+b,0);
+                for(let i=0; i<256; i++){ sSum+=sH[i]; sCDF[i]=sSum/sTotal; tSum+=tH[i]; tCDF[i]=tSum/tTotal; }
+                let lut = new Array(256);
+                for(let i=0; i<256; i++){ let j=0; while(j<255 && sCDF[j]<tCDF[i]) j++; lut[i]=j; }
+                return lut;
+            };
+
+            const rLUT = buildLUT(sStats.rHist, tStats.rHist);
+            const gLUT = buildLUT(sStats.gHist, tStats.gHist);
+            const bLUT = buildLUT(sStats.bHist, tStats.bHist);
+
+            // Tonal Scaling Factors
+            const sR = sStats.std.r/tStats.std.r, sG = sStats.std.g/tStats.std.g, sB = sStats.std.b/tStats.std.b;
 
             for(let j=0; j<d.length; j+=4) {
-                const lum = Math.round(0.299*d[j] + 0.587*d[j+1] + 0.114*d[j+2]);
-                const ratio = LUT[lum] / (lum || 1);
-                d[j] = Math.max(0,Math.min(255, ((d[j]-tStats.mean.r)*sR + srcStats.mean.r)*0.85 + (d[j]*ratio)*0.15));
-                d[j+1] = Math.max(0,Math.min(255, ((d[j+1]-tStats.mean.g)*sG + srcStats.mean.g)*0.85 + (d[j+1]*ratio)*0.15));
-                d[j+2] = Math.max(0,Math.min(255, ((d[j+2]-tStats.mean.b)*sB + srcStats.mean.b)*0.85 + (d[j+2]*ratio)*0.15));
+                // Blend statistical mapping with Histogram mapping for 100% precision
+                const nr = (d[j]-tStats.mean.r)*sR + sStats.mean.r;
+                const ng = (d[j+1]-tStats.mean.g)*sG + sStats.mean.g;
+                const nb = (d[j+2]-tStats.mean.b)*sB + sStats.mean.b;
+                
+                d[j] = Math.max(0,Math.min(255, nr*0.8 + rLUT[d[j]]*0.2));
+                d[j+1] = Math.max(0,Math.min(255, ng*0.8 + gLUT[d[j+1]]*0.2));
+                d[j+2] = Math.max(0,Math.min(255, nb*0.8 + bLUT[d[j+2]]*0.2));
             }
-            ctx.putImageData(idata, 0, 0);
-            setUI(item.settings); updateZoom(); render();
+            ctx.putImageData(idata, 0, 0); window.render();
+        }
+
+        // --- CORE FUNCTIONS ---
+        window.handleSrcUpload = el => {
+            const f = el.files[0]; if(!f) return;
+            const r = new FileReader(); r.onload = ev => {
+                const img = new Image(); img.onload = () => {
+                    get('src-pre').src = ev.target.result; get('src-pre').classList.remove('hidden'); get('src-hold').classList.add('hidden');
+                    const tx = document.createElement('canvas').getContext('2d'); tx.canvas.width=256; tx.canvas.height=256;
+                    tx.drawImage(img,0,0,256,256);
+                    srcStats = analyze(tx, 256, 256); checkReady();
+                }; img.src = ev.target.result;
+            }; r.readAsDataURL(f);
         };
 
-        const render = (targetCanvas = get('main-canvas'), settings = getUI(), sourceImg = batch[activeIdx]?.img, matchedImg = pBaseC) => {
-            if(!sourceImg) return;
-            const ctx = targetCanvas.getContext('2d');
-            const w = sourceImg.width, h = sourceImg.height;
-            targetCanvas.width = w; targetCanvas.height = h;
+        window.handleTarUpload = el => {
+            const fs = Array.from(el.files).slice(0, 30); if(!fs.length) return;
+            batch = []; get('tar-grid').innerHTML = ''; get('tar-grid').classList.remove('hidden'); get('tar-hold').classList.add('hidden');
+            let loaded = 0;
+            fs.forEach(f => {
+                const r = new FileReader(); r.onload = ev => {
+                    const img = new Image(); img.onload = () => {
+                        batch.push({ img, data: ev.target.result, settings: defS(), name: f.name });
+                        const t = document.createElement('img'); t.src = ev.target.result; t.className = "w-full aspect-square object-cover rounded-xl shadow-xl hover:scale-105 transition-all duration-300"; get('tar-grid').appendChild(t);
+                        loaded++; if(loaded === fs.length) checkReady();
+                    }; img.src = ev.target.result;
+                }; r.readAsDataURL(f);
+            });
+        };
 
-            if(isComparing && targetCanvas === get('main-canvas')) { ctx.drawImage(sourceImg, 0, 0); return; }
+        const defS = () => ({ intensity:100, exposure:100, contrast:100, highlights:0, shadows:0, temp:0, tint:0, smoothing:0, sharpen:0, grain:0, clarity:0 });
+        const checkReady = () => { if(srcStats && batch.length) { get('proc-btn').disabled = false; get('proc-btn').style.opacity = 1; } };
+        window.startEditor = () => { get('upload-section').classList.add('hidden'); get('editor-section').classList.remove('hidden'); window.loadPhoto(0); };
 
-            const blend = settings.intensity / 100;
+        window.loadPhoto = idx => {
+            if(batch[activeIdx]) batch[activeIdx].settings = getUI();
+            activeIdx = idx; 
+            get('filmstrip').innerHTML = batch.map((it, i) => `<div class="batch-item ${i===activeIdx?'active':''}" onclick="window.loadPhoto(${i})"><img src="${it.data}" class="w-full h-full object-cover"></div>`).join('');
+            const item = batch[idx];
+            fitS = Math.min((get('container').clientWidth-40) / item.img.width, (get('container').clientHeight-40) / item.img.height);
+            zoomL = 1.0; setUI(item.settings); applyNeuralMatch(item, srcStats);
+        };
+
+        window.render = (targetC = get('main-canvas'), sets = getUI(), sImg = batch[activeIdx]?.img) => {
+            if(!sImg) return; const ctx = targetC.getContext('2d'); const w = sImg.width, h = sImg.height; targetC.width = w; targetC.height = h;
+            if(isComparing && targetC === get('main-canvas')) { ctx.drawImage(sImg, 0, 0); return; }
+            
+            const blend = sets.intensity / 100;
             const buf = document.createElement('canvas'); buf.width=w; buf.height=h; const bX = buf.getContext('2d');
-            bX.drawImage(sourceImg, 0, 0); bX.globalAlpha = blend; bX.drawImage(matchedImg, 0, 0); bX.globalAlpha = 1.0;
+            bX.drawImage(sImg, 0, 0); bX.globalAlpha = blend; bX.drawImage(pBaseC, 0, 0); bX.globalAlpha = 1.0;
 
-            if(settings.smoothing > 0) {
-                const idata = bX.getImageData(0,0,w,h); const d = idata.data; const copy = new Uint8ClampedArray(d);
-                const step = w > 1600 ? 3 : 1; const rad = Math.max(1, Math.floor(settings.smoothing/15)); const smFactor = settings.smoothing/220;
-                for(let y=0; y<h; y+=step) {
-                    for(let x=0; x<w; x+=step) {
-                        const i = (y*w+x)*4;
-                        if(d[i]>75 && d[i+1]>50 && d[i]>d[i+1]) {
-                            if(y>rad && y<h-rad && x>rad && x<w-rad) {
-                                let sr=0,sg=0,sb=0,sc=0;
-                                for(let ky=-rad; ky<=rad; ky+=rad) for(let kx=-rad; kx<=rad; kx+=rad) { const ki=((y+ky)*w+(x+kx))*4; sr+=copy[ki]; sg+=copy[ki+1]; sb+=copy[ki+2]; sc++; }
-                                d[i]=copy[i]*(1-smFactor)+(sr/sc)*smFactor; d[i+1]=copy[i+1]*(1-smFactor)+(sg/sc)*smFactor; d[i+2]=copy[i+2]*(1-smFactor)+(sb/sc)*smFactor;
-                            }
-                        }
+            const idata = bX.getImageData(0,0,w,h); const d = idata.data;
+            const copy = new Uint8ClampedArray(d);
+            const step = w > 2000 ? 3 : 1; 
+            const rad = Math.max(1, Math.floor(sets.smoothing/15));
+
+            for(let y=0; y<h; y+=step) for(let x=0; x<w; x+=step) {
+                const i = (y*w+x)*4; const lum = 0.299*d[i]+0.587*d[i+1]+0.114*d[i+2];
+                // Highlights / Shadows
+                if(lum > 190 && sets.highlights !== 0) { const m=1+(sets.highlights/200); d[i]*=m; d[i+1]*=m; d[i+2]*=m; }
+                if(lum < 70 && sets.shadows !== 0) { const m=1+(sets.shadows/100); d[i]*=m; d[i+1]*=m; d[i+2]*=m; }
+                
+                // Clarity Logic (Contrast enhancement in Midtones)
+                if(sets.clarity > 0 && lum > 80 && lum < 180) { const cF=1+(sets.clarity/300); d[i]*=cF; d[i+1]*=cF; d[i+2]*=cF; }
+
+                // Precision Skin Smooth
+                if(sets.smoothing > 0 && d[i]>80 && d[i+1]>60 && d[i]>d[i+1] && d[i]>d[i+2]) {
+                    if(y>rad && y<h-rad && x>rad && x<w-rad) {
+                        let sr=0,sg=0,sb=0,sc=0; for(let ky=-rad;ky<=rad;ky+=rad)for(let kx=-rad;kx<=rad;kx+=rad){ const ki=((y+ky)*w+(x+kx))*4; sr+=copy[ki]; sg+=copy[ki+1]; sb+=copy[ki+2]; sc++; }
+                        const fact = sets.smoothing/220; d[i]=copy[i]*(1-fact)+(sr/sc)*fact; d[i+1]=copy[i+1]*(1-fact)+(sg/sc)*fact; d[i+2]=copy[i+2]*(1-fact)+(sb/sc)*fact;
                     }
                 }
-                bX.putImageData(idata,0,0);
+                if(sets.grain > 0) { const g=(Math.random()-0.5)*sets.grain; d[i]+=g; d[i+1]+=g; d[i+2]+=g; }
             }
-
-            ctx.filter = `brightness(${settings.exposure}%) contrast(${settings.contrast}%)`;
+            bX.putImageData(idata,0,0);
+            ctx.filter = `brightness(${sets.exposure}%) contrast(${sets.contrast}%)`; 
             ctx.drawImage(buf, 0, 0);
+
+            if(sets.temp !== 0) {
+                ctx.globalCompositeOperation = 'overlay';
+                ctx.fillStyle = sets.temp > 0 ? `rgba(255,180,0,${Math.abs(sets.temp)/350})` : `rgba(0,100,255,${Math.abs(sets.temp)/350})`; ctx.fillRect(0,0,w,h);
+            }
+            window.updateZoom();
         };
 
-        // --- UI HELPERS ---
-        window.switchMode = mode => {
-            get('btn-mode-creator').classList.toggle('active', mode==='creator');
-            get('btn-mode-editor').classList.toggle('active', mode==='editor');
-            get('view-creator').style.display = mode==='creator' ? 'flex' : 'none';
-            if(mode==='editor') {
-                if(batch.length > 0) { get('view-editor').classList.remove('hidden'); get('view-empty').classList.add('hidden'); }
-                else { get('view-editor').classList.add('hidden'); get('view-empty').classList.remove('hidden'); }
-            } else { get('view-editor').classList.add('hidden'); get('view-empty').classList.add('hidden'); }
+        // --- PRESET LOCAL SYSTEM ---
+        window.exportPresetFile = () => {
+            const name = get('save-name').value.trim() || "Preset"; if(!srcStats) return;
+            const data = { name, stats: srcStats, settings: getUI() };
+            const blob = new Blob([JSON.stringify(data)], {type:"application/json"});
+            const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = `${name}.json`; a.click();
+            localPresets.push(data); renderPresetList();
+            get('toast').innerText="سەیڤ کرا! ✓"; get('toast').classList.remove('hidden'); setTimeout(()=>get('toast').classList.add('hidden'),2000);
+        };
+
+        window.importPresetFile = e => {
+            const f = e.target.files[0]; if(!f) return;
+            const r = new FileReader(); r.onload = ev => { try { const d = JSON.parse(ev.target.result); localPresets.push(d); renderPresetList(); } catch(e){ alert("Invalid File"); } };
+            r.readAsText(f);
         };
 
         const renderPresetList = () => {
-            const list = get('preset-list');
-            list.innerHTML = presets.map(p => `
-                <div class="preset-card glass rounded-2xl p-2 relative ${selectedPreset?.id === p.id ? 'active' : ''}" onclick="selectPreset('${p.id}')">
-                    <img src="${p.thumb}" class="w-full aspect-video object-cover rounded-xl mb-3">
-                    <div class="px-2 pb-1 flex justify-between items-center">
-                        <span class="text-[10px] font-black uppercase truncate">${p.name}</span>
-                        <button onclick="event.stopPropagation(); deletePreset('${p.id}')" class="text-red-500 opacity-40 hover:opacity-100 transition-all"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg></button>
-                    </div>
+            get('preset-list').innerHTML = localPresets.map((p, i) => `
+                <div class="preset-pill group" onclick="window.applyLibPreset(${i})">
+                    <span class="truncate">${p.name}</span>
+                    <button onclick="event.stopPropagation(); localPresets.splice(${i},1); renderPresetList();" class="text-white/20 hover:text-red-500 transition-all">✕</button>
                 </div>
-            `).join('') || '<div class="text-center py-20 opacity-20"><p class="text-[10px] font-bold">کتێبخانەکە چۆڵە</p></div>';
+            `).join('') || '<div class="text-center py-20 opacity-20 text-[10px] font-bold">چۆڵە</div>';
         };
 
-        window.selectPreset = id => { selectedPreset = presets.find(p => p.id === id); renderPresetList(); if(batch[activeIdx]) loadPhoto(activeIdx); };
-        window.deletePreset = async id => { if(confirm("دڵنیای؟")) await deleteDoc(doc(db, 'artifacts', appId, 'public', 'data', 'presets', id)); };
-        const renderFilmstrip = () => { get('filmstrip').innerHTML = batch.map((it, i) => `<div class="batch-item ${i===activeIdx?'active':''}" onclick="loadPhoto(${i})"><img src="${it.data}" class="w-full h-full object-cover"></div>`).join(''); };
-        const getStats = (ctx, w, h) => {
-            const d = ctx.getImageData(0,0,w,h).data; let r=0,g=0,b=0,c=d.length/4,hist=new Array(256).fill(0);
-            for(let i=0;i<d.length;i+=4){ const l=Math.round(0.299*d[i]+0.587*d[i+1]+0.114*d[i+2]); hist[l]++; r+=d[i]; g+=d[i+1]; b+=d[i+2]; }
-            const m={r:r/c,g:g/c,b:b/c}; let vr=0,vg=0,vb=0; for(let i=0;i<d.length;i+=4){ vr+=Math.pow(d[i]-m.r,2); vg+=Math.pow(d[i+1]-m.g,2); vb+=Math.pow(d[i+2]-m.b,2); }
-            return {mean:m, std:{r:Math.sqrt(vr/c)||1, g:Math.sqrt(vg/c)||1, b:Math.sqrt(vb/c)||1}, histogram: hist};
+        window.applyLibPreset = i => { 
+            srcStats = localPresets[i].stats; 
+            if(localPresets[i].settings) setUI(localPresets[i].settings);
+            if(batch[activeIdx]) window.loadPhoto(activeIdx); 
         };
 
+        // --- UTILS ---
         const getUI = () => { const o={}; SLIDERS.forEach(s=>o[s]=parseInt(get(s).value)); return o; };
-        const setUI = o => { SLIDERS.forEach(s=>{ get(s).value=o[s]; const v=get(s+'-v'); if(v) v.innerText=(s==='smoothing'||s==='intensity')?o[s]+'%':o[s]; }); };
-        SLIDERS.forEach(s => get(s).oninput = () => { const v=get(s+'-v'); if(v) v.innerText=(s==='smoothing'||s==='intensity')?get(s).value+'%':get(s).value; render(); });
-
+        const setUI = o => { SLIDERS.forEach(s=>{ get(s).value=o[s]; const v=get(s+'-v'); if(v) v.innerText=(['smoothing','intensity'].includes(s))?o[s]+'%':o[s]; }); };
         window.toggleAcc = el => el.parentElement.classList.toggle('active');
-        window.zoomAdjust = m => { zoomL*=m; if(zoomL<0.05) zoomL=0.05; updateZoom(); };
-        window.fitView = () => { zoomL=1.0; updateZoom(); get('container').scrollLeft=0; get('container').scrollTop=0; };
+        window.zoomAdjust = m => { zoomL*=m; if(zoomL<0.05) zoomL=0.05; window.updateZoom(); };
+        window.fitView = () => { zoomL=1.0; window.updateZoom(); get('container').scrollLeft=0; get('container').scrollTop=0; };
         window.updateZoom = () => { const it=batch[activeIdx]; if(!it) return; const s=fitS*zoomL; get('main-canvas').style.width=(it.img.width*s)+'px'; get('main-canvas').style.height=(it.img.height*s)+'px'; get('zoom-val').innerText=Math.round(zoomL*100)+'%'; };
-        window.dlActive = () => { const a=document.createElement('a'); a.download=`Tahir_Edit.jpg`; a.href=get('main-canvas').toDataURL('image/jpeg',1.0); a.click(); };
+        window.copySets = () => { copiedSettings = getUI(); get('toast').innerText="کۆپی کرا! ✓"; get('toast').classList.remove('hidden'); setTimeout(()=>get('toast').classList.add('hidden'),1500); };
+        window.pasteSets = () => { if(copiedSettings) { setUI(copiedSettings); window.render(); } };
+        window.dlActive = () => { const a=document.createElement('a'); a.download=`Result.jpg`; a.href=get('main-canvas').toDataURL('image/jpeg',1.0); a.click(); };
 
         window.dlAllZIP = async () => {
-            if(!batch.length || !selectedPreset) return;
-            const zip = new JSZip(); get('loading-overlay').style.display='flex'; get('loading-text').innerText="ئامادە دەکرێت...";
+            if(!batch.length) return; const zip = new JSZip(); get('overlay-loading').style.display='flex';
             const tempC = document.createElement('canvas');
             for(let i=0; i<batch.length; i++){
-                get('loading-text').innerText = `${i+1} / ${batch.length} Processing...`;
-                loadPhoto(i); await new Promise(r=>setTimeout(r,100));
-                render(tempC, batch[i].settings, batch[i].img, pBaseC);
+                window.loadPhoto(i); await new Promise(r=>setTimeout(r,150));
+                window.render(tempC, batch[i].settings, batch[i].img);
                 const blob = await new Promise(r => tempC.toBlob(r, 'image/jpeg', 1.0));
-                zip.file(`Tahir_Batch_${i+1}.jpg`, blob);
+                zip.file(`Photo_${i+1}.jpg`, blob);
             }
             const content = await zip.generateAsync({type:"blob"});
-            const a = document.createElement('a'); a.href = URL.createObjectURL(content); a.download = "Tahir_Batch.zip"; a.click();
-            get('loading-overlay').style.display = 'none';
+            const a = document.createElement('a'); a.href = URL.createObjectURL(content); a.download = "Tahir_Bulk_Export.zip"; a.click();
+            get('overlay-loading').style.display = 'none';
         };
 
-        // Panning
+        const setupDD = (zone, input) => {
+            ['dragenter', 'dragover'].forEach(e => zone.addEventListener(e, (ev) => { ev.preventDefault(); zone.classList.add('drag-active'); }));
+            ['dragleave', 'drop'].forEach(e => zone.addEventListener(e, (ev) => { ev.preventDefault(); zone.classList.remove('drag-active'); }));
+            zone.addEventListener('drop', (ev) => { ev.preventDefault(); const files = ev.dataTransfer.files; if (files.length > 0) { input.files = files; input.dispatchEvent(new Event('change')); } });
+        };
+        setupDD(get('src-drop'), get('src-in'));
+        setupDD(get('tar-drop'), get('tar-in'));
+
+        const comp = get('comp-btn');
+        comp.onmousedown = () => { isComparing=true; window.render(); };
+        comp.onmouseup = () => { isComparing=false; window.render(); };
+
         let isD=false, sx, sy, sl, st;
         get('container').onmousedown = e => { if(zoomL<=1) return; isD=true; sx=e.pageX-get('container').offsetLeft; sy=e.pageY-get('container').offsetTop; sl=get('container').scrollLeft; st=get('container').scrollTop; };
         window.addEventListener('mouseup',()=>isD=false);
         get('container').onmousemove = e => { if(!isD) return; get('container').scrollLeft=sl-(e.pageX-get('container').offsetLeft-sx); get('container').scrollTop=st-(e.pageY-get('container').offsetTop-sy); };
-        get('comp-btn').onmousedown = () => { isComparing=true; render(); };
-        get('comp-btn').onmouseup = () => { isComparing=false; render(); };
+
+        window.toggleLibrary = () => {
+            const panel = get('library-panel'); const handle = get('library-handle');
+            if (panel.classList.contains('w-0')) {
+                panel.classList.remove('w-0', 'opacity-0', 'p-0'); panel.classList.add('w-[300px]', 'p-8');
+                handle.classList.add('hidden');
+            } else {
+                panel.classList.add('w-0', 'opacity-0', 'p-0'); panel.classList.remove('w-[300px]', 'p-8');
+                handle.classList.remove('hidden'); handle.classList.add('flex');
+            }
+        };
+
+        window.switchMode = m => {
+            get('btn-mode-creator').classList.toggle('active', m==='creator'); get('btn-mode-editor').classList.toggle('active', m==='editor');
+            get('view-creator').style.display = m==='creator' ? 'flex' : 'none';
+            if(m==='editor') {
+                if(batch.length > 0) { get('view-editor').classList.remove('hidden'); get('view-empty').classList.add('hidden'); }
+                else { get('view-editor').classList.add('hidden'); get('view-empty').classList.remove('hidden'); }
+            } else { get('view-editor').classList.add('hidden'); get('view-empty').classList.add('hidden'); }
+        };
     </script>
 </body>
 </html>
