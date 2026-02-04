@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tahir Tahir - AI Preset Library v19.5</title>
+    <title>Tahir Tahir - AI Preset Library v19.6</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
     <style>
@@ -35,6 +35,8 @@
         .accordion-item.active .accordion-content { max-height: 1200px; padding-bottom: 1.5rem; }
         .accordion-header { cursor: pointer; display: flex; justify-content: space-between; align-items: center; padding: 15px 12px; border-bottom: 1px solid rgba(255,255,255,0.05); }
 
+        .drag-active { border-color: var(--primary) !important; background: rgba(59, 130, 246, 0.1) !important; }
+
         @media (max-width: 1024px) {
             .sidebar { position: absolute !important; bottom: 0; left: 0; width: 100% !important; height: 50vh !important; z-index: 100; border-radius: 3rem 3rem 0 0 !important; background: rgba(10, 10, 10, 0.95) !important; }
             .viewport { height: 100vh !important; width: 100vw !important; }
@@ -57,7 +59,7 @@
                 <div class="w-12 h-12 bg-gradient-to-br from-blue-600 to-indigo-700 rounded-2xl flex items-center justify-center shadow-2xl font-black text-xl text-white">T</div>
                 <div class="hidden sm:block">
                     <h1 class="text-2xl font-black tracking-tighter uppercase italic leading-none text-white">Tahir <span class="text-blue-500">Tahir</span></h1>
-                    <p class="text-[9px] text-slate-500 font-bold uppercase tracking-[0.3em] mt-1">Preset Manager v19.5</p>
+                    <p class="text-[9px] text-slate-500 font-bold uppercase tracking-[0.3em] mt-1">Preset Manager v19.6</p>
                 </div>
             </div>
 
@@ -93,11 +95,12 @@
                 <!-- CREATOR VIEW -->
                 <div id="view-creator" class="flex-1 flex flex-col items-center justify-center p-10 animate-in fade-in duration-500">
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-10 w-full max-w-5xl">
-                        <label class="glass rounded-[3.5rem] aspect-square flex flex-col items-center justify-center cursor-pointer border-dashed border-2 border-white/10 hover:border-blue-500/40 transition-all overflow-hidden group shadow-2xl relative">
+                        <label id="src-drop" class="glass rounded-[3.5rem] aspect-square flex flex-col items-center justify-center cursor-pointer border-dashed border-2 border-white/10 hover:border-blue-500/40 transition-all overflow-hidden group shadow-2xl relative">
                             <img id="creator-src-img" class="hidden w-full h-full object-cover">
                             <div id="creator-src-hold" class="text-center opacity-40 group-hover:opacity-100">
                                 <svg class="mx-auto mb-5" width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect width="18" height="18" x="3" y="3" rx="2" ry="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/></svg>
                                 <p class="text-[13px] font-black uppercase tracking-[0.2em]">وێنەی پرێسێت بار بکە</p>
+                                <p class="text-[9px] mt-2 text-blue-400 italic">وێنەکە ڕابکێشە بۆ ئێرە</p>
                             </div>
                             <input type="file" id="creator-src-in" class="hidden" accept="image/*">
                         </label>
@@ -134,8 +137,8 @@
                         </div>
                     </div>
 
-                    <div class="sidebar lg:w-[420px] glass p-8 flex flex-col gap-6 overflow-y-auto custom-scrollbar shadow-2xl z-50">
-                        <div class="p-8 bg-blue-600/15 rounded-[2.5rem] border border-blue-500/30">
+                    <div class="sidebar lg:w-[420px] glass p-8 flex flex-col gap-8 shadow-2xl z-50 overflow-y-auto custom-scrollbar h-full">
+                        <div class="p-8 bg-blue-600/15 rounded-[2.5rem] border border-blue-500/30 shadow-inner">
                             <div class="flex justify-between text-[12px] font-black text-blue-400 uppercase mb-4 italic"><span>هێزی پرێسێت (Match)</span><span id="intensity-v">100%</span></div>
                             <input type="range" id="intensity" min="0" max="100" value="100" class="accent-blue-500">
                         </div>
@@ -158,13 +161,13 @@
                     </div>
                 </div>
 
-                <!-- EMPTY STATE -->
-                <div id="view-empty" class="hidden flex-1 flex flex-col items-center justify-center p-20 bg-[#080808]">
-                    <div class="text-center space-y-6 max-w-md">
+                <!-- EMPTY STATE (EDITOR DROP ZONE) -->
+                <div id="view-empty" class="hidden flex-1 flex flex-col items-center justify-center p-20 bg-[#080808] border-2 border-dashed border-transparent transition-all">
+                    <div class="text-center space-y-6 max-w-md pointer-events-none">
                         <div class="w-24 h-24 bg-white/5 rounded-full flex items-center justify-center mx-auto mb-8 border border-white/10"><svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4m2-5 5 5 5-5m-5 5V3" /></svg></div>
-                        <h2 class="text-3xl font-black uppercase italic tracking-tighter">وێنەکانت بار بکە</h2>
-                        <p class="text-slate-500 text-sm font-bold">بۆ ئەوەی پرێسێتەکانی کتێبخانەکەت بەکاربهێنیت، وێنەکانت لێرە بار بکە.</p>
-                        <button onclick="document.getElementById('tar-in-hidden').click()" class="px-12 py-6 bg-white text-black rounded-full font-black uppercase text-xs tracking-widest hover:scale-105 active:scale-95 transition-all">Select Photos</button>
+                        <h2 class="text-3xl font-black uppercase italic tracking-tighter text-white">وێنەکانت بار بکە</h2>
+                        <p class="text-slate-500 text-sm font-bold">وێنەکانت ڕابکێشە بۆ ئێرە یان کلیک لەسەر دوگمەی خوارەوە بکە.</p>
+                        <button onclick="document.getElementById('tar-in-hidden').click()" class="px-12 py-6 bg-white text-black rounded-full font-black uppercase text-xs tracking-widest hover:scale-105 active:scale-95 transition-all pointer-events-auto">Select Photos</button>
                         <input type="file" id="tar-in-hidden" class="hidden" accept="image/*" multiple>
                     </div>
                 </div>
@@ -186,9 +189,7 @@
         const auth = getAuth(app);
         const appId = typeof __app_id !== 'undefined' ? __app_id : 'tahir-preset-app';
 
-        window.db = db; window.appId = appId; // Export for global usage
-
-        // Core State
+        // State
         let presets = []; let batch = []; let activeIdx = 0; let selectedPreset = null;
         let zoomL = 1.0, fitS = 1.0; let pBaseC = document.createElement('canvas');
         let isRendering = false, isComparing = false;
@@ -213,6 +214,38 @@
             });
         };
         init();
+
+        // --- DRAG AND DROP HANDLER ---
+        const setupDD = (dropZone, input) => {
+            ['dragenter', 'dragover'].forEach(eventName => {
+                dropZone.addEventListener(eventName, (e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    dropZone.classList.add('drag-active');
+                }, false);
+            });
+
+            ['dragleave', 'drop'].forEach(eventName => {
+                dropZone.addEventListener(eventName, (e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    dropZone.classList.remove('drag-active');
+                }, false);
+            });
+
+            dropZone.addEventListener('drop', (e) => {
+                const dt = e.dataTransfer;
+                const files = dt.files;
+                if (files.length > 0) {
+                    input.files = files;
+                    input.dispatchEvent(new Event('change'));
+                }
+            }, false);
+        };
+
+        // Wire up Drag and Drop
+        setupDD(get('src-drop'), get('creator-src-in'));
+        setupDD(get('view-empty'), get('tar-in-hidden'));
 
         // --- PRESET CREATION ---
         let tempSrcStats = null;
@@ -348,7 +381,7 @@
             ctx.drawImage(buf, 0, 0);
         };
 
-        // --- UI RE-RENDERERS ---
+        // --- UI HELPERS ---
         window.switchMode = mode => {
             get('btn-mode-creator').classList.toggle('active', mode==='creator');
             get('btn-mode-editor').classList.toggle('active', mode==='editor');
